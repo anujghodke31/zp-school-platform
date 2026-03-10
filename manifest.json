@@ -1,0 +1,28 @@
+{
+    "name": "MahaVidya — ZP School Network",
+    "short_name": "MahaVidya",
+    "description": "Official Government of Maharashtra Zilla Parishad School Management Platform. GIGW 3.0 Compliant.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#1A237E",
+    "theme_color": "#1A237E",
+    "orientation": "portrait-primary",
+    "lang": "en",
+    "icons": [
+        {
+            "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Emblem_of_Maharashtra.svg/192px-Emblem_of_Maharashtra.svg.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Emblem_of_Maharashtra.svg/512px-Emblem_of_Maharashtra.svg.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "categories": ["education", "government"],
+    "screenshots": [],
+    "related_applications": []
+}

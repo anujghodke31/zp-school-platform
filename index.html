@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="MahaVidya — Official Zilla Parishad School Network, Government of Maharashtra. GIGW 3.0 Compliant Digital Education Platform.">
+    <meta name="theme-color" content="#1A237E">
+    <title>MahaVidya | ZP School Network | Government of Maharashtra</title>
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body id="body-root">
+
+    <!-- SKIP LINK (GIGW 3.0 / WCAG 2.1) -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- GOV TOPBAR -->
+    <div class="gov-topbar" role="banner" aria-label="Government of India official portal bar">
+        <div class="container flex-between align-center">
+            <div class="flex align-center gap-sm">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Emblem_of_India.svg/40px-Emblem_of_India.svg.png"
+                    alt="Emblem of India" class="gov-topbar-logo">
+                <span class="gov-topbar-text lang-en">Government of Maharashtra | <strong>Digital India</strong>
+                    Initiative</span>
+                <span class="gov-topbar-text lang-mr hidden">महाराष्ट्र शासन | <strong>डिजिटल इंडिया</strong>
+                    उपक्रम</span>
+            </div>
+            <div class="flex align-center gap-sm">
+                <span class="gov-topbar-text text-xs">Last Updated: 09 March 2026</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ACCESSIBILITY BAR (GIGW 3.0) -->
+    <div class="a11y-bar" role="toolbar" aria-label="Accessibility options">
+        <div class="container flex-between align-center">
+            <div class="flex align-center gap-sm">
+                <span class="a11y-label">Accessibility:</span>
+                <button class="a11y-btn" id="contrast-toggle" aria-label="Toggle high contrast mode"
+                    title="Toggle High Contrast">
+                    <i class="fa-solid fa-circle-half-stroke"></i> Contrast
+                </button>
+                <div class="font-sizer" role="group" aria-label="Font size controls">
+                    <button class="a11y-btn" id="font-decrease" aria-label="Decrease font size">A-</button>
+                    <button class="a11y-btn active" id="font-reset" aria-label="Reset font size">A</button>
+                    <button class="a11y-btn" id="font-increase" aria-label="Increase font size">A+</button>
+                </div>
+            </div>
+            <div class="lang-toggle a11y-style" role="group" aria-label="Language selection">
+                <button class="lang-btn active" data-lang="en" aria-pressed="true">English</button>
+                <button class="lang-btn" data-lang="mr" aria-pressed="false">मराठी</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN HEADER -->
+    <header class="saas-header" role="banner">
+        <div class="container flex-between align-center py-sm">
+            <div class="logo flex align-center gap-sm">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Emblem_of_Maharashtra.svg/100px-Emblem_of_Maharashtra.svg.png"
+                    alt="Maharashtra Government Emblem" class="logo-img">
+                <div>
+                    <div class="logo-title lang-en">MahaVidya</div>
+                    <div class="logo-title lang-mr hidden">महाविद्या</div>
+                    <span class="logo-subtitle lang-en">ZP School Network — Unified Platform</span>
+                    <span class="logo-subtitle lang-mr hidden">जिल्हा परिषद शाळा नेटवर्क</span>
+                </div>
+            </div>
+
+            <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" id="menu-toggle">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <nav class="saas-nav" id="main-nav" role="navigation" aria-label="Main navigation">
+                <ul class="flex gap-lg list-none" role="list">
+                    <li><a href="#home" class="nav-link active lang-en" aria-current="page">Home</a><a href="#home"
+                            class="nav-link active lang-mr hidden">मुखपृष्ठ</a></li>
+                    <li><a href="#academics" class="nav-link lang-en">Academics</a><a href="#academics"
+                            class="nav-link lang-mr hidden">शिक्षण</a></li>
+                    <li><a href="#analytics" class="nav-link lang-en">Analytics</a><a href="#analytics"
+                            class="nav-link lang-mr hidden">विश्लेषण</a></li>
+                    <li><a href="#transparency" class="nav-link lang-en">Transparency</a><a href="#transparency"
+                            class="nav-link lang-mr hidden">पारदर्शकता</a></li>
+                </ul>
+            </nav>
+
+            <div class="header-actions flex align-center gap-sm">
+                <!-- Command Bar Trigger -->
+                <button class="cmd-bar-trigger btn btn-ghost" id="cmd-bar-btn" aria-label="Open command bar (Ctrl+K)"
+                    title="Search anything (Ctrl+K)">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <span class="lang-en">Search</span>
+                    <span class="lang-mr hidden">शोधा</span>
+                    <kbd>⌘K</kbd>
+                </button>
+                <button class="btn btn-primary" id="login-nav-btn" aria-label="Login to portal">
+                    <span class="lang-en">Login</span>
+                    <span class="lang-mr hidden">प्रवेश</span>
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- COMMAND BAR (Cmd+K) -->
+    <div id="cmd-overlay" class="cmd-overlay" role="dialog" aria-modal="true" aria-label="Command Bar">
+        <div class="cmd-modal">
+            <div class="cmd-search-box">
+                <i class="fa-solid fa-magnifying-glass cmd-icon"></i>
+                <input type="text" id="cmd-input" class="cmd-input"
+                    placeholder="Search schools, teachers, students... (e.g. 'Pune attendance')"
+                    aria-label="Command search input">
+                <kbd class="cmd-esc">ESC</kbd>
+            </div>
+            <div id="cmd-results" class="cmd-results"></div>
+            <div class="cmd-footer">
+                <span><kbd>↑↓</kbd> navigate</span>
+                <span><kbd>↵</kbd> select</span>
+                <span><kbd>ESC</kbd> close</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGIN MODAL -->
+    <div id="login-overlay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div>
+                    <h2 id="modal-title" class="text-primary font-bold lang-en">Secure Portal Login</h2>
+                    <h2 id="modal-title-mr" class="text-primary font-bold lang-mr hidden">सुरक्षित पोर्टल प्रवेश</h2>
+                    <p class="text-xs text-muted lang-en">Teachers, Principals & Administrators</p>
+                    <p class="text-xs text-muted lang-mr hidden">शिक्षक, मुख्याध्यापक आणि प्रशासक</p>
+                </div>
+                <button id="close-login" class="icon-btn" aria-label="Close login modal"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <!-- Login Tabs -->
+            <div class="modal-tabs" role="tablist">
+                <button class="modal-tab active" data-tab="staff" role="tab" aria-selected="true" id="tab-staff">
+                    <i class="fa-solid fa-id-card"></i>
+                    <span class="lang-en">Staff Login</span>
+                    <span class="lang-mr hidden">कर्मचारी</span>
+                </button>
+                <button class="modal-tab" data-tab="otp" role="tab" aria-selected="false" id="tab-otp">
+                    <i class="fa-solid fa-mobile-screen"></i>
+                    <span class="lang-en">Parent OTP</span>
+                    <span class="lang-mr hidden">पालक OTP</span>
+                </button>
+            </div>
+
+            <!-- Staff Login Panel -->
+            <div id="panel-staff" class="modal-panel" role="tabpanel" aria-labelledby="tab-staff">
+                <div id="login-error" class="alert-error hidden" role="alert">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span class="lang-en">Invalid credentials. Please try again.</span>
+                    <span class="lang-mr hidden">चुकीची माहिती. पुन्हा प्रयत्न करा.</span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label lang-en" for="login-username">Username / Employee ID</label>
+                    <label class="form-label lang-mr hidden" for="login-username">वापरकर्तानाव / कर्मचारी ID</label>
+                    <div class="input-with-icon">
+                        <i class="fa-solid fa-user"></i>
+                        <input type="text" id="login-username" class="form-input" placeholder="admin"
+                            autocomplete="username">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label lang-en" for="login-password">Password</label>
+                    <label class="form-label lang-mr hidden" for="login-password">पासवर्ड</label>
+                    <div class="input-with-icon">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="login-password" class="form-input" placeholder="••••••••"
+                            autocomplete="current-password">
+                        <button class="pw-toggle" id="pw-toggle" aria-label="Show password" type="button"><i
+                                class="fa-solid fa-eye"></i></button>
+                    </div>
+                </div>
+                <button class="btn btn-primary w-100 btn-lg" id="submit-login-btn">
+                    <span class="lang-en">Sign In Securely</span>
+                    <span class="lang-mr hidden">सुरक्षित प्रवेश</span>
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                </button>
+                <p class="text-center mt-sm text-sm text-muted lang-en">Demo: <strong>admin</strong> /
+                    <strong>admin</strong> &nbsp;|&nbsp; <strong>teacher</strong> / <strong>password</strong>
+                </p>
+            </div>
+
+            <!-- Parent OTP Panel -->
+            <div id="panel-otp" class="modal-panel hidden" role="tabpanel" aria-labelledby="tab-otp">
+                <div id="otp-step-1">
+                    <div class="form-group">
+                        <label class="form-label lang-en" for="otp-phone">Mobile Number</label>
+                        <label class="form-label lang-mr hidden" for="otp-phone">मोबाइल नंबर</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-phone"></i>
+                            <input type="tel" id="otp-phone" class="form-input" placeholder="+91 98765 43210"
+                                maxlength="13">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary w-100 btn-lg" id="send-otp-btn">
+                        <span class="lang-en">Send OTP via SMS</span>
+                        <span class="lang-mr hidden">SMS द्वारे OTP पाठवा</span>
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                    <p class="text-xs text-muted mt-sm text-center lang-en">OTP sent via <strong>Sandes</strong>
+                        Government SMS Gateway</p>
+                    <p class="text-xs text-muted mt-sm text-center lang-mr hidden">OTP <strong>Sandes</strong> शासकीय
+                        SMS द्वारे पाठवला जाईल</p>
+                </div>
+                <div id="otp-step-2" class="hidden">
+                    <p class="text-sm mb-md text-primary lang-en"><i class="fa-solid fa-check-circle"></i> OTP sent to
+                        your mobile. (Demo OTP: <strong id="demo-otp-display">------</strong>)</p>
+                    <div class="form-group">
+                        <label class="form-label" for="otp-input">Enter 6-digit OTP</label>
+                        <input type="text" id="otp-input" class="form-input text-center font-bold"
+                            placeholder="· · · · · ·" maxlength="6" style="font-size:1.5rem; letter-spacing:0.5rem;">
+                    </div>
+                    <button class="btn btn-primary w-100 btn-lg" id="verify-otp-btn">
+                        <span class="lang-en">Verify & Enter Portal</span>
+                        <span class="lang-mr hidden">OTP पडताळा</span>
+                        <i class="fa-solid fa-shield-check"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEARCH / DIRECTORY OVERLAY -->
+    <div id="search-overlay" class="modal-overlay" role="dialog" aria-modal="true" aria-label="School directory search">
+        <div class="modal-card" style="max-width:600px;">
+            <div class="modal-header">
+                <h2 class="lang-en">Search 60,000+ Schools</h2>
+                <h2 class="lang-mr hidden">60,000+ शाळा शोधा</h2>
+                <button id="close-search" class="icon-btn" aria-label="Close search"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="input-with-icon mb-md">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="school-search" class="form-input"
+                    placeholder="School name, UDISE code or district...">
+            </div>
+            <div id="search-results" class="search-results-container" role="listbox" aria-label="Search results"></div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main id="main-content" tabindex="-1">
+
+        <!-- ======================================================= -->
+        <!-- HERO SLIDER                                              -->
+        <!-- ======================================================= -->
+        <section id="home" class="hero-slider-section" aria-label="Hero section">
+            <div class="hero-slides-wrapper" id="hero-slides-wrapper">
+
+                <!-- SLIDE 1: Real ZP School Photo -->
+                <div class="hero-slide slide-photo" aria-label="Real ZP School slide">
+                    <img src="zp_school_real.jpg"
+                        alt="ZP school students presenting their science project — real school in rural Maharashtra"
+                        class="slide-bg-img" loading="eager" decoding="async">
+                    <div class="slide-overlay"></div>
+                    <div class="container slide-content">
+                        <div class="slide-text-block animate-slide-in">
+                            <span class="badge badge-saffron mb-md lang-en"><i class="fa-solid fa-location-dot"></i>
+                                Zilla Parishad School, Rural Maharashtra</span>
+                            <span class="badge badge-saffron mb-md lang-mr hidden"><i
+                                    class="fa-solid fa-location-dot"></i> जिल्हा परिषद शाळा, ग्रामीण महाराष्ट्र</span>
+                            <h2 class="slide-heading lang-en">Students Presenting Their Science Innovations</h2>
+                            <h2 class="slide-heading lang-mr hidden">विद्यार्थी त्यांचे विज्ञान प्रकल्प सादर करत आहेत
+                            </h2>
+                            <p class="slide-desc lang-en">Our students are building the future. MahaVidya empowers every
+                                ZP school with digital tools to make this happen — at scale, across Maharashtra.</p>
+                            <p class="slide-desc lang-mr hidden">आमचे विद्यार्थी भविष्य घडवत आहेत. महाविद्या प्रत्येक ZP
+                                शाळेला डिजिटल साधने देते.</p>
+                            <div class="slide-ctas flex gap-md mt-lg">
+                                <button class="btn btn-saffron btn-lg lang-en"
+                                    onclick="document.getElementById('login-nav-btn').click()">Enter Portal <i
+                                        class="fa-solid fa-arrow-right"></i></button>
+                                <button class="btn btn-saffron btn-lg lang-mr hidden"
+                                    onclick="document.getElementById('login-nav-btn').click()">पोर्टल उघडा <i
+                                        class="fa-solid fa-arrow-right"></i></button>
+                                <button class="btn btn-ghost-white btn-lg lang-en"
+                                    onclick="document.getElementById('cmd-bar-btn').click()">Find Your School</button>
+                                <button class="btn btn-ghost-white btn-lg lang-mr hidden"
+                                    onclick="document.getElementById('cmd-bar-btn').click()">शाळा शोधा</button>
+                            </div>
+                            <div class="slide-stats mt-lg flex gap-lg">
+                                <div class="stat-pill"><strong>60,000+</strong><span class="lang-en">Schools</span><span
+                                        class="lang-mr hidden">शाळा</span></div>
+                                <div class="stat-pill"><strong>18 Lakh+</strong><span
+                                        class="lang-en">Students</span><span class="lang-mr hidden">विद्यार्थी</span>
+                                </div>
+                                <div class="stat-pill"><strong>34</strong><span class="lang-en">Districts</span><span
+                                        class="lang-mr hidden">जिल्हे</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 2: AI Teacher Dashboard -->
+                <div class="hero-slide slide-ai" aria-label="AI Teacher Assistant slide">
+                    <div class="slide-bg-gradient"></div>
+                    <div class="container slide-content hero-grid">
+                        <div class="slide-text-block animate-slide-in">
+                            <span class="badge badge-primary mb-md lang-en">AI-Powered • Digital India</span>
+                            <span class="badge badge-primary mb-md lang-mr hidden">AI-चालित • डिजिटल इंडिया</span>
+                            <h2 class="slide-heading-dark lang-en">Next-Generation School Management Built for Rural
+                                Connectivity</h2>
+                            <h2 class="slide-heading-dark lang-mr hidden">ग्रामीण जोडणीसाठी तयार केलेले पुढच्या पिढीचे
+                                शाळा व्यवस्थापन</h2>
+                            <p class="slide-desc-dark lang-en">A unified, secure platform enabling teachers, parents,
+                                and administrators to access academics, track performance, and automate lesson planning.
+                            </p>
+                            <p class="slide-desc-dark lang-mr hidden">शिक्षक, पालक आणि प्रशासकांसाठी एकत्रित, सुरक्षित
+                                प्लॅटफॉर्म.</p>
+                            <div class="slide-ctas flex gap-md mt-lg">
+                                <button class="btn btn-primary btn-lg lang-en"
+                                    onclick="document.getElementById('login-nav-btn').click()">Explore Platform <i
+                                        class="fa-solid fa-rocket"></i></button>
+                                <button class="btn btn-primary btn-lg lang-mr hidden">प्लॅटफॉर्म एक्सप्लोर करा <i
+                                        class="fa-solid fa-rocket"></i></button>
+                                <button class="btn btn-secondary btn-lg lang-en"
+                                    onclick="document.getElementById('analytics').scrollIntoView({behavior:'smooth'})">View
+                                    Analytics</button>
+                                <button class="btn btn-secondary btn-lg lang-mr hidden">विश्लेषण पहा</button>
+                            </div>
+                        </div>
+
+                        <!-- AI Widget Card -->
+                        <div class="hero-visual">
+                            <div class="saas-floating-card shadow-lg bg-white rounded-lg p-lg relative">
+                                <div class="decor-circle bg-blue-100"></div>
+                                <div class="decor-circle bg-orange-100 bottom-right"></div>
+                                <div class="flex-between mb-lg border-bottom pb-sm">
+                                    <div class="flex align-center gap-sm">
+                                        <div class="icon-box bg-blue text-white"><i class="fa-solid fa-robot"></i></div>
+                                        <div>
+                                            <h3 class="text-sm font-bold lang-en">AI Teacher Assistant</h3>
+                                            <h3 class="text-sm font-bold lang-mr hidden">AI शिक्षक सहाय्यक</h3>
+                                            <span class="text-xs text-muted" id="ai-status-text">Waking up
+                                                Agent...</span>
+                                        </div>
+                                    </div>
+                                    <span class="badge-sm badge-pulse-null" id="ai-badge"><i
+                                            class="fa-solid fa-circle-notch fa-spin"></i> Booting</span>
+                                </div>
+                                <div id="ai-content-state">
+                                    <div class="mock-chat-bubble user rounded mb-sm p-sm text-sm">
+                                        <strong class="lang-en">Teacher:</strong><strong
+                                            class="lang-mr hidden">शिक्षक:</strong>
+                                        <span class="lang-en"> Generate a lesson plan for Science, Class 6
+                                            (Photosynthesis).</span>
+                                        <span class="lang-mr hidden"> इयत्ता ६ विज्ञान (प्रकाशसंश्लेषण) साठी धडा योजना
+                                            तयार करा.</span>
+                                    </div>
+                                    <div class="mock-chat-bubble active rounded mb-sm p-sm" id="ai-intro-bubble"
+                                        style="display: none;">
+                                        <p class="text-sm" id="ai-intro"><i
+                                                class="fa-solid fa-wand-magic-sparkles text-accent"></i> <strong
+                                                class="lang-en">Generating Plan:</strong><strong
+                                                class="lang-mr hidden">योजना तयार होत आहे:</strong> <span
+                                                class="type-target"></span></p>
+                                    </div>
+                                    <div class="mock-chat-bubble active rounded p-sm hidden" id="ai-activities-box">
+                                        <h4 class="text-xs font-bold mb-xs text-primary lang-en">Recommended Activities:
+                                        </h4>
+                                        <h4 class="text-xs font-bold mb-xs text-primary lang-mr hidden">शिफारस केलेल्या
+                                            क्रिया:</h4>
+                                        <ul class="text-sm text-muted pl-md list-disc" id="ai-activities-list"></ul>
+                                    </div>
+                                </div>
+                                <button class="btn btn-outline w-100 mt-md text-sm" id="dl-btn" disabled>
+                                    <i class="fa-solid fa-file-pdf"></i>
+                                    <span class="lang-en">Download PDF Plan</span>
+                                    <span class="lang-mr hidden">PDF योजना डाउनलोड करा</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slider Controls -->
+            <div class="slider-controls" aria-label="Hero slider navigation">
+                <button class="slide-dot active" data-slide="0" aria-label="Go to slide 1 - Real School"></button>
+                <button class="slide-dot" data-slide="1" aria-label="Go to slide 2 - AI Dashboard"></button>
+            </div>
+            <button class="slide-arrow slide-prev" id="slide-prev" aria-label="Previous slide"><i
+                    class="fa-solid fa-chevron-left"></i></button>
+            <button class="slide-arrow slide-next" id="slide-next" aria-label="Next slide"><i
+                    class="fa-solid fa-chevron-right"></i></button>
+        </section>
+
+        <!-- ======================================================= -->
+        <!-- STUDENT PROGRESS ANALYTICS                               -->
+        <!-- ======================================================= -->
+        <section id="analytics" class="py-xl" aria-labelledby="analytics-heading">
+            <div class="container">
+                <div class="text-center mb-xl">
+                    <span class="badge badge-navy mb-md lang-en">Live Data</span>
+                    <span class="badge badge-navy mb-md lang-mr hidden">लाइव्ह डेटा</span>
+                    <h2 class="section-title lang-en" id="analytics-heading">Student Progress Analytics</h2>
+                    <h2 class="section-title lang-mr hidden">विद्यार्थी प्रगती विश्लेषण</h2>
+                    <p class="section-desc text-muted mx-auto lang-en">Visualize real-time attendance trends and subject
+                        competency gaps across districts.</p>
+                    <p class="section-desc text-muted mx-auto lang-mr hidden">जिल्ह्यांतर्गत उपस्थिती आणि विषय क्षमता
+                        अंतर दृश्यमान करा.</p>
+                </div>
+                <div class="analytics-grid">
+                    <div class="saas-card p-lg border-hover">
+                        <div class="card-title mb-xs">
+                            <span class="lang-en">Attendance & Dropout Risk</span>
+                            <span class="lang-mr hidden">उपस्थिती आणि गळती जोखीम</span>
+                            <button class="icon-btn" title="Refresh data" id="refresh-att"
+                                aria-label="Refresh attendance data"><i class="fa-solid fa-rotate-right"></i></button>
+                        </div>
+                        <p class="text-sm text-muted mb-md lang-en">6-month district attendance vs. predicted dropout
+                            indicators.</p>
+                        <p class="text-sm text-muted mb-md lang-mr hidden">6 महिन्यांचा जिल्हा उपस्थिती विरुद्ध अंदाजित
+                            गळती निर्देशक.</p>
+                        <div class="chart-container-wrapper">
+                            <div class="chart-container loaded" id="att-chart-div">
+                                <canvas id="attendanceChart"
+                                    aria-label="Attendance and dropout risk line chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="saas-card p-lg border-hover">
+                        <div class="card-title mb-xs">
+                            <span class="lang-en">Learning Competency Tracking</span>
+                            <span class="lang-mr hidden">शिक्षण क्षमता ट्रॅकिंग</span>
+                            <button class="icon-btn" title="Refresh data" id="refresh-comp"
+                                aria-label="Refresh competency data"><i class="fa-solid fa-rotate-right"></i></button>
+                        </div>
+                        <p class="text-sm text-muted mb-md lang-en">Class-wise mastery percentages vs. state benchmarks.
+                        </p>
+                        <p class="text-sm text-muted mb-md lang-mr hidden">वर्गनिहाय प्रभुत्व टक्केवारी विरुद्ध राज्य
+                            बेंचमार्क.</p>
+                        <div class="chart-container-wrapper">
+                            <div class="chart-container loaded" id="comp-chart-div">
+                                <canvas id="competencyChart" aria-label="Subject competency bar chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================================================= -->
+        <!-- REAL SCHOOL GALLERY                                      -->
+        <!-- ======================================================= -->
+        <section id="campus" class="py-xl bg-light border-top" aria-labelledby="gallery-heading">
+            <div class="container">
+                <div class="text-center mb-xl">
+                    <span class="badge badge-saffron mb-md lang-en">Real Impact</span>
+                    <span class="badge badge-saffron mb-md lang-mr hidden">वास्तविक परिणाम</span>
+                    <h2 class="section-title lang-en" id="gallery-heading">Digital Classrooms in Action</h2>
+                    <h2 class="section-title lang-mr hidden">डिजिटल वर्गखोल्या कार्यरत</h2>
+                    <p class="section-desc text-muted mx-auto lang-en">Witness how MahaVidya is transforming Zilla
+                        Parishad schools across Maharashtra.</p>
+                    <p class="section-desc text-muted mx-auto lang-mr hidden">महाविद्या महाराष्ट्रातील जिल्हा परिषद शाळा
+                        कशा बदलत आहे ते पहा.</p>
+                </div>
+                <div class="gallery-grid">
+                    <div class="gallery-item rounded-lg overflow-hidden">
+                        <img src="zp_school_real.jpg"
+                            alt="ZP school students presenting science project in rural Maharashtra"
+                            class="scale-on-hover-img" loading="lazy" decoding="async">
+                        <div class="gallery-overlay">
+                            <span class="gallery-label lang-en"><i class="fa-solid fa-microscope"></i> Science
+                                Innovation Day — ZP Primary School</span>
+                            <span class="gallery-label lang-mr hidden"><i class="fa-solid fa-microscope"></i> विज्ञान
+                                नवोपक्रम दिवस — जि.प. प्राथमिक शाळा</span>
+                        </div>
+                    </div>
+                    <div class="gallery-item rounded-lg overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=800&auto=format&fit=crop"
+                            alt="Students learning digitally" class="scale-on-hover-img" loading="lazy"
+                            decoding="async">
+                        <div class="gallery-overlay">
+                            <span class="gallery-label lang-en"><i class="fa-solid fa-tablet-screen-button"></i> Digital
+                                Learning — Pune District</span>
+                            <span class="gallery-label lang-mr hidden"><i class="fa-solid fa-tablet-screen-button"></i>
+                                डिजिटल शिक्षण — पुणे जिल्हा</span>
+                        </div>
+                    </div>
+                    <div class="gallery-item rounded-lg overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=800&auto=format&fit=crop"
+                            alt="Rural classroom" class="scale-on-hover-img" loading="lazy" decoding="async">
+                        <div class="gallery-overlay">
+                            <span class="gallery-label lang-en"><i class="fa-solid fa-chalkboard-user"></i> Smart Class
+                                — Amravati District</span>
+                            <span class="gallery-label lang-mr hidden"><i class="fa-solid fa-chalkboard-user"></i>
+                                स्मार्ट वर्ग — अमरावती जिल्हा</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================================================= -->
+        <!-- PLATFORM FEATURES                                        -->
+        <!-- ======================================================= -->
+        <section id="features" class="py-xl border-top" aria-labelledby="features-heading">
+            <div class="container">
+                <div class="text-center mb-xl">
+                    <h2 class="section-title lang-en" id="features-heading">Platform Capabilities</h2>
+                    <h2 class="section-title lang-mr hidden">प्लॅटफॉर्म क्षमता</h2>
+                </div>
+                <div class="features-grid">
+                    <div class="saas-icon-card text-center p-lg rounded scale-on-hover">
+                        <div class="icon-xl text-navy mb-md" aria-hidden="true"><i
+                                class="fa-solid fa-building-shield"></i></div>
+                        <h3 class="mb-sm lang-en">Secure Tenant Isolation</h3>
+                        <h3 class="mb-sm lang-mr hidden">सुरक्षित टेनंट अलगाव</h3>
+                        <p class="text-muted text-sm lang-en">Row-level security ensuring each ZP school's data remains
+                            private and isolated per GIGW 3.0 standards.</p>
+                        <p class="text-muted text-sm lang-mr hidden">प्रत्येक ZP शाळेचा डेटा GIGW 3.0 मानकांनुसार खाजगी
+                            राहतो.</p>
+                    </div>
+                    <div class="saas-icon-card text-center p-lg rounded scale-on-hover">
+                        <div class="icon-xl text-saffron mb-md" aria-hidden="true"><i class="fa-solid fa-wifi"></i>
+                        </div>
+                        <h3 class="mb-sm lang-en">Offline PWA Support</h3>
+                        <h3 class="mb-sm lang-mr hidden">ऑफलाइन PWA सहाय्य</h3>
+                        <p class="text-muted text-sm lang-en">Works without internet. Attendance marked offline syncs
+                            automatically when connectivity is restored.</p>
+                        <p class="text-muted text-sm lang-mr hidden">इंटरनेटशिवाय काम करते. ऑफलाइन नोंदलेली उपस्थिती
+                            आपोआप समक्रमित होते.</p>
+                    </div>
+                    <div class="saas-icon-card text-center p-lg rounded scale-on-hover">
+                        <div class="icon-xl text-green mb-md" aria-hidden="true"><i class="fa-solid fa-robot"></i></div>
+                        <h3 class="mb-sm lang-en">Vishwa-Mitra AI</h3>
+                        <h3 class="mb-sm lang-mr hidden">विश्व-मित्र AI</h3>
+                        <p class="text-muted text-sm lang-en">Natural language queries in Marathi/English. Voice-to-text
+                            for semi-literate parents and teachers.</p>
+                        <p class="text-muted text-sm lang-mr hidden">मराठी/इंग्रजीत नैसर्गिक भाषेत प्रश्न. अर्ध-साक्षर
+                            पालकांसाठी व्हॉइस-टू-टेक्स्ट.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================================================= -->
+        <!-- NOTICE BOARD & EVENTS                                    -->
+        <!-- ======================================================= -->
+        <section id="notices" class="py-xl bg-light border-top" aria-labelledby="notices-heading">
+            <div class="container">
+
+                <!-- LIVE NOTICE TICKER -->
+                <div
+                    style="background:var(--navy);border-radius:14px;overflow:hidden;margin-bottom:3rem;display:flex;align-items:stretch;">
+                    <div
+                        style="background:var(--saffron);padding:.75rem 1.25rem;display:flex;align-items:center;gap:.5rem;flex-shrink:0;">
+                        <i class="fa-solid fa-bullhorn" style="color:#fff;font-size:1rem;"></i>
+                        <span style="color:#fff;font-weight:800;font-size:.85rem;white-space:nowrap;"
+                            class="lang-en">NOTICE BOARD</span>
+                        <span style="color:#fff;font-weight:800;font-size:.85rem;white-space:nowrap;"
+                            class="lang-mr hidden">सूचना फलक</span>
+                    </div>
+                    <div style="overflow:hidden;flex:1;position:relative;">
+                        <div id="notice-ticker"
+                            style="display:flex;align-items:center;white-space:nowrap;animation:tickerScroll 32s linear infinite;padding:.75rem 2rem;">
+                            <!-- Filled by JS -->
+                        </div>
+                    </div>
+                    <div
+                        style="background:rgba(255,255,255,.1);display:flex;align-items:center;padding:0 1rem;gap:.5rem;flex-shrink:0;">
+                        <span id="ticker-date"
+                            style="color:rgba(255,255,255,.75);font-size:.75rem;font-weight:600;"></span>
+                    </div>
+                </div>
+
+                <!-- SECTION HEADER -->
+                <div class="text-center mb-xl">
+                    <span class="badge badge-saffron mb-md lang-en">Upcoming</span>
+                    <span class="badge badge-saffron mb-md lang-mr hidden">आगामी</span>
+                    <h2 class="section-title lang-en" id="notices-heading">School Events &amp; Notices</h2>
+                    <h2 class="section-title lang-mr hidden">शाळेचे कार्यक्रम आणि सूचना</h2>
+                    <p class="section-desc text-muted mx-auto lang-en">Stay updated with upcoming events, exams,
+                        results, and holidays across all ZP schools.</p>
+                    <p class="section-desc text-muted mx-auto lang-mr hidden">जि.प. शाळांमधील आगामी कार्यक्रम, परीक्षा,
+                        निकाल आणि सुट्ट्यांची माहिती.</p>
+                </div>
+
+                <!-- EVENTS GRID -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start;">
+
+                    <!-- LEFT: Upcoming Events -->
+                    <div>
+                        <h3
+                            style="font-size:1.1rem;font-weight:700;color:var(--navy);margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;">
+                            <i class="fa-solid fa-calendar-star" style="color:var(--saffron)"></i>
+                            <span class="lang-en">Upcoming Events</span><span class="lang-mr hidden">आगामी
+                                कार्यक्रम</span>
+                        </h3>
+                        <div style="display:flex;flex-direction:column;gap:.875rem;" id="events-list">
+                            <!-- Filled by JS -->
+                        </div>
+                    </div>
+
+                    <!-- RIGHT: Results & Notices -->
+                    <div>
+                        <h3
+                            style="font-size:1.1rem;font-weight:700;color:var(--navy);margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;">
+                            <i class="fa-solid fa-file-certificate" style="color:var(--navy)"></i>
+                            <span class="lang-en">Results &amp; Circulars</span><span class="lang-mr hidden">निकाल आणि
+                                परिपत्रके</span>
+                        </h3>
+                        <div style="display:flex;flex-direction:column;gap:.875rem;" id="results-list">
+                            <!-- Filled by JS -->
+                        </div>
+                        <div style="margin-top:1.25rem;">
+                            <a href="parent_portal.html" class="btn btn-saffron"
+                                style="display:inline-flex;width:100%;justify-content:center;">
+                                <i class="fa-solid fa-user-graduate"></i>
+                                <span class="lang-en">Check Your Child's Results →</span>
+                                <span class="lang-mr hidden">मुलाचा निकाल पहा →</span>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <style>
+        @keyframes tickerScroll {
+            0% {
+                transform: translateX(100%);
+            }
+
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
+        .event-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1rem 1.25rem;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s;
+        }
+
+        .event-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .event-date-box {
+            background: var(--navy);
+            color: white;
+            border-radius: 10px;
+            padding: .5rem .75rem;
+            text-align: center;
+            flex-shrink: 0;
+            min-width: 52px;
+        }
+
+        .event-date-box .ed-day {
+            font-size: 1.3rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .event-date-box .ed-mon {
+            font-size: .65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            opacity: .9;
+        }
+
+        .event-tag {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: .72rem;
+            font-weight: 700;
+        }
+
+        .event-card-exam .event-date-box {
+            background: var(--danger);
+        }
+
+        .event-card-result .event-date-box {
+            background: var(--success);
+        }
+
+        .event-card-holiday .event-date-box {
+            background: var(--saffron);
+        }
+
+        .event-card-meeting .event-date-box {
+            background: #5C6BC0;
+        }
+
+        .tag-exam {
+            background: #FFEBEE;
+            color: var(--danger);
+        }
+
+        .tag-result {
+            background: #E8F5E9;
+            color: var(--success);
+        }
+
+        .tag-holiday {
+            background: var(--saffron-light);
+            color: var(--warning);
+        }
+
+        .tag-meeting {
+            background: #EDE7F6;
+            color: #5C6BC0;
+        }
+
+        .tag-event {
+            background: var(--navy-light);
+            color: var(--navy);
+        }
+
+        .result-row {
+            background: white;
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--navy);
+            border-radius: 0 12px 12px 0;
+            padding: .875rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s;
+        }
+
+        .result-row:hover {
+            border-left-color: var(--saffron);
+            background: var(--saffron-light);
+        }
+
+        .result-row.result-new {
+            border-left-color: var(--success);
+        }
+    </style>
+
+    <!-- ======================================================= -->
+    <!-- VISHWA-MITRA FLOATING AI CHATBOT                         -->
+    <!-- ======================================================= -->
+    <div id="vm-widget" class="vm-widget" aria-label="Vishwa-Mitra AI Assistant">
+        <div class="vm-chat-panel hidden" id="vm-panel" role="dialog" aria-modal="true"
+            aria-label="Vishwa-Mitra AI chat">
+            <div class="vm-chat-header">
+                <div class="flex align-center gap-sm">
+                    <div class="vm-avatar"><i class="fa-solid fa-robot"></i></div>
+                    <div>
+                        <strong class="lang-en">Vishwa-Mitra AI</strong>
+                        <strong class="lang-mr hidden">विश्व-मित्र AI</strong>
+                        <br>
+                        <span class="text-xs text-success vm-online-indicator lang-en">● Online — Marathi &
+                            English</span>
+                        <span class="text-xs text-success vm-online-indicator lang-mr hidden">● ऑनलाइन — मराठी आणि
+                            इंग्रजी</span>
+                    </div>
+                </div>
+                <button class="icon-btn text-white" id="close-vm" aria-label="Close chat"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="vm-messages" id="vm-messages" aria-live="polite" aria-atomic="false">
+                <div class="vm-msg vm-msg-bot">
+                    <div class="vm-bubble">
+                        <span class="lang-en">नमस्ते! 🙏 I'm Vishwa-Mitra, your school support assistant. Ask me about
+                            fees, homework, school events, or student progress — in Marathi or English!</span>
+                        <span class="lang-mr hidden">नमस्ते! 🙏 मी विश्व-मित्र आहे. शाळेबद्दल कोणतेही प्रश्न विचारा —
+                            मराठी किंवा इंग्रजीत!</span>
+                    </div>
+                </div>
+            </div>
+            <div class="vm-input-bar">
+                <button class="vm-voice-btn" id="vm-voice-btn" aria-label="Start voice input in Marathi">
+                    <i class="fa-solid fa-microphone"></i>
+                </button>
+                <input type="text" class="vm-input" id="vm-input" placeholder="Type in English or मराठी..."
+                    aria-label="Chat message input">
+                <button class="vm-send-btn" id="vm-send-btn" aria-label="Send message">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+
+        <button class="vm-fab" id="vm-fab-btn" aria-label="Open Vishwa-Mitra AI Assistant" aria-expanded="false">
+            <i class="fa-solid fa-robot vm-fab-icon"></i>
+            <span class="vm-fab-label lang-en">Ask AI</span>
+            <span class="vm-fab-label lang-mr hidden">AI ला विचारा</span>
+        </button>
+    </div>
+
+    <!-- PWA OFFLINE BANNER -->
+    <div id="offline-banner" class="offline-banner hidden" role="alert" aria-live="assertive">
+        <i class="fa-solid fa-wifi-slash"></i>
+        <span class="lang-en">You are offline. MahaVidya is working in cached mode.</span>
+        <span class="lang-mr hidden">आपण ऑफलाइन आहात. महाविद्या कॅश मोडमध्ये काम करत आहे.</span>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="saas-footer bg-dark text-white pt-xl pb-md" role="contentinfo">
+        <div class="container footer-grid mb-xl border-bottom border-gray-800 pb-lg">
+            <div class="footer-brand">
+                <div class="flex align-center gap-sm mb-md">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Emblem_of_Maharashtra.svg/100px-Emblem_of_Maharashtra.svg.png"
+                        alt="Maharashtra Emblem" class="footer-logo">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Emblem_of_India.svg/100px-Emblem_of_India.svg.png"
+                        alt="India Emblem" class="footer-logo">
+                </div>
+                <h4 class="mb-xs lang-en">Department of School Education</h4>
+                <h4 class="mb-xs lang-mr hidden">शालेय शिक्षण विभाग</h4>
+                <p class="text-gray-400 text-sm mb-md lang-en">Official ZP Schools Digital Infrastructure. GIGW 3.0
+                    Compliant. Built for Bharat.</p>
+                <p class="text-gray-400 text-sm mb-md lang-mr hidden">अधिकृत ZP शाळा डिजिटल पायाभूत सुविधा. GIGW 3.0
+                    अनुपालक.</p>
+                <div class="flex gap-sm align-center text-xs text-gray-500">
+                    <span class="status-dot bg-green"></span>
+                    <span class="lang-en">All Systems Operational</span>
+                    <span class="lang-mr hidden">सर्व सिस्टम चालू</span>
+                </div>
+            </div>
+            <div class="footer-nav">
+                <h4 class="mb-md text-gray-300 lang-en">Portals</h4>
+                <h4 class="mb-md text-gray-300 lang-mr hidden">पोर्टल्स</h4>
+                <ul class="list-none text-sm text-gray-400">
+                    <li class="mb-sm"><a href="#" class="hover-white lang-en">Super Admin Dashboard</a><a href="#"
+                            class="hover-white lang-mr hidden">सुपर अॅडमिन</a></li>
+                    <li class="mb-sm"><a href="#" class="hover-white lang-en">Principal / Teacher Login</a><a href="#"
+                            class="hover-white lang-mr hidden">मुख्याध्यापक / शिक्षक</a></li>
+                    <li class="mb-sm"><a href="#" class="hover-white lang-en">Shiksha Saathi (Anganwadi)</a><a href="#"
+                            class="hover-white lang-mr hidden">शिक्षा साथी (अंगणवाडी)</a></li>
+                </ul>
+            </div>
+            <div class="footer-nav">
+                <h4 class="mb-md text-gray-300 lang-en">Resources</h4>
+                <h4 class="mb-md text-gray-300 lang-mr hidden">संसाधने</h4>
+                <ul class="list-none text-sm text-gray-400">
+                    <li class="mb-sm"><a href="#" class="hover-white lang-en">RTE Admissions Portal</a><a href="#"
+                            class="hover-white lang-mr hidden">RTE प्रवेश पोर्टल</a></li>
+                    <li class="mb-sm"><a href="#" class="hover-white lang-en">E-Balbharati Curriculum</a><a href="#"
+                            class="hover-white lang-mr hidden">ई-बालभारती</a></li>
+                    <li class="mb-sm"><a href="#" class="hover-white lang-en">GIGW 3.0 Compliance</a><a href="#"
+                            class="hover-white lang-mr hidden">GIGW 3.0 अनुपालन</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="container flex-between flex-wrap gap-md text-sm text-gray-500">
+            <p class="lang-en">© 2026 Government of Maharashtra. All rights reserved.</p>
+            <p class="lang-mr hidden">© 2026 महाराष्ट्र शासन. सर्व हक्क आरक्षित.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(reg => console.log('[PWA] Service Worker registered:', reg.scope))
+                .catch(err => console.warn('[PWA] SW registration failed:', err));
+        }
+
+        // Offline Banner
+        window.addEventListener('offline', () => document.getElementById('offline-banner').classList.remove('hidden'));
+        window.addEventListener('online', () => document.getElementById('offline-banner').classList.add('hidden'));
+    </script>
+</body>
+
+</html>

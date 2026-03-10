@@ -1,0 +1,1826 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MahaVidya — Teacher Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --navy: #1A237E;
+            --navy-light: #E8EAF6;
+            --navy-hover: #283593;
+            --saffron: #FF9933;
+            --saffron-light: #FFF3E0;
+            --success: #2E7D32;
+            --danger: #C62828;
+            --warning: #F57C00;
+            --text: #1C1C2E;
+            --muted: #64748B;
+            --border: #E2E8F0;
+            --bg: #F0F2F8;
+            --white: #fff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 260px;
+            background: linear-gradient(180deg, #1A237E 0%, #1565C0 100%);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            z-index: 50;
+            box-shadow: 4px 0 16px rgba(0, 0, 0, .15);
+        }
+
+        .sb-brand {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+        }
+
+        .sb-brand img {
+            height: 36px;
+            filter: brightness(0) invert(1);
+        }
+
+        .sb-brand-txt h2 {
+            font-size: 1.1rem;
+            font-weight: 800;
+        }
+
+        .sb-brand-txt small {
+            font-size: .7rem;
+            opacity: .7;
+            display: block;
+        }
+
+        .sb-nav {
+            flex: 1;
+            padding: 1rem 0;
+            overflow-y: auto;
+        }
+
+        .sb-section {
+            font-size: .65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            color: rgba(255, 255, 255, .4);
+            padding: .75rem 1.5rem .25rem;
+        }
+
+        .sb-item {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            padding: .7rem 1.5rem;
+            font-size: .875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background .2s;
+            color: rgba(255, 255, 255, .85);
+            border-left: 3px solid transparent;
+        }
+
+        .sb-item:hover {
+            background: rgba(255, 255, 255, .08);
+            color: #fff;
+        }
+
+        .sb-item.active {
+            background: rgba(255, 255, 255, .12);
+            color: #fff;
+            border-left-color: var(--saffron);
+        }
+
+        .sb-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .sb-badge {
+            margin-left: auto;
+            background: var(--saffron);
+            color: #fff;
+            font-size: .65rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .sb-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, .1);
+            font-size: .8rem;
+        }
+
+        .sb-user {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+        }
+
+        .sb-avatar {
+            width: 36px;
+            height: 36px;
+            background: var(--saffron);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: .9rem;
+            flex-shrink: 0;
+        }
+
+        /* MAIN */
+        .main {
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            padding: .875rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .04);
+        }
+
+        .topbar-title h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .topbar-title p {
+            font-size: .8rem;
+            color: var(--muted);
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .date-badge {
+            background: var(--navy-light);
+            color: var(--navy);
+            padding: .4rem .9rem;
+            border-radius: 8px;
+            font-size: .8rem;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            padding: .4rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: .8rem;
+            transition: all .2s;
+        }
+
+        .logout-btn:hover {
+            background: #FFF0F0;
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        /* CONTENT AREA */
+        .content {
+            padding: 2rem;
+        }
+
+        /* TABS */
+        .panel {
+            display: none;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        /* STAT CARDS */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.25rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 1.25rem 1.5rem;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .04);
+            transition: transform .2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .si-navy {
+            background: var(--navy-light);
+            color: var(--navy);
+        }
+
+        .si-green {
+            background: #E8F5E9;
+            color: var(--success);
+        }
+
+        .si-red {
+            background: #FFEBEE;
+            color: var(--danger);
+        }
+
+        .si-orange {
+            background: var(--saffron-light);
+            color: var(--warning);
+        }
+
+        .stat-val {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--navy);
+            line-height: 1;
+        }
+
+        .stat-lbl {
+            font-size: .78rem;
+            color: var(--muted);
+            font-weight: 500;
+            margin-top: .2rem;
+        }
+
+        /* ATTENDANCE PORTAL */
+        .att-header {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.25rem;
+            border: 1px solid var(--border);
+        }
+
+        .att-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .section-heading {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: .25rem;
+        }
+
+        .section-sub {
+            font-size: .85rem;
+            color: var(--muted);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .55rem 1.1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: .85rem;
+            cursor: pointer;
+            border: none;
+            transition: all .2s;
+        }
+
+        .btn-primary {
+            background: var(--navy);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: var(--navy-hover);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: #fff;
+        }
+
+        .btn-success:hover {
+            background: #1B5E20;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: #fff;
+        }
+
+        .btn-danger:hover {
+            background: #8B1A1A;
+        }
+
+        .btn-outline {
+            background: var(--white);
+            border: 1.5px solid var(--border);
+            color: var(--text);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--navy);
+            color: var(--navy);
+        }
+
+        .btn-saffron {
+            background: var(--saffron);
+            color: #fff;
+        }
+
+        .btn-saffron:hover {
+            background: #E68900;
+        }
+
+        /* ATTENDANCE TABLE */
+        .att-table-wrap {
+            background: var(--white);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .att-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .att-table th {
+            background: var(--navy);
+            color: #fff;
+            padding: .875rem 1rem;
+            text-align: left;
+            font-size: .8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+        }
+
+        .att-table td {
+            padding: .875rem 1rem;
+            border-bottom: 1px solid var(--border);
+            font-size: .9rem;
+            vertical-align: middle;
+        }
+
+        .att-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .att-table tr:hover td {
+            background: #F8FAFC;
+        }
+
+        .roll-badge {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--navy-light);
+            color: var(--navy);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .status-btn-group {
+            display: flex;
+            gap: .4rem;
+        }
+
+        .s-btn {
+            width: 38px;
+            height: 32px;
+            border-radius: 6px;
+            border: 1.5px solid var(--border);
+            background: var(--white);
+            cursor: pointer;
+            font-weight: 700;
+            font-size: .8rem;
+            transition: all .2s;
+        }
+
+        .s-btn-p.sel {
+            background: #E8F5E9;
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .s-btn-a.sel {
+            background: #FFEBEE;
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .s-btn-l.sel {
+            background: #FFF3E0;
+            border-color: var(--warning);
+            color: var(--warning);
+        }
+
+        .s-btn:not(.sel) {
+            color: var(--muted);
+        }
+
+        .att-pct {
+            font-weight: 700;
+        }
+
+        .pct-high {
+            color: var(--success);
+        }
+
+        .pct-mid {
+            color: var(--warning);
+        }
+
+        .pct-low {
+            color: var(--danger);
+        }
+
+        .progress-bar-wrap {
+            background: var(--bg);
+            border-radius: 50px;
+            height: 6px;
+            width: 80px;
+            overflow: hidden;
+            margin-top: .3rem;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 50px;
+            transition: width .5s;
+        }
+
+        .fill-high {
+            background: var(--success);
+        }
+
+        .fill-mid {
+            background: var(--warning);
+        }
+
+        .fill-low {
+            background: var(--danger);
+        }
+
+        /* SAVE BANNER */
+        .save-banner {
+            background: var(--success);
+            color: #fff;
+            padding: .875rem 1.5rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            font-weight: 600;
+            animation: fadeIn .3s;
+            display: none;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* CHARTS */
+        .charts-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .chart-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .chart-card h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 1rem;
+        }
+
+        .chart-box {
+            position: relative;
+            height: 240px;
+        }
+
+        /* STUDENT HISTORY */
+        .history-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: .4rem;
+        }
+
+        .history-cell {
+            border-radius: 4px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .65rem;
+            font-weight: 700;
+            cursor: default;
+        }
+
+        .hc-p {
+            background: #C8E6C9;
+            color: #2E7D32;
+        }
+
+        .hc-a {
+            background: #FFCDD2;
+            color: #C62828;
+        }
+
+        .hc-dash {
+            background: #F1F5F9;
+            color: var(--muted);
+        }
+
+        .hc-header {
+            font-size: .6rem;
+            color: var(--muted);
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: .2rem;
+        }
+
+        /* QUICK MSG */
+        .qmsg-list {
+            display: flex;
+            flex-direction: column;
+            gap: .5rem;
+        }
+
+        .qmsg {
+            background: var(--bg);
+            border-radius: 8px;
+            padding: .75rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: .85rem;
+        }
+
+        .qmsg-btn {
+            background: none;
+            border: 1.5px solid var(--navy);
+            color: var(--navy);
+            border-radius: 6px;
+            padding: .3rem .8rem;
+            font-size: .75rem;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .qmsg-btn:hover {
+            background: var(--navy);
+            color: #fff;
+        }
+
+        /* STUDENT SEARCH */
+        .search-bar {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            background: var(--bg);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            padding: .5rem 1rem;
+        }
+
+        .search-bar input {
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: .9rem;
+            flex: 1;
+        }
+
+        /* TIMETABLE */
+        .tt-grid {
+            display: grid;
+            grid-template-columns: 80px repeat(5, 1fr);
+            gap: 2px;
+            background: var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .tt-cell {
+            background: var(--white);
+            padding: .7rem .5rem;
+            text-align: center;
+            font-size: .78rem;
+        }
+
+        .tt-header {
+            background: var(--navy);
+            color: #fff;
+            font-weight: 700;
+            font-size: .75rem;
+        }
+
+        .tt-time {
+            background: var(--navy-light);
+            color: var(--navy);
+            font-weight: 700;
+            font-size: .72rem;
+        }
+
+        .tt-now {
+            background: linear-gradient(135deg, #E8EAF6, #fff);
+            border-bottom: 3px solid var(--saffron);
+            font-weight: 600;
+        }
+
+        .sub-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: .72rem;
+            font-weight: 600;
+        }
+
+        .sub-math {
+            background: #E3F2FD;
+            color: #1565C0;
+        }
+
+        .sub-sci {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .sub-eng {
+            background: #FFF3E0;
+            color: #E65100;
+        }
+
+        .sub-mar {
+            background: #F3E5F5;
+            color: #6A1B9A;
+        }
+
+        .sub-sst {
+            background: #FBE9E7;
+            color: #BF360C;
+        }
+
+        .sub-pe {
+            background: #E0F7FA;
+            color: #006064;
+        }
+
+        /* NOTIFICATION */
+        .notif {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: var(--success);
+            color: #fff;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: .9rem;
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .15);
+            transform: translateY(80px);
+            opacity: 0;
+            transition: all .4s;
+            z-index: 999;
+        }
+
+        .notif.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* DIGITAL LIBRARY */
+        .lib-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .lib-item {
+            background: var(--white);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            padding: 1rem;
+            display: flex;
+            gap: .75rem;
+            align-items: flex-start;
+            transition: all .2s;
+            cursor: pointer;
+        }
+
+        .lib-item:hover {
+            border-color: var(--navy);
+            box-shadow: 0 4px 12px rgba(26, 35, 126, .1);
+        }
+
+        .lib-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .li-pdf {
+            background: #FFEBEE;
+            color: var(--danger);
+        }
+
+        .li-vid {
+            background: #E3F2FD;
+            color: #1565C0;
+        }
+
+        .lib-title {
+            font-size: .85rem;
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .lib-sub {
+            font-size: .75rem;
+            color: var(--muted);
+        }
+
+        /* MODAL */
+        .modal-bg {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, .6);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-bg.open {
+            display: flex;
+        }
+
+        .modal-box {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, .2);
+        }
+
+        .modal-box h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: .75rem;
+        }
+
+        /* RESPONSIVE */
+        @media(max-width:900px) {
+            .sidebar {
+                width: 200px;
+            }
+
+            .main {
+                margin-left: 200px;
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .charts-row {
+                grid-template-columns: 1fr;
+            }
+
+            .lib-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sb-brand">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Emblem_of_Maharashtra.svg/100px-Emblem_of_Maharashtra.svg.png"
+                alt="Emblem">
+            <div class="sb-brand-txt">
+                <h2>MahaVidya</h2>
+                <small>ZP School Network</small>
+            </div>
+        </div>
+        <nav class="sb-nav">
+            <div class="sb-section">Main</div>
+            <div class="sb-item active" data-panel="dashboard"><i class="fa-solid fa-house"></i> Dashboard</div>
+            <div class="sb-item" data-panel="attendance"><i class="fa-solid fa-clipboard-check"></i> Attendance Portal
+                <span class="sb-badge">Today</span>
+            </div>
+            <div class="sb-item" data-panel="students"><i class="fa-solid fa-users"></i> Students</div>
+            <div class="sb-section">Academics</div>
+            <div class="sb-item" data-panel="timetable"><i class="fa-solid fa-calendar-days"></i> Timetable</div>
+            <div class="sb-item" data-panel="library"><i class="fa-solid fa-book-open"></i> Digital Library</div>
+            <div class="sb-item" data-panel="elearning"><i class="fa-solid fa-graduation-cap"></i> E-Learning <span
+                    class="sb-badge" style="background:#4CAF50">New</span></div>
+            <div class="sb-item" data-panel="assignments"><i class="fa-solid fa-file-pen"></i> Assignments <span
+                    class="sb-badge" id="pending-badge">4</span></div>
+            <div class="sb-section">Communication</div>
+            <div class="sb-item" data-panel="messaging"><i class="fa-solid fa-bullhorn"></i> Messaging</div>
+            <div class="sb-item" data-panel="analytics"><i class="fa-solid fa-chart-line"></i> Analytics</div>
+        </nav>
+        <div class="sb-footer">
+            <div class="sb-user">
+                <div class="sb-avatar">P</div>
+                <div>
+                    <div style="font-size:.85rem;font-weight:600;" id="sb-user-name">Smt. Priya Deshmukh</div>
+                    <div style="font-size:.72rem;opacity:.6;" id="sb-user-role">Class Teacher — 7A</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main">
+        <div class="topbar">
+            <div class="topbar-title">
+                <h3 id="topbar-heading">Dashboard Overview</h3>
+                <p id="topbar-sub">Welcome back! Here's your Class 7A summary.</p>
+            </div>
+            <div class="topbar-right">
+                <span class="date-badge" id="today-date-badge"></span>
+                <button class="logout-btn" onclick="window.location.href='index.html'"><i
+                        class="fa-solid fa-arrow-right-from-bracket"></i> Logout</button>
+            </div>
+        </div>
+
+        <div class="content">
+
+            <!-- ===================== DASHBOARD ===================== -->
+            <div class="panel active" id="panel-dashboard">
+                <div class="stats-row" id="stats-row">
+                    <div class="stat-card">
+                        <div class="stat-icon si-navy"><i class="fa-solid fa-users"></i></div>
+                        <div>
+                            <div class="stat-val">10</div>
+                            <div class="stat-lbl">Total Students (7A)</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon si-green"><i class="fa-solid fa-user-check"></i></div>
+                        <div>
+                            <div class="stat-val" id="st-present">—</div>
+                            <div class="stat-lbl">Present Today</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon si-red"><i class="fa-solid fa-user-xmark"></i></div>
+                        <div>
+                            <div class="stat-val" id="st-absent">—</div>
+                            <div class="stat-lbl">Absent Today</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon si-orange"><i class="fa-solid fa-percent"></i></div>
+                        <div>
+                            <div class="stat-val" id="st-pct">—</div>
+                            <div class="stat-lbl">Avg Attendance (30d)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Attendance Summary Table -->
+                <div class="att-table-wrap">
+                    <div
+                        style="padding:1.25rem 1.5rem; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <div class="section-heading">Today's Quick View</div>
+                            <div class="section-sub">Class 7A — Mark or review attendance</div>
+                        </div>
+                        <button class="btn btn-primary" onclick="switchPanel('attendance')"><i
+                                class="fa-solid fa-clipboard-check"></i> Open Attendance Portal</button>
+                    </div>
+                    <table class="att-table" id="dash-students-table">
+                        <thead>
+                            <tr>
+                                <th>Roll</th>
+                                <th>Student Name</th>
+                                <th>30-Day Attendance</th>
+                                <th>Today</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dash-students-body">
+                            <tr>
+                                <td colspan="4" style="text-align:center;color:var(--muted);padding:2rem;">Loading
+                                    student data...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ===================== ATTENDANCE PORTAL ===================== -->
+            <div class="panel" id="panel-attendance">
+                <div class="att-header">
+                    <div class="att-header-row">
+                        <div>
+                            <div class="section-heading"><i class="fa-solid fa-clipboard-check"
+                                    style="color:var(--navy)"></i> Attendance Portal — Class 7A</div>
+                            <div class="section-sub">Mark attendance for each student. Changes auto-save when you click
+                                Save.</div>
+                        </div>
+                        <div style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;">
+                            <input type="date" id="att-date-picker" class="btn btn-outline"
+                                style="padding:.5rem .75rem;">
+                            <button class="btn btn-outline" id="mark-all-p"><i class="fa-solid fa-check-double"></i> All
+                                Present</button>
+                            <button class="btn btn-saffron" id="save-att"><i class="fa-solid fa-floppy-disk"></i> Save
+                                Attendance</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="att-table-wrap">
+                    <table class="att-table" id="attendance-table">
+                        <thead>
+                            <tr>
+                                <th style="width:60px">#</th>
+                                <th>Student Name</th>
+                                <th>Mark Status</th>
+                                <th style="width:120px">30d Attendance</th>
+                                <th>Last 5 Days</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendance-body">
+                            <tr>
+                                <td colspan="5" style="text-align:center;color:var(--muted);padding:2rem;"><i
+                                        class="fa-solid fa-spinner fa-spin"></i> Loading...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="save-banner" id="save-banner"><i class="fa-solid fa-check-circle"></i> <span
+                        id="save-msg">Attendance saved successfully!</span></div>
+            </div>
+
+            <!-- ===================== STUDENTS (DETAILED) ===================== -->
+            <div class="panel" id="panel-students">
+                <div class="att-header">
+                    <div class="att-header-row">
+                        <div>
+                            <div class="section-heading">Student Profiles — Class 7A</div>
+                            <div class="section-sub">Click any student to view their detailed attendance history.</div>
+                        </div>
+                        <div class="search-bar" style="width:280px">
+                            <i class="fa-solid fa-magnifying-glass" style="color:var(--muted)"></i>
+                            <input type="text" id="student-search" placeholder="Search student...">
+                        </div>
+                    </div>
+                </div>
+                <div id="students-grid"
+                    style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem;">
+                    <!-- Filled by JS -->
+                </div>
+            </div>
+
+            <!-- ===================== TIMETABLE ===================== -->
+            <div class="panel" id="panel-timetable">
+                <div class="att-header">
+                    <div class="section-heading"><i class="fa-solid fa-calendar-days" style="color:var(--navy)"></i>
+                        Weekly Timetable — Class 7A</div>
+                    <div class="section-sub">Color-coded daily schedule for Monday–Friday</div>
+                </div>
+                <div
+                    style="background:var(--white);border-radius:16px;padding:1.5rem;border:1px solid var(--border);overflow-x:auto;">
+                    <div class="tt-grid">
+                        <div class="tt-cell tt-header">Time</div>
+                        <div class="tt-cell tt-header">Monday</div>
+                        <div class="tt-cell tt-header">Tuesday</div>
+                        <div class="tt-cell tt-header">Wednesday</div>
+                        <div class="tt-cell tt-header">Thursday</div>
+                        <div class="tt-cell tt-header">Friday</div>
+
+                        <div class="tt-cell tt-time">8:00–8:45</div>
+                        <div class="tt-cell"><span class="sub-badge sub-math">Mathematics</span></div>
+                        <div class="tt-cell"><span class="sub-badge sub-sci">Science</span></div>
+                        <div class="tt-cell"><span class="sub-badge sub-eng">English</span></div>
+                        <div class="tt-cell"><span class="sub-badge sub-math">Mathematics</span></div>
+                        <div class="tt-cell"><span class="sub-badge sub-mar">Marathi</span></div>
+
+                        <div class="tt-cell tt-time">8:45–9:30</div>
+                        <div class="tt-cell"><span class="sub-badge sub-sci">Science</span></div>
+                        <div class="tt-cell"><span class="sub-badge sub-mar">Marathi</span></div>
+                        <div class="tt-cell"><span class="sub-badge sub-math">Mathematics</span></div>
+                        <div class="tt-cell"><span class="sub-badge sub-sci">Science</span></div>
+                        <div class="tt-cell"><span class="sub-badge sub-sst">Hist/Geo</span></div>
+
+                        <div class="tt-cell tt-time" style="background:#FFF3E0;color:var(--warning);font-weight:700;">
+                            9:30–10:00</div>
+                        <div class="tt-cell"
+                            style="background:#FFF8F0;grid-column:span 1;text-align:center;color:var(--muted);font-size:.75rem;">
+                            ☕ Break</div>
+                        <div class="tt-cell"
+                            style="background:#FFF8F0;text-align:center;color:var(--muted);font-size:.75rem;">☕ Break
+                        </div>
+                        <div class="tt-cell"
+                            style="background:#FFF8F0;text-align:center;color:var(--muted);font-size:.75rem;">☕ Break
+                        </div>
+                        <div class="tt-cell"
+                            style="background:#FFF8F0;text-align:center;color:var(--muted);font-size:.75rem;">☕ Break
+                        </div>
+                        <div class="tt-cell"
+                            style="background:#FFF8F0;text-align:center;color:var(--muted);font-size:.75rem;">☕ Break
+                        </div>
+
+                        <div class="tt-cell tt-time">10:00–10:45</div>
+                        <div class="tt-cell"><span class="sub-badge sub-eng">English</span></div>
+                        <div class="tt-cell"><span class="sub-badge sub-math">Mathematics</span></div>
+                        <div class="tt-cell"><span class="sub-badge sub-sci">Science</span></div>
+                        <div class="tt-cell"><span class="sub-badge sub-mar">Marathi</span></div>
+                        <div class="tt-cell"><span class="sub-badge sub-math">Mathematics</span></div>
+
+                        <div class="tt-cell tt-time">10:45–11:30</div>
+                        <div class="tt-cell"><span class="sub-badge sub-sst">Hist/Geo</span></div>
+                        <div class="tt-cell"><span class="sub-badge sub-eng">English</span></div>
+                        <div class="tt-cell"><span class="sub-badge sub-mar">Marathi</span></div>
+                        <div class="tt-cell"><span class="sub-badge sub-eng">English</span></div>
+                        <div class="tt-cell"><span class="sub-badge sub-sci">Science</span></div>
+
+                        <div class="tt-cell tt-time">11:30–12:15</div>
+                        <div class="tt-cell"><span class="sub-badge sub-mar">Marathi</span></div>
+                        <div class="tt-cell"><span class="sub-badge sub-sst">Hist/Geo</span></div>
+                        <div class="tt-cell"><span class="sub-badge sub-pe">P.T. / Art</span></div>
+                        <div class="tt-cell"><span class="sub-badge sub-sst">Hist/Geo</span></div>
+                        <div class="tt-cell"><span class="sub-badge sub-pe">P.T. / Art</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===================== LIBRARY ===================== -->
+            <div class="panel" id="panel-library">
+                <div class="att-header">
+                    <div class="section-heading"><i class="fa-solid fa-book-open" style="color:var(--navy)"></i> Digital
+                        Library — Class 7</div>
+                    <div class="section-sub">NEP 2020 aligned textbooks, videos and resources. SCERT Maharashtra.</div>
+                </div>
+                <div class="lib-grid">
+                    <div class="lib-item">
+                        <div class="lib-icon li-pdf"><i class="fa-solid fa-file-pdf"></i></div>
+                        <div>
+                            <div class="lib-title">Mathematics — Std 7</div>
+                            <div class="lib-sub">SCERT Maharashtra • Marathi Medium • PDF, 4.2MB</div>
+                        </div>
+                    </div>
+                    <div class="lib-item">
+                        <div class="lib-icon li-pdf"><i class="fa-solid fa-file-pdf"></i></div>
+                        <div>
+                            <div class="lib-title">Science & Technology — Std 7</div>
+                            <div class="lib-sub">SCERT Maharashtra • Marathi Medium • PDF, 6.1MB</div>
+                        </div>
+                    </div>
+                    <div class="lib-item">
+                        <div class="lib-icon li-pdf"><i class="fa-solid fa-file-pdf"></i></div>
+                        <div>
+                            <div class="lib-title">English — Std 7 (Balbharati)</div>
+                            <div class="lib-sub">SCERT Maharashtra • English Medium • PDF, 3.8MB</div>
+                        </div>
+                    </div>
+                    <div class="lib-item">
+                        <div class="lib-icon li-pdf"><i class="fa-solid fa-file-pdf"></i></div>
+                        <div>
+                            <div class="lib-title">Marathi — Std 7</div>
+                            <div class="lib-sub">SCERT Maharashtra • Marathi Medium • PDF, 3.5MB</div>
+                        </div>
+                    </div>
+                    <div class="lib-item">
+                        <div class="lib-icon li-pdf"><i class="fa-solid fa-file-pdf"></i></div>
+                        <div>
+                            <div class="lib-title">History & Civics — Std 7</div>
+                            <div class="lib-sub">SCERT Maharashtra • Marathi Medium • PDF, 5.2MB</div>
+                        </div>
+                    </div>
+                    <div class="lib-item">
+                        <div class="lib-icon li-vid"><i class="fa-brands fa-youtube"></i></div>
+                        <div>
+                            <div class="lib-title">Photosynthesis — Video Lesson</div>
+                            <div class="lib-sub">Diksha Platform • Science Ch.6 • 12 min</div>
+                        </div>
+                    </div>
+                    <div class="lib-item">
+                        <div class="lib-icon li-vid"><i class="fa-brands fa-youtube"></i></div>
+                        <div>
+                            <div class="lib-title">Fractions & Decimals — Video</div>
+                            <div class="lib-sub">Diksha Platform • Maths Ch.3 • 18 min</div>
+                        </div>
+                    </div>
+                    <div class="lib-item">
+                        <div class="lib-icon li-vid"><i class="fa-brands fa-youtube"></i></div>
+                        <div>
+                            <div class="lib-title">Maharashtra — Geography Video</div>
+                            <div class="lib-sub">Diksha Platform • Geo Ch.2 • 20 min</div>
+                        </div>
+                    </div>
+                    <div class="lib-item">
+                        <div class="lib-icon li-pdf"><i class="fa-solid fa-file-lines"></i></div>
+                        <div>
+                            <div class="lib-title">NEP 2020 Learning Outcomes</div>
+                            <div class="lib-sub">Govt of India • Teacher Reference • PDF, 2.1MB</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===================== ANALYTICS ===================== -->
+            <div class="panel" id="panel-analytics">
+                <div class="att-header">
+                    <div class="section-heading"><i class="fa-solid fa-chart-line" style="color:var(--navy)"></i> Class
+                        Analytics Dashboard</div>
+                    <div class="section-sub">Real-time attendance trends and performance for Class 7A</div>
+                </div>
+                <div class="charts-row">
+                    <div class="chart-card">
+                        <h4>Attendance Trend — Class 7A (30 Days)</h4>
+                        <div class="chart-box"><canvas id="att-chart"></canvas></div>
+                    </div>
+                    <div class="chart-card">
+                        <h4>Student-wise Attendance % (30 Days)</h4>
+                        <div class="chart-box"><canvas id="students-chart"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ===================== E-LEARNING ===================== -->
+        <div class="panel" id="panel-elearning">
+            <div class="att-header">
+                <div class="att-header-row">
+                    <div>
+                        <div class="section-heading"><i class="fa-solid fa-graduation-cap"
+                                style="color:var(--navy)"></i> E-Learning Portal — Class 7A</div>
+                        <div class="section-sub">NEP 2020 aligned videos, textbooks & interactive quizzes from Diksha &
+                            SCERT</div>
+                    </div>
+                    <div style="display:flex;gap:.5rem;flex-wrap:wrap;" id="el-filter-row">
+                        <button class="btn btn-primary el-filter-btn" data-sub="all">All</button>
+                        <button class="btn btn-outline el-filter-btn" data-sub="Mathematics">Maths</button>
+                        <button class="btn btn-outline el-filter-btn" data-sub="Science">Science</button>
+                        <button class="btn btn-outline el-filter-btn" data-sub="English">English</button>
+                        <button class="btn btn-outline el-filter-btn" data-sub="Marathi">Marathi</button>
+                        <button class="btn btn-outline el-filter-btn" data-sub="History">History</button>
+                    </div>
+                </div>
+            </div>
+            <div id="el-materials-grid"
+                style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;"></div>
+        </div>
+
+        <!-- ===================== ASSIGNMENTS ===================== -->
+        <div class="panel" id="panel-assignments">
+            <div class="att-header">
+                <div class="att-header-row">
+                    <div>
+                        <div class="section-heading"><i class="fa-solid fa-file-pen" style="color:var(--navy)"></i>
+                            Assignments — Class 7A</div>
+                        <div class="section-sub">Create and track homework & project submissions</div>
+                    </div>
+                    <button class="btn btn-primary" onclick="showNewAssignmentModal()"><i class="fa-solid fa-plus"></i>
+                        New Assignment</button>
+                </div>
+            </div>
+            <div id="assignments-list" style="display:flex;flex-direction:column;gap:1rem;"></div>
+        </div>
+
+        <!-- ===================== MESSAGING ===================== -->
+        <div class="panel" id="panel-messaging">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+                <!-- Quick Announcements -->
+                <div class="chart-card">
+                    <h4><i class="fa-solid fa-bullhorn" style="color:var(--navy)"></i> Send Announcement</h4>
+                    <div class="form-group" style="margin-bottom:.875rem;">
+                        <label
+                            style="font-size:.8rem;font-weight:600;color:var(--navy);display:block;margin-bottom:.35rem;">Audience</label>
+                        <select id="msg-audience"
+                            style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:.55rem .75rem;font-size:.875rem;background:#fff;outline:none;">
+                            <option value="all">All Parents — Class 7A</option>
+                            <option value="absent">Parents of Absent Students</option>
+                            <option value="at-risk">At-Risk Students (Below 80%)</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom:.875rem;">
+                        <label
+                            style="font-size:.8rem;font-weight:600;color:var(--navy);display:block;margin-bottom:.35rem;">Message</label>
+                        <textarea id="msg-text" rows="5"
+                            style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:.65rem .75rem;font-size:.875rem;resize:vertical;outline:none;font-family:inherit;"
+                            placeholder="Type your message here in English or Marathi..."></textarea>
+                    </div>
+                    <div style="display:flex;gap:.5rem;">
+                        <button class="btn btn-primary" style="flex:1;" onclick="sendAnnouncement()"><i
+                                class="fa-solid fa-paper-plane"></i> Send via SMS</button>
+                        <button class="btn btn-outline" onclick="document.getElementById('msg-text').value='';"><i
+                                class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div id="msg-sent-banner"
+                        style="display:none;background:#E8F5E9;border:1px solid #A5D6A7;border-radius:8px;padding:.75rem;margin-top:.875rem;font-size:.85rem;color:#2E7D32;font-weight:600;">
+                        <i class="fa-solid fa-circle-check"></i> Message sent! <span id="msg-sent-count"></span>
+                    </div>
+                </div>
+                <!-- Quick Templates -->
+                <div class="chart-card">
+                    <h4><i class="fa-solid fa-clipboard-list" style="color:var(--saffron)"></i> Quick Templates</h4>
+                    <div class="qmsg-list">
+                        <div class="qmsg"><span>📋 Attendance reminder for absent parents</span><button class="qmsg-btn"
+                                onclick="useTemplate('Dear Parent, your child was absent today. Please ensure regular attendance. — Smt. Priya Deshmukh')">Use</button>
+                        </div>
+                        <div class="qmsg"><span>📝 Assignment deadline reminder</span><button class="qmsg-btn"
+                                onclick="useTemplate('Dear Parent, please remind your child to submit the pending assignment by this Friday. Thank you.')">Use</button>
+                        </div>
+                        <div class="qmsg"><span>🎉 Exam schedule notification</span><button class="qmsg-btn"
+                                onclick="useTemplate('Unit Test 2 will be held on 18 March 2026 for all subjects. Classes 5–8. Timing: 8:00 AM – 12:00 PM.')">Use</button>
+                        </div>
+                        <div class="qmsg"><span>👩‍👩‍👧 Parent-Teacher Meeting invite</span><button class="qmsg-btn"
+                                onclick="useTemplate('You are cordially invited to Parent-Teacher Meeting on 22 March 2026 at 10:00 AM in the School Hall. Kindly confirm attendance.')">Use</button>
+                        </div>
+                        <div class="qmsg"><span>🏆 Congratulations to top performers</span><button class="qmsg-btn"
+                                onclick="useTemplate('Congratulations! Your child has performed excellently in Unit Test 1 and is among the top performers in Class 7A. Keep it up!')">Use</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Sent History -->
+            <div
+                style="margin-top:1.5rem;background:var(--white);border-radius:16px;padding:1.5rem;border:1px solid var(--border);">
+                <h4 style="font-size:1rem;font-weight:700;color:var(--navy);margin-bottom:1rem;"><i
+                        class="fa-solid fa-clock-rotate-left"></i> Recent Announcements</h4>
+                <div style="display:flex;flex-direction:column;gap:.65rem;">
+                    <div style="padding:.75rem;background:#F0F2F8;border-radius:8px;font-size:.85rem;">
+                        <strong>Attendance Reminder</strong> — Sent to 3 parents (Absent students) &nbsp;•&nbsp; <span
+                            style="color:var(--muted)">Today 9:15 AM</span>
+                    </div>
+                    <div style="padding:.75rem;background:#F0F2F8;border-radius:8px;font-size:.85rem;"><strong>Unit Test
+                            2 Schedule</strong> — Sent to all 10 parents &nbsp;•&nbsp; <span
+                            style="color:var(--muted)">8 Mar 2026</span></div>
+                    <div style="padding:.75rem;background:#F0F2F8;border-radius:8px;font-size:.85rem;">
+                        <strong>Parent-Teacher Meeting</strong> — Sent to all 10 parents &nbsp;•&nbsp; <span
+                            style="color:var(--muted)">5 Mar 2026</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    </div>
+
+    <!-- ASSIGNMENT MODAL -->
+    <div class="modal-bg" id="new-assignment-modal">
+        <div class="modal-box" style="max-width:480px;">
+            <h3><i class="fa-solid fa-file-pen" style="color:var(--navy)"></i> Create New Assignment</h3>
+            <div style="display:flex;flex-direction:column;gap:.875rem;">
+                <div><label
+                        style="font-size:.82rem;font-weight:600;color:var(--navy);display:block;margin-bottom:.3rem;">Title</label><input
+                        type="text" id="na-title" class="search-bar"
+                        style="display:block;width:100%;padding:.6rem .9rem;border-radius:8px;border:1.5px solid var(--border);font-size:.9rem;"
+                        placeholder="Assignment title"></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
+                    <div><label
+                            style="font-size:.82rem;font-weight:600;color:var(--navy);display:block;margin-bottom:.3rem;">Subject</label><select
+                            id="na-subject"
+                            style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:.6rem;font-size:.875rem;">
+                            <option>Mathematics</option>
+                            <option>Science</option>
+                            <option>English</option>
+                            <option>Marathi</option>
+                            <option>History</option>
+                        </select></div>
+                    <div><label
+                            style="font-size:.82rem;font-weight:600;color:var(--navy);display:block;margin-bottom:.3rem;">Due
+                            Date</label><input type="date" id="na-due"
+                            style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:.6rem;font-size:.875rem;">
+                    </div>
+                </div>
+                <div><label
+                        style="font-size:.82rem;font-weight:600;color:var(--navy);display:block;margin-bottom:.3rem;">Instructions</label><textarea
+                        id="na-desc" rows="3"
+                        style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:.6rem .9rem;font-size:.875rem;resize:vertical;font-family:inherit;"></textarea>
+                </div>
+                <div style="display:flex;gap:.75rem;margin-top:.25rem;">
+                    <button class="btn btn-primary" style="flex:1;" onclick="createAssignment()"><i
+                            class="fa-solid fa-plus"></i> Create Assignment</button>
+                    <button class="btn btn-outline"
+                        onclick="document.getElementById('new-assignment-modal').classList.remove('open')">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTIFICATION TOAST -->
+    <div class="notif" id="toast-notif">
+        <i class="fa-solid fa-check-circle"></i>
+        <span id="toast-msg">Done!</span>
+    </div>
+
+    <!-- STUDENT DETAIL MODAL -->
+    <div class="modal-bg" id="student-modal">
+        <div class="modal-box" style="max-width:560px;">
+            <h3 id="modal-student-name">Student Details</h3>
+            <div id="modal-body"></div>
+            <div style="margin-top:1.5rem;text-align:right;">
+                <button class="btn btn-outline"
+                    onclick="document.getElementById('student-modal').classList.remove('open')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // NAVIGATION
+        // ============================================================
+        const panels = { dashboard: 'Dashboard Overview', attendance: 'Attendance Portal', students: 'Student Profiles', timetable: 'Weekly Timetable', library: 'Digital Library', elearning: 'E-Learning Portal', assignments: 'Assignments', messaging: 'Messaging & Announcements', analytics: 'Class Analytics' };
+        const subTexts = { dashboard: 'Welcome back! Here\'s your Class 7A summary.', attendance: 'Mark and review today\'s attendance.', students: 'Click a student card for attendance history.', timetable: 'Color-coded weekly class schedule.', library: 'NEP 2020 aligned digital resources.', elearning: 'NEP 2020 videos, textbooks & interactive quizzes.', assignments: 'View, create and track student assignments.', messaging: 'Send notices and announcements to parents.', analytics: 'Real-time performance metrics.' };
+
+        function switchPanel(name) {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
+            document.getElementById('panel-' + name).classList.add('active');
+            document.querySelector(`[data-panel="${name}"]`).classList.add('active');
+            document.getElementById('topbar-heading').textContent = panels[name];
+            document.getElementById('topbar-sub').textContent = subTexts[name];
+            if (name === 'analytics') loadAnalyticsCharts();
+            if (name === 'elearning') loadElearning();
+            if (name === 'assignments') loadAssignments();
+        }
+        document.querySelectorAll('.sb-item').forEach(item => {
+            item.addEventListener('click', () => switchPanel(item.dataset.panel));
+        });
+
+        // ============================================================
+        // DATE
+        // ============================================================
+        const today = new Date();
+        const todayStr = today.toISOString().split('T')[0];
+        const dp = document.getElementById('att-date-picker');
+        if (dp) dp.value = todayStr;
+        document.getElementById('today-date-badge').textContent = today.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' });
+
+        // ============================================================
+        // TOAST NOTIFICATION
+        // ============================================================
+        function showToast(msg, color = '#2E7D32') {
+            const t = document.getElementById('toast-notif');
+            t.style.background = color;
+            document.getElementById('toast-msg').textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        // ============================================================
+        // LOAD STUDENTS
+        // ============================================================
+        let allStudents = [];
+        let todayAttMap = {}; // id -> current selected status
+
+        function pctColor(p) { return p >= 90 ? 'pct-high' : p >= 75 ? 'pct-mid' : 'pct-low'; }
+        function fillClass(p) { return p >= 90 ? 'fill-high' : p >= 75 ? 'fill-mid' : 'fill-low'; }
+
+        async function loadStudentData() {
+            const [studentsRes, todayRes] = await Promise.all([
+                fetch('http://localhost:8000/api/students').then(r => r.json()),
+                fetch('http://localhost:8000/api/attendance/today').then(r => r.json())
+            ]);
+            allStudents = studentsRes;
+
+            // Build today map
+            todayRes.students.forEach(s => { todayAttMap[s.id] = s.status === '—' ? null : s.status; });
+
+            // Stats
+            const present = Object.values(todayAttMap).filter(s => s === 'P').length;
+            const absent = Object.values(todayAttMap).filter(s => s === 'A').length;
+            const avgPct = Math.round(allStudents.reduce((a, s) => a + s.attendance_pct, 0) / allStudents.length);
+            document.getElementById('st-present').textContent = present;
+            document.getElementById('st-absent').textContent = absent;
+            document.getElementById('st-pct').textContent = avgPct + '%';
+
+            renderDashTable();
+            renderAttendancePortal();
+            renderStudentsGrid();
+        }
+
+        function renderDashTable() {
+            const tbody = document.getElementById('dash-students-body');
+            tbody.innerHTML = allStudents.map(s => {
+                const pct = s.attendance_pct;
+                const todayStatus = todayAttMap[s.id];
+                const todayBadge = todayStatus === 'P' ? '<span style="color:#2E7D32;font-weight:700">✓ Present</span>'
+                    : todayStatus === 'A' ? '<span style="color:#C62828;font-weight:700">✗ Absent</span>'
+                        : '<span style="color:var(--muted)">— Not marked</span>';
+                return `<tr>
+                <td><div style="display:flex;align-items:center;gap:.5rem;"><div class="roll-badge">${s.roll}</div></div></td>
+                <td><strong>${s.name}</strong></td>
+                <td>
+                    <div class="att-pct ${pctColor(pct)}">${pct}%</div>
+                    <div class="progress-bar-wrap"><div class="progress-bar-fill ${fillClass(pct)}" style="width:${pct}%"></div></div>
+                </td>
+                <td>${todayBadge}</td>
+            </tr>`;
+            }).join('');
+        }
+
+        function renderAttendancePortal() {
+            const tbody = document.getElementById('attendance-body');
+            tbody.innerHTML = allStudents.map(s => {
+                const initStatus = todayAttMap[s.id] || null;
+                const pct = s.attendance_pct;
+                // Last 5 days from history (rough simulation)
+                const last5Circles = ['P', 'P', 'A', 'P', 'P'].map((st, i) => `<div style="width:22px;height:22px;border-radius:50%;background:${st === 'P' ? '#C8E6C9' : '#FFCDD2'};color:${st === 'P' ? '#2E7D32' : '#C62828'};font-size:.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;">${st}</div>`).join('');
+                return `<tr id="att-row-${s.id}">
+                <td><div style="display:flex;align-items:center;gap:.5rem;"><div class="roll-badge">${s.roll}</div></div></td>
+                <td><strong>${s.name}</strong><br><span style="font-size:.75rem;color:var(--muted)">Class 7A | Roll ${s.roll}</span></td>
+                <td>
+                    <div class="status-btn-group" id="status-grp-${s.id}">
+                        <button class="s-btn s-btn-p ${initStatus === 'P' ? 'sel' : ''}" onclick="setStatus(${s.id},'P',this)" title="Present">P</button>
+                        <button class="s-btn s-btn-a ${initStatus === 'A' ? 'sel' : ''}" onclick="setStatus(${s.id},'A',this)" title="Absent">A</button>
+                        <button class="s-btn s-btn-l ${initStatus === 'L' ? 'sel' : ''}" onclick="setStatus(${s.id},'L',this)" title="Late / Leave">L</button>
+                    </div>
+                </td>
+                <td>
+                    <div class="att-pct ${pctColor(pct)}">${pct}%</div>
+                    <div class="progress-bar-wrap"><div class="progress-bar-fill ${fillClass(pct)}" style="width:${pct}%"></div></div>
+                </td>
+                <td><div style="display:flex;gap:.25rem;">${last5Circles}</div></td>
+            </tr>`;
+            }).join('');
+        }
+
+        function setStatus(id, status, btn) {
+            todayAttMap[id] = status;
+            const grp = document.getElementById('status-grp-' + id);
+            grp.querySelectorAll('.s-btn').forEach(b => b.classList.remove('sel'));
+            btn.classList.add('sel');
+        }
+
+        document.getElementById('mark-all-p')?.addEventListener('click', () => {
+            allStudents.forEach(s => {
+                todayAttMap[s.id] = 'P';
+                const grp = document.getElementById('status-grp-' + s.id);
+                if (grp) { grp.querySelectorAll('.s-btn').forEach(b => b.classList.remove('sel')); grp.querySelector('.s-btn-p').classList.add('sel'); }
+            });
+            showToast('All students marked Present!');
+        });
+
+        document.getElementById('save-att')?.addEventListener('click', async () => {
+            const date = document.getElementById('att-date-picker').value || todayStr;
+            const records = Object.entries(todayAttMap).filter(([_, v]) => v).map(([id, status]) => ({ id: parseInt(id), status }));
+            const res = await fetch('http://localhost:8000/api/attendance/mark', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ date, records })
+            }).then(r => r.json());
+            if (res.success) {
+                showToast(`✓ Attendance saved for ${date} — ${records.length} students`);
+                // Refresh stats
+                loadStudentData();
+            }
+        });
+
+        // ============================================================
+        // STUDENTS GRID
+        // ============================================================
+        function renderStudentsGrid(filter = '') {
+            const grid = document.getElementById('students-grid');
+            const filtered = filter ? allStudents.filter(s => s.name.toLowerCase().includes(filter.toLowerCase())) : allStudents;
+            grid.innerHTML = filtered.map(s => {
+                const pct = s.attendance_pct;
+                return `<div class="stat-card" style="flex-direction:column;align-items:flex-start;gap:.75rem;cursor:pointer;" onclick="openStudentModal(${s.id})">
+                <div style="display:flex;justify-content:space-between;width:100%;align-items:center;">
+                    <div class="roll-badge" style="width:42px;height:42px;font-size:1.1rem;">${s.roll}</div>
+                    <span class="att-pct ${pctColor(pct)}" style="font-size:1.3rem;">${pct}%</span>
+                </div>
+                <div>
+                    <div style="font-weight:700;color:var(--navy);">${s.name}</div>
+                    <div style="font-size:.75rem;color:var(--muted);">Class 7A • ${s.present_days}/${s.total_days} days present</div>
+                </div>
+                <div class="progress-bar-wrap" style="width:100%"><div class="progress-bar-fill ${fillClass(pct)}" style="width:${pct}%"></div></div>
+            </div>`;
+            }).join('');
+        }
+
+        document.getElementById('student-search')?.addEventListener('input', e => renderStudentsGrid(e.target.value));
+
+        async function openStudentModal(id) {
+            const data = await fetch(`http://localhost:8000/api/student/${id}/attendance`).then(r => r.json());
+            document.getElementById('modal-student-name').textContent = `${data.roll}. ${data.name} — Attendance History`;
+            const pct = data.attendance_pct;
+            const entries = Object.entries(data.history).slice(-30);
+            const cells = entries.map(([date, status]) => {
+                const d = new Date(date); const label = d.getDate() + '/' + (d.getMonth() + 1);
+                return `<div title="${date}" class="history-cell ${status === 'P' ? 'hc-p' : 'hc-a'}">${label}</div>`;
+            }).join('');
+            document.getElementById('modal-body').innerHTML = `
+            <div style="display:flex;gap:2rem;margin-bottom:1rem;">
+                <div><div style="font-size:2rem;font-weight:800;color:${pct >= 90 ? '#2E7D32' : pct >= 75 ? '#F57C00' : '#C62828'}">${pct}%</div><div style="font-size:.8rem;color:var(--muted)">Overall Attendance</div></div>
+                <div><div style="font-size:2rem;font-weight:800;color:var(--navy)">${data.present_days}</div><div style="font-size:.8rem;color:var(--muted)">Days Present</div></div>
+                <div><div style="font-size:2rem;font-weight:800;color:#C62828">${data.total_days - data.present_days}</div><div style="font-size:.8rem;color:var(--muted)">Days Absent</div></div>
+            </div>
+            <div style="font-size:.8rem;font-weight:600;color:var(--muted);margin-bottom:.5rem;">LAST 30 SCHOOL DAYS</div>
+            <div class="history-grid">${cells}</div>
+            <div style="display:flex;gap:1rem;margin-top:.75rem;font-size:.78rem;">
+                <span style="display:flex;align-items:center;gap:.3rem;"><span style="width:14px;height:14px;border-radius:3px;background:#C8E6C9;display:inline-block;"></span>Present</span>
+                <span style="display:flex;align-items:center;gap:.3rem;"><span style="width:14px;height:14px;border-radius:3px;background:#FFCDD2;display:inline-block;"></span>Absent</span>
+            </div>`;
+            document.getElementById('student-modal').classList.add('open');
+        }
+
+        // Close modal on background click
+        document.getElementById('student-modal').addEventListener('click', function (e) {
+            if (e.target === this) this.classList.remove('open');
+        });
+
+        // ============================================================
+        // ANALYTICS CHARTS
+        // ============================================================
+        let attChartInst = null, studChartInst = null;
+        async function loadAnalyticsCharts() {
+            const data = await fetch('http://localhost:8000/api/attendance/monthly').then(r => r.json());
+
+            // Student bar chart
+            const ctx2 = document.getElementById('students-chart');
+            if (ctx2 && studChartInst) studChartInst.destroy();
+            if (ctx2) studChartInst = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: data.map(s => s.roll + '. ' + s.name.split(' ')[0]),
+                    datasets: [{ label: 'Attendance %', data: data.map(s => s.pct), backgroundColor: data.map(s => s.pct >= 90 ? '#2E7D32' : s.pct >= 75 ? '#FF9933' : '#C62828'), borderRadius: 6 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100 }, x: { grid: { display: false } } }, animation: { duration: 1200 } }
+            });
+
+            // Trend line chart
+            const ctx1 = document.getElementById('att-chart');
+            if (ctx1 && attChartInst) attChartInst.destroy();
+            if (ctx1) attChartInst = new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: ['Wk 1', 'Wk 2', 'Wk 3', 'Wk 4'],
+                    datasets: [{ label: 'Class Avg', data: [84, 87, 85, Math.round(data.reduce((a, s) => a + s.pct, 0) / data.length)], borderColor: '#1A237E', backgroundColor: 'rgba(26,35,126,.1)', fill: true, tension: .4, borderWidth: 3, pointRadius: 5 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 100 }, x: { grid: { display: false } } }, animation: { duration: 1200 } }
+            });
+        }
+
+        // ============================================================
+        // E-LEARNING
+        // ============================================================
+        let elLoaded = false;
+        async function loadElearning(subject = 'all') {
+            const grid = document.getElementById('el-materials-grid');
+            if (!grid) return;
+            grid.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--muted);"><i class="fa-solid fa-spinner fa-spin"></i> Loading materials...</div>';
+            const url = subject === 'all' ? 'http://localhost:8000/api/elearning/materials' : `http://localhost:8000/api/elearning/materials?subject=${encodeURIComponent(subject)}`;
+            const data = await fetch(url).then(r => r.json()).catch(() => []);
+            const typeBadge = { video: '🎬 Video', pdf: '📄 PDF', quiz: '🧠 Quiz' };
+            grid.innerHTML = data.map(m => `
+            <div style="background:#fff;border-radius:16px;border:1.5px solid var(--border);overflow:hidden;transition:all .25s;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.04);" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 10px 24px rgba(0,0,0,.12)'" onmouseout="this.style.transform='';this.style.boxShadow='0 2px 8px rgba(0,0,0,.04)'">
+                <div style="background:${m.bg};padding:1.25rem;display:flex;align-items:center;gap:.875rem;border-bottom:1px solid ${m.bg}">
+                    <div style="width:48px;height:48px;border-radius:12px;background:${m.color}20;display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:${m.color};flex-shrink:0;"><i class="fa-solid ${m.icon}"></i></div>
+                    <div><div style="font-size:.7rem;font-weight:700;color:${m.color};text-transform:uppercase;letter-spacing:.05em;">${m.subject}</div><div style="font-size:.9rem;font-weight:700;color:#1C1C2E;margin-top:.1rem;">${m.title}</div></div>
+                </div>
+                <div style="padding:1rem;">
+                    <p style="font-size:.8rem;color:var(--muted);margin-bottom:.875rem;">${m.desc}</p>
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <span style="background:${m.bg};color:${m.color};padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:700;">${typeBadge[m.type] || m.type}</span>
+                        ${m.duration ? `<span style="font-size:.75rem;color:var(--muted);"><i class="fa-solid fa-clock"></i> ${m.duration}</span>` : ''}
+                    </div>
+                    <div style="font-size:.72rem;color:var(--muted);margin-top:.5rem;"><i class="fa-solid fa-building-columns"></i> ${m.source}</div>
+                    <button onclick="openMaterial(${m.id},'${m.type}')" style="width:100%;margin-top:.875rem;background:${m.color};color:#fff;border:none;border-radius:8px;padding:.55rem;font-size:.82rem;font-weight:700;cursor:pointer;transition:opacity .2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+                        ${m.type === 'video' ? '▶ Watch Video' : m.type === 'pdf' ? '⬇ Download PDF' : '🧠 Start Quiz'}
+                    </button>
+                </div>
+            </div>`).join('');
+            elLoaded = true;
+        }
+
+        function openMaterial(id, type) {
+            if (type === 'quiz') showToast('Quiz feature — interactive MCQs coming soon! 🧠', '#1565C0');
+            else if (type === 'video') { showToast('Opening Diksha video ▶', '#2E7D32'); window.open('https://diksha.gov.in', '_blank'); }
+            else { showToast('Downloading PDF from SCERT ⬇', '#FF9933'); window.open('https://www.scertmaha.ac.in', '_blank'); }
+        }
+
+        document.querySelectorAll('.el-filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.el-filter-btn').forEach(b => { b.classList.remove('btn-primary'); b.classList.add('btn-outline'); });
+                btn.classList.add('btn-primary'); btn.classList.remove('btn-outline');
+                loadElearning(btn.dataset.sub);
+            });
+        });
+
+        // ============================================================
+        // ASSIGNMENTS
+        // ============================================================
+        let allAssignments = [];
+        async function loadAssignments() {
+            const list = document.getElementById('assignments-list');
+            if (!list) return;
+            list.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--muted);"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div>';
+            allAssignments = await fetch('http://localhost:8000/api/assignments').then(r => r.json()).catch(() => []);
+            const subColors = { Mathematics: '#1565C0', Science: '#2E7D32', English: '#E65100', Marathi: '#6A1B9A', History: '#BF360C' };
+            list.innerHTML = allAssignments.map(a => {
+                const pct = Math.round(a.submissions / a.total * 100);
+                const isCompleted = a.status === 'completed';
+                const overdue = new Date(a.due) < new Date() && !isCompleted;
+                return `<div style="background:#fff;border-radius:16px;border:1.5px solid ${isCompleted ? '#A5D6A7' : overdue ? '#EF9A9A' : 'var(--border)'};padding:1.25rem 1.5rem;box-shadow:0 2px 8px rgba(0,0,0,.04);">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;">
+                    <div style="flex:1;">
+                        <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.35rem;">
+                            <span style="background:${subColors[a.subject] || '#1A237E'}18;color:${subColors[a.subject] || '#1A237E'};padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:700;">${a.subject}</span>
+                            <span style="background:${isCompleted ? '#E8F5E9' : overdue ? '#FFEBEE' : '#E8EAF6'};color:${isCompleted ? '#2E7D32' : overdue ? '#C62828' : '#1A237E'};padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:700;">${isCompleted ? '✓ Completed' : overdue ? '⚠ Overdue' : '● Active'}</span>
+                        </div>
+                        <div style="font-size:1rem;font-weight:700;color:#1C1C2E;">${a.title}</div>
+                        <div style="font-size:.82rem;color:var(--muted);margin-top:.2rem;">${a.desc}</div>
+                        <div style="font-size:.78rem;color:var(--muted);margin-top:.5rem;"><i class="fa-solid fa-calendar-day"></i> Due: <strong style="color:${overdue ? '#C62828' : '#1A237E'}">${a.due_display}</strong></div>
+                    </div>
+                    <div style="text-align:center;flex-shrink:0;">
+                        <div style="font-size:1.6rem;font-weight:800;color:${pct >= 80 ? '#2E7D32' : pct >= 50 ? '#F57C00' : '#C62828'}">${a.submissions}/${a.total}</div>
+                        <div style="font-size:.72rem;color:var(--muted);">Submitted</div>
+                        <div style="margin-top:.4rem;background:#F0F2F8;border-radius:50px;height:6px;width:80px;overflow:hidden;"><div style="height:100%;border-radius:50px;background:${pct >= 80 ? '#2E7D32' : pct >= 50 ? '#FF9933' : '#C62828'};width:${pct}%;transition:width .5s;"></div></div>
+                    </div>
+                </div>
+            </div>`;
+            }).join('');
+        }
+
+        function showNewAssignmentModal() {
+            document.getElementById('new-assignment-modal').classList.add('open');
+            const d = new Date(); d.setDate(d.getDate() + 7);
+            document.getElementById('na-due').value = d.toISOString().split('T')[0];
+        }
+
+        async function createAssignment() {
+            const title = document.getElementById('na-title').value.trim();
+            const subject = document.getElementById('na-subject').value;
+            const due = document.getElementById('na-due').value;
+            const desc = document.getElementById('na-desc').value.trim();
+            if (!title || !due) { showToast('Please fill title and due date', '#C62828'); return; }
+            const dueDate = new Date(due);
+            showToast(`✓ Assignment "${title}" created!`, '#2E7D32');
+            document.getElementById('new-assignment-modal').classList.remove('open');
+            document.getElementById('na-title').value = '';
+            document.getElementById('na-desc').value = '';
+            const newA = { id: Date.now(), title, subject, class: '7A', due, due_display: dueDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }), desc: desc || 'No instructions.', submissions: 0, total: 10, status: 'active' };
+            allAssignments.unshift(newA);
+            loadAssignments();
+        }
+
+        document.getElementById('new-assignment-modal')?.addEventListener('click', function (e) { if (e.target === this) this.classList.remove('open'); });
+
+        // ============================================================
+        // MESSAGING
+        // ============================================================
+        function useTemplate(text) {
+            document.getElementById('msg-text').value = text;
+            showToast('Template loaded! Edit and send.', '#1565C0');
+        }
+
+        async function sendAnnouncement() {
+            const msg = document.getElementById('msg-text').value.trim();
+            if (!msg) { showToast('Please type a message first', '#C62828'); return; }
+            const audience = document.getElementById('msg-audience').value;
+
+            const submitBtn = event.currentTarget || document.querySelector('.msg-send-btn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
+            submitBtn.disabled = true;
+
+            try {
+                const res = await fetch('http://localhost:8000/api/notices', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title: "Teacher Announcement", message: msg, audience: audience })
+                });
+
+                if (res.ok) {
+                    const counts = { all: 'All Parents', absent: 'Absent Parents', 'at-risk': 'At-Risk Parents' };
+                    const banner = document.getElementById('msg-sent-banner');
+                    banner.style.display = 'flex';
+                    document.getElementById('msg-sent-count').textContent = `Delivered to ${counts[audience] || 'Parents'} via SMS (Sandes Gateway)`;
+                    document.getElementById('msg-text').value = '';
+                    setTimeout(() => { banner.style.display = 'none'; }, 4000);
+                } else {
+                    showToast('Failed to send announcement', '#C62828');
+                }
+            } catch (err) {
+                showToast('Network error', '#C62828');
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        // ============================================================
+        // REAL-TIME SSE ALERTS
+        // ============================================================
+        const eventSource = new EventSource('http://localhost:8000/stream');
+        eventSource.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+            if (data.type === 'notice') {
+                showToast(`🔔 New Announcement: ${data.title} - ${data.message}`, '#FF9933');
+            }
+        };
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        loadStudentData();
+    </script>
+</body>
+
+</html>
