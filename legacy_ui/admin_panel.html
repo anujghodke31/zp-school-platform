@@ -1,0 +1,1314 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MahaVidya Admin Panel ΓÇö School management for ZP School Network administrators.">
+    <title>MahaVidya ΓÇö Admin Panel | ZP School Network</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --navy: #1A237E;
+            --navy-light: #E8EAF6;
+            --saffron: #FF9933;
+            --saffron-light: #FFF3E0;
+            --success: #2E7D32;
+            --danger: #C62828;
+            --warning: #F57C00;
+            --text: #1C1C2E;
+            --muted: #64748B;
+            --border: #E2E8F0;
+            --bg: #F0F2F8;
+            --white: #fff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Sans Devanagari', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, #1A237E 0%, #1565C0 100%);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 50;
+            box-shadow: 4px 0 16px rgba(0, 0, 0, .15);
+        }
+
+        .sb-brand {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, .1);
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+        }
+
+        .sb-brand img {
+            height: 36px;
+            filter: brightness(0) invert(1);
+        }
+
+        .sb-brand h2 {
+            font-size: 1.05rem;
+            font-weight: 800;
+        }
+
+        .sb-brand small {
+            font-size: .68rem;
+            opacity: .65;
+            display: block;
+        }
+
+        .sb-nav {
+            flex: 1;
+            padding: 1rem 0;
+            overflow-y: auto;
+        }
+
+        .sb-section {
+            font-size: .62rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .12em;
+            color: rgba(255, 255, 255, .4);
+            padding: .75rem 1.5rem .25rem;
+        }
+
+        .sb-item {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            padding: .7rem 1.5rem;
+            font-size: .875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all .2s;
+            color: rgba(255, 255, 255, .85);
+            border-left: 3px solid transparent;
+        }
+
+        .sb-item:hover {
+            background: rgba(255, 255, 255, .08);
+            color: #fff;
+        }
+
+        .sb-item.active {
+            background: rgba(255, 255, 255, .12);
+            color: #fff;
+            border-left-color: var(--saffron);
+        }
+
+        .sb-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .sb-badge {
+            margin-left: auto;
+            background: var(--danger);
+            color: #fff;
+            font-size: .62rem;
+            font-weight: 800;
+            padding: 2px 7px;
+            border-radius: 10px;
+        }
+
+        .sb-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, .1);
+        }
+
+        .sb-user {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+        }
+
+        .sb-avatar {
+            width: 34px;
+            height: 34px;
+            background: var(--saffron);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: .85rem;
+            flex-shrink: 0;
+        }
+
+        /* MAIN */
+        .main {
+            margin-left: 260px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            background: #fff;
+            border-bottom: 1px solid var(--border);
+            padding: .875rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .04);
+        }
+
+        .topbar-title h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .topbar-title p {
+            font-size: .8rem;
+            color: var(--muted);
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .date-badge {
+            background: var(--navy-light);
+            color: var(--navy);
+            padding: .4rem .9rem;
+            border-radius: 8px;
+            font-size: .8rem;
+            font-weight: 600;
+        }
+
+        /* CONTENT */
+        .content {
+            padding: 2rem;
+            flex: 1;
+        }
+
+        /* PANELS */
+        .panel {
+            display: none;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        /* STAT CARDS */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.25rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .stat-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 1.25rem 1.5rem;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .04);
+            transition: transform .2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .si-navy {
+            background: var(--navy-light);
+            color: var(--navy);
+        }
+
+        .si-green {
+            background: #E8F5E9;
+            color: var(--success);
+        }
+
+        .si-red {
+            background: #FFEBEE;
+            color: var(--danger);
+        }
+
+        .si-orange {
+            background: var(--saffron-light);
+            color: var(--warning);
+        }
+
+        .si-purple {
+            background: #F3E5F5;
+            color: #6A1B9A;
+        }
+
+        .stat-val {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--navy);
+            line-height: 1;
+        }
+
+        .stat-lbl {
+            font-size: .78rem;
+            color: var(--muted);
+            font-weight: 500;
+            margin-top: .2rem;
+        }
+
+        /* CARDS */
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .04);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* BUTTONS */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .55rem 1.1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: .85rem;
+            cursor: pointer;
+            border: none;
+            transition: all .2s;
+        }
+
+        .btn-primary {
+            background: var(--navy);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #283593;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: #fff;
+        }
+
+        .btn-danger:hover {
+            background: #8B1A1A;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: #fff;
+        }
+
+        .btn-success:hover {
+            background: #1B5E20;
+        }
+
+        .btn-outline {
+            background: #fff;
+            border: 1.5px solid var(--border);
+            color: var(--text);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--navy);
+            color: var(--navy);
+        }
+
+        .btn-saffron {
+            background: var(--saffron);
+            color: #fff;
+        }
+
+        .btn-saffron:hover {
+            background: #E68900;
+        }
+
+        .btn-sm {
+            padding: .35rem .8rem;
+            font-size: .78rem;
+        }
+
+        /* TABLE */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            background: var(--navy);
+            color: #fff;
+            padding: .75rem 1rem;
+            text-align: left;
+            font-size: .78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+        }
+
+        .data-table td {
+            padding: .875rem 1rem;
+            border-bottom: 1px solid var(--border);
+            font-size: .88rem;
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .data-table tr:hover td {
+            background: #F8FAFC;
+        }
+
+        .att-pill {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: .72rem;
+            font-weight: 700;
+        }
+
+        /* MODAL */
+        .modal-bg {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, .5);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-bg.open {
+            display: flex;
+        }
+
+        .modal-box {
+            background: #fff;
+            border-radius: 20px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, .2);
+        }
+
+        .modal-box h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 1.25rem;
+            padding-bottom: .75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: .75rem;
+        }
+
+        .form-group {
+            margin-bottom: .875rem;
+        }
+
+        .form-label {
+            font-size: .82rem;
+            font-weight: 600;
+            color: var(--navy);
+            display: block;
+            margin-bottom: .35rem;
+        }
+
+        .form-input {
+            width: 100%;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            padding: .6rem .875rem;
+            font-size: .9rem;
+            outline: none;
+            font-family: inherit;
+            transition: border-color .2s;
+            background: #fff;
+        }
+
+        .form-input:focus {
+            border-color: var(--navy);
+        }
+
+        /* CHARTS */
+        .charts-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .chart-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .chart-card h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 1rem;
+        }
+
+        .chart-wrap {
+            height: 240px;
+            position: relative;
+        }
+
+        /* NOTIF TOAST */
+        .notif {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: var(--success);
+            color: #fff;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: .9rem;
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .15);
+            transform: translateY(80px);
+            opacity: 0;
+            transition: all .4s;
+            z-index: 999;
+        }
+
+        .notif.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* SEARCH */
+        .search-wrap {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            background: var(--bg);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            padding: .5rem 1rem;
+        }
+
+        .search-wrap input {
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: .9rem;
+            flex: 1;
+        }
+
+        /* EVENT ITEMS */
+        .event-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: .875rem 1rem;
+            background: var(--bg);
+            border-radius: 10px;
+            margin-bottom: .5rem;
+        }
+
+        .ev-left {
+            display: flex;
+            align-items: center;
+            gap: .875rem;
+        }
+
+        .ev-date {
+            background: var(--navy);
+            color: #fff;
+            border-radius: 8px;
+            padding: .35rem .65rem;
+            text-align: center;
+            min-width: 44px;
+        }
+
+        .ev-date .day {
+            font-size: 1.1rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .ev-date .mon {
+            font-size: .6rem;
+            font-weight: 700;
+            opacity: .85;
+        }
+
+        @media(max-width:900px) {
+            .sidebar {
+                width: 200px;
+            }
+
+            .main {
+                margin-left: 200px;
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .charts-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sb-brand">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Emblem_of_Maharashtra.svg/100px-Emblem_of_Maharashtra.svg.png"
+                alt="Emblem">
+            <div>
+                <h2>MahaVidya</h2>
+                <small>ZP Admin Panel</small>
+            </div>
+        </div>
+        <nav class="sb-nav">
+            <div class="sb-section">Overview</div>
+            <div class="sb-item active" data-panel="overview"><i class="fa-solid fa-gauge-high"></i> Dashboard</div>
+            <div class="sb-item" data-panel="students"><i class="fa-solid fa-users"></i> Students <span class="sb-badge"
+                    id="student-count-badge">10</span></div>
+            <div class="sb-item" data-panel="teachers"><i class="fa-solid fa-chalkboard-user"></i> Teachers</div>
+            <div class="sb-section">Academic</div>
+            <div class="sb-item" data-panel="events"><i class="fa-solid fa-calendar-star"></i> Events & Holidays</div>
+            <div class="sb-item" data-panel="results"><i class="fa-solid fa-file-certificate"></i> Results & Reports
+            </div>
+            <div class="sb-section">Communication</div>
+            <div class="sb-item" data-panel="announcements"><i class="fa-solid fa-bullhorn"></i> Announcements</div>
+            <div class="sb-section">System</div>
+            <div class="sb-item" data-panel="analytics"><i class="fa-solid fa-chart-line"></i> Analytics</div>
+        </nav>
+        <div class="sb-footer">
+            <div class="sb-user">
+                <div class="sb-avatar">A</div>
+                <div>
+                    <div style="font-size:.85rem;font-weight:600;">Admin User</div>
+                    <div style="font-size:.7rem;opacity:.6;">Super Administrator</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main">
+        <div class="topbar">
+            <div class="topbar-title">
+                <h3 id="topbar-heading">Dashboard Overview</h3>
+                <p id="topbar-sub">School-wide summary and quick actions</p>
+            </div>
+            <div class="topbar-right">
+                <span class="date-badge" id="today-date"></span>
+                <a href="index.html" class="btn btn-outline btn-sm"><i class="fa-solid fa-arrow-left"></i> Home</a>
+                <button class="btn btn-danger btn-sm" onclick="window.location.href='index.html'"><i
+                        class="fa-solid fa-arrow-right-from-bracket"></i> Logout</button>
+            </div>
+        </div>
+
+        <div class="content">
+
+            <!-- ======== OVERVIEW ======== -->
+            <div class="panel active" id="panel-overview">
+                <div class="stats-row" id="admin-stats-row">
+                    <div class="stat-card">
+                        <div class="stat-icon si-navy"><i class="fa-solid fa-users"></i></div>
+                        <div>
+                            <div class="stat-val" id="s-students">ΓÇö</div>
+                            <div class="stat-lbl">Total Students</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon si-green"><i class="fa-solid fa-percent"></i></div>
+                        <div>
+                            <div class="stat-val" id="s-att">ΓÇö</div>
+                            <div class="stat-lbl">Avg Attendance</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon si-red"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        <div>
+                            <div class="stat-val" id="s-risk">ΓÇö</div>
+                            <div class="stat-lbl">At-Risk Students</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon si-orange"><i class="fa-solid fa-chalkboard-user"></i></div>
+                        <div>
+                            <div class="stat-val" id="s-teachers">ΓÇö</div>
+                            <div class="stat-lbl">Teachers</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="stats-row" style="grid-template-columns:repeat(4,1fr);">
+                    <div class="stat-card">
+                        <div class="stat-icon si-purple"><i class="fa-solid fa-school"></i></div>
+                        <div>
+                            <div class="stat-val" id="s-classes">ΓÇö</div>
+                            <div class="stat-lbl">Classes</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon si-green"><i class="fa-solid fa-file-pen"></i></div>
+                        <div>
+                            <div class="stat-val" id="s-assignments">ΓÇö</div>
+                            <div class="stat-lbl">Assignments</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon si-navy"><i class="fa-solid fa-building-columns"></i></div>
+                        <div>
+                            <div class="stat-val" id="s-network">ΓÇö</div>
+                            <div class="stat-lbl">ZP Schools in Network</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon si-orange"><i class="fa-solid fa-wifi"></i></div>
+                        <div>
+                            <div class="stat-val" id="s-sessions">ΓÇö</div>
+                            <div class="stat-lbl">Active Sessions</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="charts-row">
+                    <div class="chart-card">
+                        <h4>Attendance Distribution (Class-wise)</h4>
+                        <div class="chart-wrap"><canvas id="att-dist-chart"></canvas></div>
+                    </div>
+                    <div class="chart-card">
+                        <h4>Dropout Risk Trend (6 Months)</h4>
+                        <div class="chart-wrap"><canvas id="dropout-chart"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======== STUDENTS ======== -->
+            <div class="panel" id="panel-students">
+                <div class="card">
+                    <div class="card-title">
+                        Student Management ΓÇö Class 7A
+                        <div style="display:flex;gap:.75rem;align-items:center;">
+                            <div class="search-wrap" style="width:220px;"><i class="fa-solid fa-magnifying-glass"
+                                    style="color:var(--muted)"></i><input type="text" id="student-search"
+                                    placeholder="Search student..."></div>
+                            <button class="btn btn-primary" onclick="showAddStudentModal()"><i
+                                    class="fa-solid fa-plus"></i> Add Student</button>
+                        </div>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Roll</th>
+                                    <th>Name</th>
+                                    <th>Class</th>
+                                    <th>Parent Phone</th>
+                                    <th>30d Attendance</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="students-tbody">
+                                <tr>
+                                    <td colspan="7" style="text-align:center;color:var(--muted);padding:2rem;"><i
+                                            class="fa-solid fa-spinner fa-spin"></i> Loading...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======== TEACHERS ======== -->
+            <div class="panel" id="panel-teachers">
+                <div class="card">
+                    <div class="card-title">
+                        Teacher Management
+                        <button class="btn btn-primary"
+                            onclick="showToast('Teacher management ΓÇö coming in next release!')"><i
+                                class="fa-solid fa-plus"></i> Add Teacher</button>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Name</th>
+                                    <th>Subject(s)</th>
+                                    <th>Class Assigned</th>
+                                    <th>Phone</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td><strong>Smt. Priya Deshmukh</strong></td>
+                                    <td>Mathematics, Science</td>
+                                    <td>7A (Class Teacher)</td>
+                                    <td>9876500001</td>
+                                    <td><span class="att-pill" style="background:#E8F5E9;color:#2E7D32;">ΓùÅ Active</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td><strong>Shri. Ramesh Patil</strong></td>
+                                    <td>English, History</td>
+                                    <td>7A, 6B</td>
+                                    <td>9876500002</td>
+                                    <td><span class="att-pill" style="background:#E8F5E9;color:#2E7D32;">ΓùÅ Active</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td><strong>Smt. Kavita Shinde</strong></td>
+                                    <td>Marathi</td>
+                                    <td>5A, 6A, 7A</td>
+                                    <td>9876500003</td>
+                                    <td><span class="att-pill" style="background:#E8F5E9;color:#2E7D32;">ΓùÅ Active</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>4</td>
+                                    <td><strong>Shri. Sunil Wagh</strong></td>
+                                    <td>Physical Education</td>
+                                    <td>All Classes</td>
+                                    <td>9876500004</td>
+                                    <td><span class="att-pill" style="background:#E8F5E9;color:#2E7D32;">ΓùÅ Active</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>5</td>
+                                    <td><strong>Smt. Rekha Jadhav</strong></td>
+                                    <td>Science</td>
+                                    <td>5A, 5B, 6A</td>
+                                    <td>9876500005</td>
+                                    <td><span class="att-pill" style="background:#E8F5E9;color:#2E7D32;">ΓùÅ Active</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>6</td>
+                                    <td><strong>Shri. Anil Kulkarni</strong></td>
+                                    <td>Mathematics</td>
+                                    <td>5A, 6A</td>
+                                    <td>9876500006</td>
+                                    <td><span class="att-pill" style="background:#FFF3E0;color:#F57C00;">ΓùÉ On
+                                            Leave</span></td>
+                                </tr>
+                                <tr>
+                                    <td>7</td>
+                                    <td><strong>Smt. Meera Bhor</strong></td>
+                                    <td>Art & Craft</td>
+                                    <td>All Classes</td>
+                                    <td>9876500007</td>
+                                    <td><span class="att-pill" style="background:#E8F5E9;color:#2E7D32;">ΓùÅ Active</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>8</td>
+                                    <td><strong>Shri. Dnyanesh Kale</strong></td>
+                                    <td>History, Civics</td>
+                                    <td>6B, 7A, 7B</td>
+                                    <td>9876500008</td>
+                                    <td><span class="att-pill" style="background:#E8F5E9;color:#2E7D32;">ΓùÅ Active</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======== EVENTS ======== -->
+            <div class="panel" id="panel-events">
+                <div class="card">
+                    <div class="card-title">
+                        School Events & Holidays
+                        <button class="btn btn-primary" onclick="showAddEventModal()"><i class="fa-solid fa-plus"></i>
+                            Add Event</button>
+                    </div>
+                    <div id="events-list-admin"></div>
+                </div>
+            </div>
+
+            <!-- ======== RESULTS ======== -->
+            <div class="panel" id="panel-results">
+                <div class="card">
+                    <div class="card-title">Results & Monthly Reports</div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;">
+                        <div
+                            style="background:var(--navy-light);border-radius:14px;padding:1.25rem;display:flex;align-items:center;gap:1rem;">
+                            <div class="stat-icon si-navy"><i class="fa-solid fa-file-certificate"></i></div>
+                            <div>
+                                <div style="font-weight:700;color:var(--navy);">Unit Test 1 Results</div>
+                                <div style="font-size:.8rem;color:var(--muted);">Declared ΓÇö 28 Feb 2026</div><button
+                                    class="btn btn-primary btn-sm" style="margin-top:.75rem;"
+                                    onclick="showToast('Opening Unit Test 1 results...')"><i
+                                        class="fa-solid fa-eye"></i> View</button>
+                            </div>
+                        </div>
+                        <div
+                            style="background:#E8F5E9;border-radius:14px;padding:1.25rem;display:flex;align-items:center;gap:1rem;">
+                            <div class="stat-icon si-green"><i class="fa-solid fa-chart-bar"></i></div>
+                            <div>
+                                <div style="font-weight:700;color:var(--success);">Monthly Attendance Report</div>
+                                <div style="font-size:.8rem;color:var(--muted);">February 2026 ΓÇö PDF</div><button
+                                    class="btn btn-success btn-sm" style="margin-top:.75rem;"
+                                    onclick="showToast('Generating PDF report... ≡ƒôä')"><i
+                                        class="fa-solid fa-download"></i> Download PDF</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Roll</th>
+                                    <th>Student Name</th>
+                                    <th>Maths</th>
+                                    <th>Science</th>
+                                    <th>English</th>
+                                    <th>Marathi</th>
+                                    <th>History</th>
+                                    <th>Total</th>
+                                    <th>Grade</th>
+                                    <th>Rank</th>
+                                </tr>
+                            </thead>
+                            <tbody id="results-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======== ANNOUNCEMENTS ======== -->
+            <div class="panel" id="panel-announcements">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+                    <div class="card">
+                        <div class="card-title">Send School-Wide Announcement</div>
+                        <div class="form-group"><label class="form-label">Target Audience</label>
+                            <select class="form-input" id="ann-audience">
+                                <option>All Students & Parents</option>
+                                <option>All Teachers</option>
+                                <option>Class 7A Only</option>
+                                <option>At-Risk Students' Parents</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label class="form-label">Channel</label>
+                            <select class="form-input" id="ann-channel">
+                                <option>SMS (Sandes Gateway)</option>
+                                <option>WhatsApp</option>
+                                <option>Notice Board</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label class="form-label">Message (English / Marathi)</label>
+                            <textarea class="form-input" id="ann-msg" rows="5"
+                                placeholder="Type your announcement here..."></textarea>
+                        </div>
+                        <button class="btn btn-primary" style="width:100%;" onclick="sendSchoolAnnouncement()"><i
+                                class="fa-solid fa-paper-plane"></i> Send Announcement</button>
+                        <div id="ann-done"
+                            style="display:none;background:#E8F5E9;border-radius:8px;padding:.75rem;margin-top:.875rem;font-size:.85rem;color:#2E7D32;font-weight:600;">
+                            <i class="fa-solid fa-circle-check"></i> Announcement sent successfully!
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Announcement History</div>
+                        <div style="display:flex;flex-direction:column;gap:.65rem;">
+                            <div
+                                style="padding:.875rem;background:var(--bg);border-radius:10px;border-left:3px solid var(--navy);">
+                                <strong style="font-size:.88rem;">Unit Test 2 Schedule</strong>
+                                <div style="font-size:.78rem;color:var(--muted);margin-top:.2rem;">Sent to all parents
+                                    &nbsp;ΓÇó&nbsp; 8 Mar 2026 &nbsp;ΓÇó&nbsp; SMS</div>
+                            </div>
+                            <div
+                                style="padding:.875rem;background:var(--bg);border-radius:10px;border-left:3px solid var(--saffron);">
+                                <strong style="font-size:.88rem;">Science Exhibition ΓÇö Registration</strong>
+                                <div style="font-size:.78rem;color:var(--muted);margin-top:.2rem;">Sent to Class 6ΓÇô8
+                                    &nbsp;ΓÇó&nbsp; 5 Mar 2026 &nbsp;ΓÇó&nbsp; SMS</div>
+                            </div>
+                            <div
+                                style="padding:.875rem;background:var(--bg);border-radius:10px;border-left:3px solid var(--success);">
+                                <strong style="font-size:.88rem;">Parent-Teacher Meeting Invite</strong>
+                                <div style="font-size:.78rem;color:var(--muted);margin-top:.2rem;">Sent to all parents
+                                    &nbsp;ΓÇó&nbsp; 2 Mar 2026 &nbsp;ΓÇó&nbsp; SMS + WhatsApp</div>
+                            </div>
+                            <div
+                                style="padding:.875rem;background:var(--bg);border-radius:10px;border-left:3px solid var(--navy);">
+                                <strong style="font-size:.88rem;">Unit Test 1 Results Declared</strong>
+                                <div style="font-size:.78rem;color:var(--muted);margin-top:.2rem;">Sent to all parents
+                                    &nbsp;ΓÇó&nbsp; 1 Mar 2026 &nbsp;ΓÇó&nbsp; SMS</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======== ANALYTICS ======== -->
+            <div class="panel" id="panel-analytics">
+                <div class="charts-row">
+                    <div class="chart-card">
+                        <h4>Monthly Attendance Trend (6 Months)</h4>
+                        <div class="chart-wrap"><canvas id="monthly-att-chart"></canvas></div>
+                    </div>
+                    <div class="chart-card">
+                        <h4>Student-wise Attendance (30 Days)</h4>
+                        <div class="chart-wrap"><canvas id="student-att-chart"></canvas></div>
+                    </div>
+                </div>
+                <div class="chart-card" style="margin-top:1.5rem;">
+                    <h4>Subject Competency vs. State Benchmark</h4>
+                    <div class="chart-wrap"><canvas id="competency-chart"></canvas></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- NOTIFICATION TOAST -->
+    <div class="notif" id="toast"><i class="fa-solid fa-check-circle"></i><span id="toast-msg">Done!</span></div>
+
+    <!-- ADD STUDENT MODAL -->
+    <div class="modal-bg" id="add-student-modal">
+        <div class="modal-box">
+            <h3><i class="fa-solid fa-user-plus"></i> Add New Student</h3>
+            <div class="form-row">
+                <div class="form-group"><label class="form-label">First Name</label><input type="text"
+                        class="form-input" id="s-fname" placeholder="e.g. Aanya"></div>
+                <div class="form-group"><label class="form-label">Last Name</label><input type="text" class="form-input"
+                        id="s-lname" placeholder="e.g. Patil"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label class="form-label">Class</label><select class="form-input" id="s-class">
+                        <option>7A</option>
+                        <option>6A</option>
+                        <option>5A</option>
+                        <option>5B</option>
+                    </select></div>
+                <div class="form-group"><label class="form-label">Roll Number</label><input type="text"
+                        class="form-input" id="s-roll" placeholder="e.g. K"></div>
+            </div>
+            <div class="form-group"><label class="form-label">Parent Phone</label><input type="tel" class="form-input"
+                    id="s-phone" placeholder="+91 98765 XXXXX"></div>
+            <div class="form-group"><label class="form-label">Parent Email (Optional)</label><input type="email"
+                    class="form-input" id="s-email" placeholder="parent@email.com"></div>
+            <div style="display:flex;gap:.75rem;margin-top:.5rem;">
+                <button class="btn btn-primary" style="flex:1;" onclick="addStudent()"><i
+                        class="fa-solid fa-user-plus"></i> Add Student</button>
+                <button class="btn btn-outline" onclick="closeModal('add-student-modal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADD EVENT MODAL -->
+    <div class="modal-bg" id="add-event-modal">
+        <div class="modal-box">
+            <h3><i class="fa-solid fa-calendar-plus"></i> Add Event / Holiday</h3>
+            <div class="form-group"><label class="form-label">Event Title</label><input type="text" class="form-input"
+                    id="ev-title" placeholder="e.g. Annual Sports Day"></div>
+            <div class="form-row">
+                <div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input"
+                        id="ev-date"></div>
+                <div class="form-group"><label class="form-label">Type</label><select class="form-input" id="ev-type">
+                        <option>Event</option>
+                        <option>Exam</option>
+                        <option>Holiday</option>
+                        <option>Meeting</option>
+                    </select></div>
+            </div>
+            <div class="form-group"><label class="form-label">Description</label><textarea class="form-input"
+                    id="ev-desc" rows="3" placeholder="Event details..."></textarea></div>
+            <div style="display:flex;gap:.75rem;margin-top:.5rem;">
+                <button class="btn btn-primary" style="flex:1;" onclick="addEvent()"><i class="fa-solid fa-plus"></i>
+                    Add Event</button>
+                <button class="btn btn-outline" onclick="closeModal('add-event-modal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // NAVIGATION
+        // ============================================================
+        const panelTitles = { overview: 'Dashboard Overview', students: 'Student Management', teachers: 'Teacher Management', events: 'Events & Holidays', results: 'Results & Reports', announcements: 'Announcements', analytics: 'Analytics Dashboard' };
+        const panelSubs = { overview: 'School-wide summary and quick actions', students: 'View, add, and manage all students', teachers: 'View and manage teaching staff', events: 'Manage school events and holidays', results: 'Exam results and downloadable reports', announcements: 'Send messages to parents and staff', analytics: 'Real-time attendance and performance data' };
+
+        function switchPanel(name) {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
+            document.getElementById('panel-' + name).classList.add('active');
+            document.querySelector(`[data-panel="${name}"]`).classList.add('active');
+            document.getElementById('topbar-heading').textContent = panelTitles[name];
+            document.getElementById('topbar-sub').textContent = panelSubs[name];
+            if (name === 'analytics') loadAnalyticsCharts();
+            if (name === 'students') loadStudents();
+            if (name === 'results') loadResults();
+            if (name === 'events') renderEventsAdmin();
+        }
+        document.querySelectorAll('.sb-item').forEach(item => item.addEventListener('click', () => switchPanel(item.dataset.panel)));
+
+        // Date
+        document.getElementById('today-date').textContent = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' });
+
+        // Toast
+        function showToast(msg, color = '#2E7D32') {
+            const t = document.getElementById('toast'); t.style.background = color;
+            document.getElementById('toast-msg').textContent = msg;
+            t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+        document.querySelectorAll('.modal-bg').forEach(m => m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); }));
+
+        // ============================================================
+        // ADMIN STATS
+        // ============================================================
+        async function loadAdminStats() {
+            const data = await fetch('http://localhost:8000/api/admin/stats').then(r => r.json()).catch(() => ({ total_students: 10, total_teachers: 8, total_classes: 4, avg_attendance: 87.4, at_risk_count: 2, total_assignments: 5, schools_in_network: 40, active_sessions: 6 }));
+            document.getElementById('s-students').textContent = data.total_students;
+            document.getElementById('s-teachers').textContent = data.total_teachers;
+            document.getElementById('s-classes').textContent = data.total_classes;
+            document.getElementById('s-att').textContent = data.avg_attendance + '%';
+            document.getElementById('s-risk').textContent = data.at_risk_count;
+            document.getElementById('s-assignments').textContent = data.total_assignments;
+            document.getElementById('s-network').textContent = data.schools_in_network;
+            document.getElementById('s-sessions').textContent = data.active_sessions;
+            document.getElementById('student-count-badge').textContent = data.total_students;
+            // Overview charts
+            const ctx1 = document.getElementById('att-dist-chart');
+            if (ctx1) new Chart(ctx1, { type: 'doughnut', data: { labels: ['Class 5A', 'Class 5B', 'Class 6A', 'Class 7A'], datasets: [{ data: [89, 82, 91, 87], backgroundColor: ['#1A237E', '#FF9933', '#2E7D32', '#1565C0'], borderWidth: 2, borderColor: '#fff' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } } });
+            const ctx2 = document.getElementById('dropout-chart');
+            if (ctx2) new Chart(ctx2, { type: 'line', data: { labels: ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'], datasets: [{ label: 'Dropout Risk %', data: [15, 12, 14, 11, 9, 7], borderColor: '#C62828', backgroundColor: 'rgba(198,40,40,.08)', fill: true, tension: .4, borderWidth: 3, pointRadius: 5 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 30 }, x: { grid: { display: false } } } } });
+        }
+
+        // ============================================================
+        // STUDENTS
+        // ============================================================
+        let allStudents = [];
+        async function loadStudents() {
+            const tbody = document.getElementById('students-tbody');
+            allStudents = await fetch('http://localhost:8000/api/students').then(r => r.json()).catch(() => []);
+            renderStudents();
+        }
+        function renderStudents(filter = '') {
+            const tbody = document.getElementById('students-tbody');
+            const filtered = filter ? allStudents.filter(s => s.name.toLowerCase().includes(filter.toLowerCase())) : allStudents;
+            tbody.innerHTML = filtered.map(s => {
+                const pct = s.attendance_pct;
+                const pctColor = pct >= 90 ? '#2E7D32' : pct >= 75 ? '#F57C00' : '#C62828';
+                const pillBg = pct >= 90 ? '#E8F5E9' : pct >= 75 ? '#FFF3E0' : '#FFEBEE';
+                return `<tr>
+                <td><div style="width:32px;height:32px;border-radius:50%;background:var(--navy-light);color:var(--navy);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem;">${s.roll}</div></td>
+                <td><strong>${s.name}</strong></td>
+                <td>${s.class}</td>
+                <td>${s.parent_phone}</td>
+                <td><span class="att-pill" style="background:${pillBg};color:${pctColor};">${pct}%</span></td>
+                <td><span class="att-pill" style="background:${pct >= 75 ? '#E8F5E9' : '#FFEBEE'};color:${pct >= 75 ? '#2E7D32' : '#C62828'};">${pct >= 75 ? 'ΓùÅ Good' : 'ΓÜá At Risk'}</span></td>
+                <td><button class="btn btn-outline btn-sm" onclick="showToast('Editing ${s.name}...')"><i class="fa-solid fa-pen"></i></button></td>
+            </tr>`;
+            }).join('');
+        }
+        document.getElementById('student-search').addEventListener('input', e => renderStudents(e.target.value));
+
+        function showAddStudentModal() { document.getElementById('add-student-modal').classList.add('open'); }
+        function addStudent() {
+            const fname = document.getElementById('s-fname').value.trim();
+            const lname = document.getElementById('s-lname').value.trim();
+            if (!fname || !lname) { showToast('Please enter full name', '#C62828'); return; }
+            showToast(`Γ£ô Student ${fname} ${lname} added!`);
+            closeModal('add-student-modal');
+            document.getElementById('s-fname').value = ''; document.getElementById('s-lname').value = '';
+        }
+
+        // ============================================================
+        // EVENTS
+        // ============================================================
+        const EVENTS_DATA = [
+            { day: '15', month: 'MAR', title: 'Annual Science Exhibition', desc: 'All Class 6ΓÇô8 | Assembly Ground | 10:00 AM', type: 'event' },
+            { day: '18', month: 'MAR', title: 'Unit Test 2 ΓÇö All Subjects', desc: 'Class 5ΓÇô8 | 8:00 AM ΓÇô 12:00 PM | All classrooms', type: 'exam' },
+            { day: '22', month: 'MAR', title: 'Parent-Teacher Meeting', desc: 'All parents | School Hall | 10:00 AM ΓÇô 1:00 PM', type: 'meeting' },
+            { day: '29', month: 'MAR', title: 'Gudi Padwa ΓÇö School Holiday', desc: 'Shubh Gudi Padwa! School will remain closed.', type: 'holiday' },
+            { day: '12', month: 'APR', title: 'Annual Final Examination Begins', desc: 'Classes 5ΓÇô8 | 20 April last date', type: 'exam' },
+        ];
+        const typeColors = { event: '#1A237E', exam: '#C62828', holiday: '#FF9933', meeting: '#5C6BC0' };
+
+        function renderEventsAdmin() {
+            const list = document.getElementById('events-list-admin');
+            list.innerHTML = EVENTS_DATA.map((e, i) => `
+            <div class="event-item">
+                <div class="ev-left">
+                    <div class="ev-date" style="background:${typeColors[e.type]};"><div class="day">${e.day}</div><div class="mon">${e.month}</div></div>
+                    <div><div style="font-weight:700;font-size:.9rem;">${e.title}</div><div style="font-size:.78rem;color:var(--muted);">${e.desc}</div></div>
+                </div>
+                <div style="display:flex;gap:.5rem;">
+                    <button class="btn btn-outline btn-sm" onclick="showToast('Editing event...')"><i class="fa-solid fa-pen"></i></button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteEvent(${i})"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            </div>`).join('');
+        }
+        function deleteEvent(i) { EVENTS_DATA.splice(i, 1); renderEventsAdmin(); showToast('Event deleted', '#C62828'); }
+        function showAddEventModal() { document.getElementById('add-event-modal').classList.add('open'); }
+        function addEvent() {
+            const title = document.getElementById('ev-title').value.trim();
+            const dateVal = document.getElementById('ev-date').value;
+            if (!title || !dateVal) { showToast('Please fill title and date', '#C62828'); return; }
+            const d = new Date(dateVal);
+            EVENTS_DATA.unshift({ day: d.getDate().toString().padStart(2, '0'), month: d.toLocaleString('en', { month: 'short' }).toUpperCase(), title, desc: document.getElementById('ev-desc').value || 'ΓÇö', type: document.getElementById('ev-type').value.toLowerCase() });
+            renderEventsAdmin();
+            closeModal('add-event-modal');
+            showToast(`Γ£ô Event "${title}" added!`);
+            document.getElementById('ev-title').value = ''; document.getElementById('ev-desc').value = '';
+        }
+
+        // ============================================================
+        // RESULTS TABLE
+        // ============================================================
+        async function loadResults() {
+            const tbody = document.getElementById('results-tbody');
+            const data = await fetch('http://localhost:8000/api/results').then(r => r.json()).catch(() => []);
+            const students = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+            const allResults = await Promise.all(students.map(id => fetch(`http://localhost:8000/api/student/${id}/results`).then(r => r.json())));
+            tbody.innerHTML = allResults.map(s => {
+                const ex = s.exams?.[0];
+                if (!ex) return '';
+                const pct = Math.round(ex.total / ex.max * 100);
+                const pctColor = pct >= 80 ? '#2E7D32' : pct >= 60 ? '#F57C00' : '#C62828';
+                return `<tr><td><strong>${s.roll}</strong></td><td>${s.name}</td><td>${ex.math}</td><td>${ex.science}</td><td>${ex.english}</td><td>${ex.marathi}</td><td>${ex.hist}</td><td><strong style="color:${pctColor}">${ex.total}/${ex.max}</strong></td><td><span class="att-pill" style="background:${pctColor}18;color:${pctColor};">${ex.grade}</span></td><td>#${ex.rank}</td></tr>`;
+            }).join('');
+        }
+
+        // ============================================================
+        // ANALYTICS CHARTS
+        // ============================================================
+        let analyticsLoaded = false;
+        async function loadAnalyticsCharts() {
+            if (analyticsLoaded) return;
+            const monthly = await fetch('http://localhost:8000/api/attendance/monthly').then(r => r.json()).catch(() => []);
+            const competency = await fetch('http://localhost:8000/api/analytics/competency').then(r => r.json()).catch(() => ({ labels: ['Maths', 'Science', 'English', 'Marathi', 'History'], mastery: [65, 58, 80, 85, 71], benchmark: [80, 80, 80, 80, 80] }));
+            const monthlyTrend = await fetch('http://localhost:8000/api/analytics/attendance').then(r => r.json()).catch(() => ({ labels: ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'], attendance: [82, 85, 84, 86, 88, 87] }));
+            const c1 = document.getElementById('monthly-att-chart');
+            if (c1) new Chart(c1, { type: 'line', data: { labels: monthlyTrend.labels, datasets: [{ label: 'Avg Attendance %', data: monthlyTrend.attendance, borderColor: '#1A237E', backgroundColor: 'rgba(26,35,126,.08)', fill: true, tension: .4, borderWidth: 3, pointRadius: 5 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: false, min: 60, max: 100 }, x: { grid: { display: false } } } } });
+            const c2 = document.getElementById('student-att-chart');
+            if (c2 && monthly.length) new Chart(c2, { type: 'bar', data: { labels: monthly.map(s => s.roll + '.' + s.name.split(' ')[0]), datasets: [{ label: '30d Attendance %', data: monthly.map(s => s.pct), backgroundColor: monthly.map(s => s.pct >= 90 ? '#2E7D32' : s.pct >= 75 ? '#FF9933' : '#C62828'), borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100 }, x: { grid: { display: false } } } } });
+            const c3 = document.getElementById('competency-chart');
+            if (c3) new Chart(c3, { type: 'bar', data: { labels: competency.labels, datasets: [{ label: 'Current Mastery %', data: competency.mastery, backgroundColor: '#1A237E', borderRadius: 6 }, { label: 'State Benchmark %', data: competency.benchmark, backgroundColor: '#FF9933', borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true, max: 100 }, x: { grid: { display: false } } } } });
+            analyticsLoaded = true;
+        }
+
+        async function sendSchoolAnnouncement() {
+            const msg = document.getElementById('ann-msg').value.trim();
+            if (!msg) { showToast('Please type a message', '#C62828'); return; }
+            const audience = document.getElementById('ann-audience').value;
+            const channel = document.getElementById('ann-channel').value;
+
+            try {
+                const res = await fetch('http://localhost:8000/api/notices', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title: "Admin Announcement", message: msg, audience: audience })
+                });
+
+                if (res.ok) {
+                    setTimeout(() => {
+                        const doneBanner = document.getElementById('ann-done');
+                        doneBanner.innerHTML = `<i class="fa-solid fa-circle-check"></i> Announcement broadcasted via ${channel}!`;
+                        doneBanner.style.display = 'flex';
+                        document.getElementById('ann-msg').value = '';
+                        setTimeout(() => doneBanner.style.display = 'none', 4000);
+                    }, 600);
+                } else {
+                    showToast('Failed to post announcement', '#C62828');
+                }
+            } catch (e) {
+                showToast('Network error', '#C62828');
+            }
+        }
+
+        // ============================================================
+        // REAL-TIME SSE ALERTS
+        // ============================================================
+        const adminEventSource = new EventSource('http://localhost:8000/stream');
+        adminEventSource.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+            if (data.type === 'notice') {
+                showToast(`≡ƒöö ${data.title}: ${data.message}`, '#FF9933');
+            }
+        };
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        loadAdminStats();
+        loadStudents();
+        renderEventsAdmin();
+    </script>
+</body>
+
+</html>

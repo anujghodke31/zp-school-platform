@@ -1,0 +1,1374 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MahaVidya ΓÇö Parent Portal</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --navy: #1A237E;
+            --navy-light: #E8EAF6;
+            --saffron: #FF9933;
+            --saffron-light: #FFF3E0;
+            --success: #2E7D32;
+            --danger: #C62828;
+            --warning: #F57C00;
+            --text: #1C1C2E;
+            --muted: #64748B;
+            --border: #E2E8F0;
+            --bg: #F0F2F8;
+            --white: #fff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Sans Devanagari', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* LOGIN SCREEN */
+        .login-screen {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1A237E 0%, #283593 50%, #3949AB 100%);
+            padding: 1.5rem;
+        }
+
+        .login-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-logo img {
+            height: 60px;
+            filter: brightness(0) invert(1);
+            margin-bottom: .75rem;
+        }
+
+        .login-logo h1 {
+            color: #fff;
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+
+        .login-logo p {
+            color: rgba(255, 255, 255, .75);
+            font-size: .9rem;
+            margin-top: .25rem;
+        }
+
+        .login-card {
+            background: var(--white);
+            border-radius: 24px;
+            padding: 2.25rem;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, .3);
+        }
+
+        .login-card h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: .25rem;
+        }
+
+        .login-card .sub {
+            font-size: .83rem;
+            color: var(--muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.1rem;
+        }
+
+        .form-label {
+            font-size: .82rem;
+            font-weight: 600;
+            color: var(--navy);
+            display: block;
+            margin-bottom: .35rem;
+        }
+
+        .input-wrap {
+            display: flex;
+            align-items: center;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            background: var(--bg);
+            transition: border-color .2s;
+        }
+
+        .input-wrap:focus-within {
+            border-color: var(--navy);
+            background: #fff;
+        }
+
+        .input-wrap i {
+            padding: .75rem;
+            color: var(--muted);
+        }
+
+        .input-wrap input {
+            border: none;
+            outline: none;
+            flex: 1;
+            padding: .7rem .5rem;
+            font-size: .95rem;
+            background: transparent;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem;
+            width: 100%;
+            padding: .8rem;
+            border-radius: 10px;
+            border: none;
+            font-weight: 700;
+            font-size: .95rem;
+            cursor: pointer;
+            transition: all .2s;
+        }
+
+        .btn-navy {
+            background: var(--navy);
+            color: #fff;
+        }
+
+        .btn-navy:hover {
+            background: #283593;
+        }
+
+        .btn-saffron {
+            background: var(--saffron);
+            color: #fff;
+        }
+
+        .btn-saffron:hover {
+            background: #E68900;
+        }
+
+        .btn-outline {
+            background: #fff;
+            border: 1.5px solid var(--border);
+            color: var(--text);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--navy);
+            color: var(--navy);
+        }
+
+        .divider {
+            text-align: center;
+            color: var(--muted);
+            font-size: .8rem;
+            margin: .75rem 0;
+        }
+
+        .error-box {
+            background: #FFEBEE;
+            border: 1px solid #EF9A9A;
+            color: var(--danger);
+            border-radius: 8px;
+            padding: .65rem .9rem;
+            font-size: .83rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .step2 {
+            display: none;
+        }
+
+        .otp-demo-hint {
+            background: var(--navy-light);
+            border-radius: 8px;
+            padding: .6rem .9rem;
+            font-size: .78rem;
+            color: var(--navy);
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .otp-input {
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: .5rem;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: .75rem;
+            width: 100%;
+            color: var(--navy);
+            outline: none;
+            background: #fff;
+            transition: border-color .2s;
+        }
+
+        .otp-input:focus {
+            border-color: var(--navy);
+        }
+
+        /* PORTAL */
+        .portal {
+            display: none;
+            min-height: 100vh;
+            background: var(--bg);
+        }
+
+        .portal.active {
+            display: block;
+        }
+
+        .header {
+            background: var(--navy);
+            color: #fff;
+            padding: .875rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+        }
+
+        .header-logo img {
+            height: 34px;
+            filter: brightness(0) invert(1);
+        }
+
+        .header-txt h2 {
+            font-size: 1rem;
+            font-weight: 800;
+        }
+
+        .header-txt p {
+            font-size: .72rem;
+            opacity: .75;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, .15);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, .3);
+            padding: .4rem 1rem;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: .8rem;
+            font-weight: 600;
+            transition: background .2s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, .25);
+        }
+
+        /* STUDENT HERO CARD */
+        .student-hero {
+            background: linear-gradient(135deg, var(--navy), #3949AB);
+            color: #fff;
+            padding: 2rem 1.5rem;
+        }
+
+        .sh-inner {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .sh-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: var(--saffron);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 800;
+            border: 3px solid rgba(255, 255, 255, .4);
+            flex-shrink: 0;
+        }
+
+        .sh-info h2 {
+            font-size: 1.4rem;
+            font-weight: 800;
+        }
+
+        .sh-info p {
+            font-size: .85rem;
+            opacity: .8;
+            margin-top: .2rem;
+        }
+
+        .sh-stats {
+            display: flex;
+            gap: 1.25rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .sh-stat {
+            background: rgba(255, 255, 255, .15);
+            border-radius: 10px;
+            padding: .6rem 1rem;
+            text-align: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .sh-stat strong {
+            display: block;
+            font-size: 1.4rem;
+            font-weight: 800;
+        }
+
+        .sh-stat small {
+            font-size: .7rem;
+            opacity: .8;
+        }
+
+        /* CONTENT */
+        .portal-content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        .section-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            margin-bottom: 1.25rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .04);
+        }
+
+        .section-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            padding-bottom: .75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .att-summary {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .att-box {
+            flex: 1;
+            min-width: 100px;
+            border-radius: 12px;
+            padding: .875rem;
+            text-align: center;
+        }
+
+        .att-box strong {
+            display: block;
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+
+        .att-box span {
+            font-size: .75rem;
+            font-weight: 500;
+        }
+
+        .ab-green {
+            background: #E8F5E9;
+            color: var(--success);
+        }
+
+        .ab-red {
+            background: #FFEBEE;
+            color: var(--danger);
+        }
+
+        .ab-orange {
+            background: var(--saffron-light);
+            color: var(--warning);
+        }
+
+        .ab-navy {
+            background: var(--navy-light);
+            color: var(--navy);
+        }
+
+        /* CALENDAR GRID */
+        .cal-months {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .cal-month h4 {
+            font-size: .85rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: .5rem;
+            text-align: center;
+        }
+
+        .cal-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 3px;
+        }
+
+        .cal-day-hdr {
+            font-size: .6rem;
+            text-align: center;
+            color: var(--muted);
+            font-weight: 600;
+            padding: 2px;
+        }
+
+        .cal-day {
+            aspect-ratio: 1;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .7rem;
+            font-weight: 600;
+        }
+
+        .cd-p {
+            background: #C8E6C9;
+            color: var(--success);
+        }
+
+        .cd-a {
+            background: #FFCDD2;
+            color: var(--danger);
+        }
+
+        .cd-empty {
+            background: transparent;
+        }
+
+        .cd-weekend {
+            background: #F1F5F9;
+            color: var(--muted);
+        }
+
+        .cd-today {
+            border: 2px solid var(--saffron);
+        }
+
+        /* TIMETABLE */
+        .tt-grid {
+            display: grid;
+            grid-template-columns: 70px repeat(5, 1fr);
+            gap: 2px;
+            background: var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            font-size: .78rem;
+        }
+
+        .tt-h {
+            background: var(--navy);
+            color: #fff;
+            padding: .5rem .25rem;
+            text-align: center;
+            font-weight: 700;
+            font-size: .7rem;
+        }
+
+        .tt-t {
+            background: var(--navy-light);
+            color: var(--navy);
+            padding: .5rem;
+            text-align: center;
+            font-weight: 700;
+            font-size: .67rem;
+        }
+
+        .tt-c {
+            background: #fff;
+            padding: .5rem .25rem;
+            text-align: center;
+        }
+
+        .sub-b {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: .67rem;
+            font-weight: 600;
+        }
+
+        .sm {
+            background: #E3F2FD;
+            color: #1565C0;
+        }
+
+        .sc {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .se {
+            background: #FFF3E0;
+            color: #E65100;
+        }
+
+        .smr {
+            background: #F3E5F5;
+            color: #6A1B9A;
+        }
+
+        .ss {
+            background: #FBE9E7;
+            color: #BF360C;
+        }
+
+        .sp {
+            background: #E0F7FA;
+            color: #006064;
+        }
+
+        .tt-brk {
+            background: #FFF8F0;
+            color: var(--warning);
+            text-align: center;
+            font-size: .68rem;
+            font-weight: 600;
+        }
+
+        /* CHART */
+        .chart-wrap {
+            height: 200px;
+            position: relative;
+            margin-top: .5rem;
+        }
+
+        /* LANGUAGE TOGGLE */
+        .lang-toggle {
+            display: flex;
+            gap: 4px;
+        }
+
+        .lang-btn {
+            background: rgba(255, 255, 255, .1);
+            border: 1px solid rgba(255, 255, 255, .3);
+            color: #fff;
+            padding: 3px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: .78rem;
+            font-weight: 600;
+        }
+
+        .lang-btn.active {
+            background: var(--saffron);
+            border-color: var(--saffron);
+        }
+
+        .lang-mr {
+            display: none;
+        }
+
+        body.marathi .lang-en {
+            display: none;
+        }
+
+        body.marathi .lang-mr {
+            display: block !important;
+        }
+
+        /* NOTICES */
+        .notice-item {
+            border-left: 3px solid var(--saffron);
+            padding: .65rem .9rem;
+            margin-bottom: .6rem;
+            background: var(--saffron-light);
+            border-radius: 0 8px 8px 0;
+            font-size: .85rem;
+        }
+
+        .notice-date {
+            font-size: .72rem;
+            color: var(--muted);
+            margin-top: .2rem;
+        }
+
+        /* PROGRESS BADGES */
+        .badge-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: .75rem;
+        }
+
+        .badge-item {
+            border-radius: 10px;
+            padding: .875rem;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .bi-green {
+            background: #E8F5E9;
+            border-color: #A5D6A7;
+        }
+
+        .bi-orange {
+            background: var(--saffron-light);
+            border-color: #FFCC80;
+        }
+
+        .bi-red {
+            background: #FFEBEE;
+            border-color: #EF9A9A;
+        }
+
+        .badge-item i {
+            font-size: 1.5rem;
+            display: block;
+            margin-bottom: .3rem;
+        }
+
+        .badge-item strong {
+            font-size: .8rem;
+            font-weight: 700;
+            display: block;
+        }
+
+        .badge-item small {
+            font-size: .7rem;
+            color: var(--muted);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ======================== LOGIN ======================== -->
+    <div id="login-screen" class="login-screen">
+        <div class="login-logo">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Emblem_of_Maharashtra.svg/100px-Emblem_of_Maharashtra.svg.png"
+                alt="Maharashtra Emblem">
+            <h1>MahaVidya</h1>
+            <p>Parent Portal ΓÇö ZP School Network, Maharashtra</p>
+        </div>
+        <div class="login-card">
+            <h2 id="lc-title">Parent / Guardian Login</h2>
+            <p class="sub" id="lc-sub">Enter your registered mobile number to receive OTP</p>
+
+            <div id="error-box" class="error-box"></div>
+
+            <!-- STEP 1: Phone -->
+            <div id="step1">
+                <div class="form-group">
+                    <label class="form-label" for="phone-input">Mobile Number / αñ«αÑïαñ¼αñ╛αñçαñ▓ αñ¿αñéαñ¼αñ░</label>
+                    <div class="input-wrap">
+                        <i class="fa-solid fa-phone"></i>
+                        <input type="tel" id="phone-input" placeholder="+91 98765 43210" maxlength="13">
+                    </div>
+                    <p style="font-size:.72rem;color:var(--muted);margin-top:.35rem;">Demo numbers: 9876543001 (Aanya)
+                        through 9876543010 (Janhavi)</p>
+                </div>
+                <button class="btn btn-navy" id="send-otp-btn">
+                    <i class="fa-solid fa-paper-plane"></i> Send OTP
+                </button>
+                <div class="divider">ΓÇö or use any number and OTP <strong>123456</strong> to demo ΓÇö</div>
+            </div>
+
+            <!-- STEP 2: OTP -->
+            <div id="step2" class="step2">
+                <div class="otp-demo-hint" id="otp-hint">
+                    <i class="fa-solid fa-mobile-screen"></i> OTP sent! <strong>Demo OTP: <span
+                            id="demo-otp">------</span></strong>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Enter 6-digit OTP</label>
+                    <input type="text" id="otp-input" class="otp-input" placeholder="┬╖ ┬╖ ┬╖ ┬╖ ┬╖ ┬╖" maxlength="6">
+                </div>
+                <button class="btn btn-saffron mb-sm" id="verify-btn">
+                    <i class="fa-solid fa-shield-check"></i> Verify & Enter Portal
+                </button>
+                <button class="btn btn-outline mt-sm" id="back-btn" style="margin-top:.5rem;">ΓåÉ Change Number</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================== PORTAL ======================== -->
+    <div id="portal" class="portal">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-logo">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Emblem_of_Maharashtra.svg/100px-Emblem_of_Maharashtra.svg.png"
+                    alt="Emblem">
+                <div class="header-txt">
+                    <h2>MahaVidya Parent Portal</h2>
+                    <p>ZP School Network ΓÇö Government of Maharashtra</p>
+                </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:.75rem;">
+                <div class="lang-toggle">
+                    <button class="lang-btn active" id="en-btn" onclick="setLang('en')">EN</button>
+                    <button class="lang-btn" id="mr-btn" onclick="setLang('mr')">αñ«αñ░αñ╛αñáαÑÇ</button>
+                </div>
+                <button class="logout-btn" onclick="location.reload()"><i
+                        class="fa-solid fa-arrow-right-from-bracket"></i> Logout</button>
+            </div>
+        </div>
+
+        <!-- STUDENT HERO -->
+        <div class="student-hero" id="student-hero">
+            <div class="sh-inner">
+                <div class="sh-avatar" id="student-avatar">A</div>
+                <div>
+                    <div class="sh-info">
+                        <h2 id="student-name-display">Aanya Patil</h2>
+                        <p>Class 7A | Roll No: A | <span class="lang-en">ZP Primary School, Maharashtra</span><span
+                                class="lang-mr">αñ£αñ┐.αñ¬. αñ¬αÑìαñ░αñ╛αñÑαñ«αñ┐αñò αñ╢αñ╛αñ│αñ╛, αñ«αñ╣αñ╛αñ░αñ╛αñ╖αÑìαñƒαÑìαñ░</span></p>
+                    </div>
+                    <div class="sh-stats" id="sh-stats-row"><!-- filled by JS --></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PORTAL CONTENT -->
+        <div class="portal-content">
+
+            <!-- ATTENDANCE SUMMARY -->
+            <div class="section-card">
+                <h3><i class="fa-solid fa-calendar-check" style="color:var(--navy)"></i> <span
+                        class="lang-en">Attendance Summary</span><span class="lang-mr">αñëαñ¬αñ╕αÑìαñÑαñ┐αññαÑÇ αñ╕αñ╛αñ░αñ╛αñéαñ╢</span></h3>
+                <div class="att-summary" id="att-summary-boxes"><!-- JS --></div>
+
+                <!-- RING CHART -->
+                <div style="max-width:200px;margin:0 auto 1rem;">
+                    <div class="chart-wrap"><canvas id="att-donut-chart"></canvas></div>
+                </div>
+            </div>
+
+            <!-- ATTENDANCE CALENDAR -->
+            <div class="section-card">
+                <h3><i class="fa-solid fa-calendar" style="color:var(--saffron)"></i> <span class="lang-en">Monthly
+                        Attendance Calendar</span><span class="lang-mr">αñ«αñ╛αñ╕αñ┐αñò αñëαñ¬αñ╕αÑìαñÑαñ┐αññαÑÇ αñòαÑàαñ▓αÑçαñéαñíαñ░</span></h3>
+                <div id="calendar-container"><!-- JS --></div>
+                <div style="display:flex;gap:1rem;margin-top:.75rem;font-size:.78rem;">
+                    <span style="display:flex;align-items:center;gap:.35rem;"><span
+                            style="width:14px;height:14px;border-radius:3px;background:#C8E6C9;display:inline-block;"></span><span
+                            class="lang-en">Present</span><span class="lang-mr">αñëαñ¬αñ╕αÑìαñÑαñ┐αññ</span></span>
+                    <span style="display:flex;align-items:center;gap:.35rem;"><span
+                            style="width:14px;height:14px;border-radius:3px;background:#FFCDD2;display:inline-block;"></span><span
+                            class="lang-en">Absent</span><span class="lang-mr">αñàαñ¿αÑüαñ¬αñ╕αÑìαñÑαñ┐αññ</span></span>
+                    <span style="display:flex;align-items:center;gap:.35rem;"><span
+                            style="width:14px;height:14px;border-radius:3px;background:#F1F5F9;display:inline-block;"></span><span
+                            class="lang-en">Weekend</span><span class="lang-mr">αñ╕αÑüαñƒαÑìαñƒαÑÇ</span></span>
+                </div>
+            </div>
+
+            <!-- COMPETENCY BADGES -->
+            <div class="section-card">
+                <h3><i class="fa-solid fa-trophy" style="color:var(--saffron)"></i> <span class="lang-en">Learning
+                        Competency Report</span><span class="lang-mr">αñ╢αñ┐αñòαÑìαñ╖αñú αñòαÑìαñ╖αñ«αññαñ╛ αñàαñ╣αñ╡αñ╛αñ▓</span></h3>
+                <div class="badge-grid">
+                    <div class="badge-item bi-green"><i class="fa-solid fa-star" style="color:#2E7D32"></i><strong
+                            class="lang-en">Mastered</strong><strong class="lang-mr"
+                            style="display:none">αñ¬αÑìαñ░αñ¡αÑüαññαÑìαñ╡</strong><small>Mathematics, Marathi</small></div>
+                    <div class="badge-item bi-orange"><i class="fa-solid fa-arrow-trend-up"
+                            style="color:#F57C00"></i><strong class="lang-en">Improving</strong><strong class="lang-mr"
+                            style="display:none">αñ╕αÑüαñºαñ╛αñ░αññ αñåαñ╣αÑç</strong><small>Science, English</small></div>
+                    <div class="badge-item bi-red"><i class="fa-solid fa-triangle-exclamation"
+                            style="color:#C62828"></i><strong class="lang-en">Needs Focus</strong><strong
+                            class="lang-mr" style="display:none">αñ▓αñòαÑìαñ╖ αñ╣αñ╡αÑç</strong><small>History & Civics</small></div>
+                </div>
+            </div>
+
+            <!-- TODAY'S TIMETABLE -->
+            <div class="section-card">
+                <h3><i class="fa-solid fa-clock" style="color:var(--navy)"></i> <span class="lang-en">Today's Timetable
+                        ΓÇö Class 7A</span><span class="lang-mr">αñåαñ£αñÜαÑç αñ╡αÑçαñ│αñ╛αñ¬αññαÑìαñ░αñò ΓÇö αñ╡αñ░αÑìαñù 7A</span></h3>
+                <div style="overflow-x:auto;">
+                    <div class="tt-grid">
+                        <div class="tt-h">Time</div>
+                        <div class="tt-h">Mon</div>
+                        <div class="tt-h">Tue</div>
+                        <div class="tt-h">Wed</div>
+                        <div class="tt-h">Thu</div>
+                        <div class="tt-h">Fri</div>
+                        <div class="tt-t">8:00ΓÇô8:45</div>
+                        <div class="tt-c"><span class="sub-b sm">Maths</span></div>
+                        <div class="tt-c"><span class="sub-b sc">Science</span></div>
+                        <div class="tt-c"><span class="sub-b se">English</span></div>
+                        <div class="tt-c"><span class="sub-b sm">Maths</span></div>
+                        <div class="tt-c"><span class="sub-b smr">Marathi</span></div>
+                        <div class="tt-t">8:45ΓÇô9:30</div>
+                        <div class="tt-c"><span class="sub-b sc">Science</span></div>
+                        <div class="tt-c"><span class="sub-b smr">Marathi</span></div>
+                        <div class="tt-c"><span class="sub-b sm">Maths</span></div>
+                        <div class="tt-c"><span class="sub-b sc">Science</span></div>
+                        <div class="tt-c"><span class="sub-b ss">Hist</span></div>
+                        <div class="tt-t tt-brk" style="background:#FFF8F0;color:#E65100;">Break</div>
+                        <div class="tt-brk">Γÿò</div>
+                        <div class="tt-brk">Γÿò</div>
+                        <div class="tt-brk">Γÿò</div>
+                        <div class="tt-brk">Γÿò</div>
+                        <div class="tt-brk">Γÿò</div>
+                        <div class="tt-t">10:00ΓÇô10:45</div>
+                        <div class="tt-c"><span class="sub-b se">English</span></div>
+                        <div class="tt-c"><span class="sub-b sm">Maths</span></div>
+                        <div class="tt-c"><span class="sub-b sc">Science</span></div>
+                        <div class="tt-c"><span class="sub-b smr">Marathi</span></div>
+                        <div class="tt-c"><span class="sub-b sm">Maths</span></div>
+                        <div class="tt-t">10:45ΓÇô11:30</div>
+                        <div class="tt-c"><span class="sub-b ss">Hist</span></div>
+                        <div class="tt-c"><span class="sub-b se">English</span></div>
+                        <div class="tt-c"><span class="sub-b smr">Marathi</span></div>
+                        <div class="tt-c"><span class="sub-b se">English</span></div>
+                        <div class="tt-c"><span class="sub-b sc">Science</span></div>
+                        <div class="tt-t">11:30ΓÇô12:15</div>
+                        <div class="tt-c"><span class="sub-b smr">Marathi</span></div>
+                        <div class="tt-c"><span class="sub-b ss">Hist</span></div>
+                        <div class="tt-c"><span class="sub-b sp">P.T.</span></div>
+                        <div class="tt-c"><span class="sub-b ss">Hist</span></div>
+                        <div class="tt-c"><span class="sub-b sp">P.T.</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCHOOL NOTICES -->
+            <div class="section-card">
+                <h3><i class="fa-solid fa-bullhorn" style="color:var(--saffron)"></i> <span class="lang-en">School
+                        Notices</span><span class="lang-mr">αñ╢αñ╛αñ│αÑçαñÜαÑìαñ»αñ╛ αñ╕αÑéαñÜαñ¿αñ╛</span></h3>
+                <div class="notice-item"><strong class="lang-en">Annual Science Exhibition ΓÇö 15 March
+                        2026</strong><strong class="lang-mr">αñ╡αñ╛αñ░αÑìαñ╖αñ┐αñò αñ╡αñ┐αñ£αÑìαñ₧αñ╛αñ¿ αñ¬αÑìαñ░αñªαñ░αÑìαñ╢αñ¿αÑÇ ΓÇö 15 αñ«αñ╛αñ░αÑìαñÜ 2026</strong>
+                    <div class="notice-date">Posted: 07 March 2026</div>
+                </div>
+                <div class="notice-item"><strong class="lang-en">Unit Test 2 ΓÇö 18 March 2026 (All
+                        Subjects)</strong><strong class="lang-mr">αñ»αÑüαñ¿αñ┐αñƒ αñƒαÑçαñ╕αÑìαñƒ 2 ΓÇö 18 αñ«αñ╛αñ░αÑìαñÜ 2026 (αñ╕αñ░αÑìαñ╡ αñ╡αñ┐αñ╖αñ»)</strong>
+                    <div class="notice-date">Posted: 06 March 2026</div>
+                </div>
+                <div class="notice-item"><strong class="lang-en">Parent-Teacher Meeting ΓÇö 22 March 2026 (10:00
+                        AM)</strong><strong class="lang-mr">αñ¬αñ╛αñ▓αñò-αñ╢αñ┐αñòαÑìαñ╖αñò αñ¼αÑêαñáαñò ΓÇö 22 αñ«αñ╛αñ░αÑìαñÜ 2026 (αñ╕αñòαñ╛αñ│αÑÇ 10:00)</strong>
+                    <div class="notice-date">Posted: 05 March 2026</div>
+                </div>
+                <div class="notice-item"><strong class="lang-en">School Fee Waiver Form ΓÇö Submission Deadline 20
+                        March</strong><strong class="lang-mr">αñ╢αñ╛αñ│αñ╛ αñ╢αÑüαñ▓αÑìαñò αñ«αñ╛αñ½αÑÇ αñàαñ░αÑìαñ£ ΓÇö αñ╕αñ╛αñªαñ░ αñòαñ░αñúαÑìαñ»αñ╛αñÜαÑÇ αñàαñéαññαñ┐αñ« αññαñ╛αñ░αÑÇαñû 20
+                        αñ«αñ╛αñ░αÑìαñÜ</strong>
+                    <div class="notice-date">Posted: 04 March 2026</div>
+                </div>
+            </div>
+
+            <!-- EXAM RESULTS (Scoped strictly to this child only) -->
+            <div class="section-card" id="results-card">
+                <h3><i class="fa-solid fa-file-certificate" style="color:var(--navy)"></i>
+                    <span class="lang-en">Exam Results ΓÇö <span id="result-student-name">Your Child</span></span>
+                    <span class="lang-mr">αñ¬αñ░αÑÇαñòαÑìαñ╖αñ╛ αñ¿αñ┐αñòαñ╛αñ▓ ΓÇö <span class="mr-name"></span></span>
+                </h3>
+
+                <!-- Result not yet available notice -->
+                <div id="result-loading" style="text-align:center;padding:1rem;color:var(--muted);font-size:.85rem;">
+                    <i class="fa-solid fa-spinner fa-spin"></i> Loading results...
+                </div>
+
+                <!-- Results container -->
+                <div id="results-container" style="display:none;"></div>
+            </div>
+
+            <!-- ASSIGNMENTS DUE -->
+            <div class="section-card" id="assignments-card">
+                <h3><i class="fa-solid fa-file-pen" style="color:var(--saffron)"></i>
+                    <span class="lang-en">Pending Assignments</span>
+                    <span class="lang-mr">αñ¬αÑìαñ░αñ▓αñéαñ¼αñ┐αññ αñàαñ╕αñ╛αñçαñ¿αñ«αÑçαñéαñƒ</span>
+                </h3>
+                <div id="pp-assignments-list">
+                    <div style="text-align:center;padding:1rem;color:var(--muted);font-size:.85rem;"><i
+                            class="fa-solid fa-spinner fa-spin"></i> Loading...</div>
+                </div>
+            </div>
+
+            <!-- VISHWA-MITRA CHATBOT -->
+            <div class="section-card"
+                style="background:linear-gradient(135deg,#1A237E,#283593);color:#fff;border:none;">
+                <h3 style="color:#fff;border-bottom-color:rgba(255,255,255,.2);"><i class="fa-solid fa-robot"></i> <span
+                        class="lang-en">Vishwa-Mitra AI Assistant</span><span class="lang-mr">αñ╡αñ┐αñ╢αÑìαñ╡-αñ«αñ┐αññαÑìαñ░ AI
+                        αñ╕αñ╣αñ╛αñ»αÑìαñ»αñò</span></h3>
+                <p style="font-size:.85rem;opacity:.85;margin-bottom:1rem;" class="lang-en">Ask about fees, homework,
+                    exam dates, or your child's progress ΓÇö in Marathi or English.</p>
+                <p style="font-size:.85rem;opacity:.85;margin-bottom:1rem;" class="lang-mr">αñ╢αÑüαñ▓αÑìαñò, αñùαÑâαñ╣αñ¬αñ╛αñá, αñ¬αñ░αÑÇαñòαÑìαñ╖αñ╛ αñòαñ┐αñéαñ╡αñ╛
+                    αñ¬αÑìαñ░αñùαññαÑÇαñ¼αñªαÑìαñªαñ▓ αñ╡αñ┐αñÜαñ╛αñ░αñ╛ ΓÇö αñ«αñ░αñ╛αñáαÑÇ αñòαñ┐αñéαñ╡αñ╛ αñçαñéαñùαÑìαñ░αñ£αÑÇαññ.</p>
+                <div style="display:flex;gap:.5rem;">
+                    <input type="text" id="pp-va-input" placeholder="Type your question here..."
+                        style="flex:1;padding:.7rem 1rem;border-radius:8px;border:none;outline:none;font-size:.9rem;">
+                    <button id="pp-va-send"
+                        style="background:var(--saffron);color:#fff;border:none;border-radius:8px;padding:.7rem 1.2rem;font-weight:700;cursor:pointer;"><i
+                            class="fa-solid fa-paper-plane"></i></button>
+                </div>
+                <div id="pp-va-reply"
+                    style="background:rgba(255,255,255,.1);border-radius:8px;padding:.75rem;margin-top:.75rem;font-size:.85rem;display:none;">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <style>
+        /* Results marks table */
+        .marks-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: .75rem;
+            font-size: .88rem;
+        }
+
+        .marks-table th {
+            background: var(--navy);
+            color: #fff;
+            padding: .6rem .9rem;
+            text-align: left;
+            font-size: .8rem;
+        }
+
+        .marks-table td {
+            padding: .6rem .9rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .marks-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .grade-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: .8rem;
+            font-weight: 800;
+        }
+
+        .grade-a-plus {
+            background: #E8F5E9;
+            color: var(--success);
+        }
+
+        .grade-a {
+            background: #E8F5E9;
+            color: var(--success);
+        }
+
+        .grade-b-plus {
+            background: var(--navy-light);
+            color: var(--navy);
+        }
+
+        .grade-b {
+            background: var(--navy-light);
+            color: var(--navy);
+        }
+
+        .grade-c {
+            background: #FFF3E0;
+            color: var(--warning);
+        }
+
+        .marks-bar-wrap {
+            background: #F1F5F9;
+            border-radius: 50px;
+            height: 8px;
+            width: 100px;
+            overflow: hidden;
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: .5rem;
+        }
+
+        .marks-bar {
+            height: 100%;
+            border-radius: 50px;
+        }
+
+        .result-summary-row {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.25rem;
+            flex-wrap: wrap;
+        }
+
+        .result-stat {
+            text-align: center;
+        }
+
+        .result-stat strong {
+            display: block;
+            font-size: 1.6rem;
+            font-weight: 800;
+        }
+
+        .result-stat small {
+            font-size: .75rem;
+            color: var(--muted);
+        }
+    </style>
+
+    <script>
+        // ============================================================
+        // LANGUAGE TOGGLE
+        // ============================================================
+        function setLang(lang) {
+            document.body.classList.toggle('marathi', lang === 'mr');
+            document.getElementById('en-btn').classList.toggle('active', lang === 'en');
+            document.getElementById('mr-btn').classList.toggle('active', lang === 'mr');
+            // Update all lang- elements
+            document.querySelectorAll('.lang-en').forEach(el => el.style.display = lang === 'en' ? '' : 'none');
+            document.querySelectorAll('.lang-mr').forEach(el => el.style.display = lang === 'mr' ? '' : 'none');
+        }
+
+        // ============================================================
+        // OTP LOGIN FLOW
+        // ============================================================
+        let storedOTP = '';
+        let studentId = 1;
+
+        document.getElementById('send-otp-btn').addEventListener('click', async () => {
+            const phone = document.getElementById('phone-input').value.trim();
+            if (!phone) return;
+            const btn = document.getElementById('send-otp-btn');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...'; btn.disabled = true;
+            try {
+                const data = await fetch('http://localhost:8000/api/otp/send', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone: phone.replace('+91', '').replace(' ', '').trim() })
+                }).then(r => r.json());
+                storedOTP = String(data.otp);
+                document.getElementById('demo-otp').textContent = storedOTP;
+                document.getElementById('step1').style.display = 'none';
+                document.getElementById('step2').style.display = 'block';
+            } catch (e) {
+                // Offline fallback
+                storedOTP = '123456';
+                document.getElementById('demo-otp').textContent = storedOTP;
+                document.getElementById('step1').style.display = 'none';
+                document.getElementById('step2').style.display = 'block';
+            }
+        });
+
+        document.getElementById('back-btn').addEventListener('click', () => {
+            document.getElementById('step1').style.display = 'block';
+            document.getElementById('step2').style.display = 'none';
+        });
+
+        document.getElementById('verify-btn').addEventListener('click', async () => {
+            const entered = document.getElementById('otp-input').value.trim();
+            if (entered.length !== 6) return;
+            const phone = document.getElementById('phone-input').value.trim().replace('+91', '').replace(' ', '').trim();
+            const btn = document.getElementById('verify-btn');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verifying...'; btn.disabled = true;
+
+            if (entered === storedOTP || entered === '123456') {
+                // Determine student from phone
+                const phoneMap = { "9876543001": 1, "9876543002": 2, "9876543003": 3, "9876543004": 4, "9876543005": 5, "9876543006": 6, "9876543007": 7, "9876543008": 8, "9876543009": 9, "9876543010": 10 };
+                studentId = phoneMap[phone] || 1;
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('portal').classList.add('active');
+                await loadStudentPortal(studentId);
+                await loadParentAssignments();
+            } else {
+                const errBox = document.getElementById('error-box');
+                errBox.textContent = 'Invalid OTP. Try again or use 123456 as demo.';
+                errBox.style.display = 'block';
+                btn.innerHTML = '<i class="fa-solid fa-shield-check"></i> Verify & Enter Portal'; btn.disabled = false;
+            }
+        });
+
+        // ============================================================
+        // LOAD STUDENT DATA
+        // ============================================================
+        let donutChart = null;
+
+        async function loadStudentPortal(id) {
+            let data;
+            try {
+                data = await fetch(`http://localhost:8000/api/student/${id}/attendance`).then(r => r.json());
+            } catch (e) {
+                // Offline fallback
+                data = { id: 1, name: 'Aanya Patil', roll: 'A', class: '7A', attendance_pct: 96.2, present_days: 25, total_days: 26, history: {} };
+            }
+
+            // Student hero
+            document.getElementById('student-name-display').textContent = data.name;
+            document.getElementById('student-avatar').textContent = data.roll;
+            const pct = data.attendance_pct;
+            const absent = data.total_days - data.present_days;
+            const pctColor = pct >= 90 ? '#2E7D32' : pct >= 75 ? '#F57C00' : '#C62828';
+
+            document.getElementById('sh-stats-row').innerHTML = `
+        <div class="sh-stat"><strong>${pct}%</strong><small>Attendance</small></div>
+        <div class="sh-stat"><strong>${data.present_days}</strong><small>Days Present</small></div>
+        <div class="sh-stat"><strong>${absent}</strong><small>Days Absent</small></div>
+        <div class="sh-stat"><strong>${data.class}</strong><small>Class</small></div>`;
+
+            document.getElementById('att-summary-boxes').innerHTML = `
+        <div class="att-box ab-navy"><strong>${pct}%</strong><span>Overall %</span></div>
+        <div class="att-box ab-green"><strong>${data.present_days}</strong><span>Present</span></div>
+        <div class="att-box ab-red"><strong>${absent}</strong><span>Absent</span></div>
+        <div class="att-box ab-orange"><strong>${data.total_days}</strong><span>School Days</span></div>`;
+
+            // Donut chart
+            const ctx = document.getElementById('att-donut-chart');
+            if (donutChart) donutChart.destroy();
+            donutChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: { labels: ['Present', 'Absent'], datasets: [{ data: [data.present_days, absent], backgroundColor: ['#2E7D32', '#C62828'], borderWidth: 0 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.raw} days` } } }, cutout: '65%', animation: { duration: 1000 } }
+            });
+
+            // Calendar
+            buildCalendar(data.history);
+
+            // Results ΓÇö strictly this student only
+            await loadStudentResults(id, data.name);
+        }
+
+        // ============================================================
+        // STUDENT RESULTS (Strictly scoped to this child's ID only)
+        // ============================================================
+        async function loadStudentResults(id, studentName) {
+            const loadingEl = document.getElementById('result-loading');
+            const container = document.getElementById('results-container');
+            const nameEl = document.getElementById('result-student-name');
+            if (nameEl) nameEl.textContent = studentName;
+
+            try {
+                // API strictly returns only THIS student's results by ID ΓÇö no cross-student access
+                const data = await fetch(`http://localhost:8000/api/student/${id}/results`).then(r => r.json());
+
+                if (data.error) { if (loadingEl) loadingEl.textContent = 'No results found.'; return; }
+                if (loadingEl) loadingEl.style.display = 'none';
+                if (container) container.style.display = 'block';
+
+                const subjects = [
+                    { key: 'math', label: 'Mathematics' },
+                    { key: 'science', label: 'Science & Technology' },
+                    { key: 'english', label: 'English' },
+                    { key: 'marathi', label: 'Marathi' },
+                    { key: 'hist', label: 'History & Civics' }
+                ];
+
+                const gradeClass = g => {
+                    const m = { 'A+': 'grade-a-plus', 'A': 'grade-a', 'B+': 'grade-b-plus', 'B': 'grade-b', 'C': 'grade-c' };
+                    return m[g] || 'grade-c';
+                };
+
+                container.innerHTML = data.exams.map(exam => {
+                    const pct = Math.round(exam.total / exam.max * 100);
+                    const maxPerSubject = exam.max / subjects.length;
+                    return `
+            <div style="margin-bottom:1.5rem;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.875rem;flex-wrap:wrap;gap:.5rem;">
+                    <div>
+                        <strong style="font-size:1rem;color:var(--navy);">${exam.exam}</strong>
+                        <span style="font-size:.78rem;color:var(--muted);margin-left:.5rem;">Class 7A ΓÇö ${data.roll}. ${data.name}</span>
+                    </div>
+                    <span class="grade-badge ${gradeClass(exam.grade)}">${exam.grade}</span>
+                </div>
+                <div class="result-summary-row">
+                    <div class="result-stat"><strong style="color:var(--navy);">${exam.total}/${exam.max}</strong><small>Total Marks</small></div>
+                    <div class="result-stat"><strong style="color:${pct >= 75 ? '#2E7D32' : '#C62828'};">${pct}%</strong><small>Percentage</small></div>
+                    <div class="result-stat"><strong style="color:var(--saffron);">#${exam.rank}</strong><small>Class Rank</small></div>
+                </div>
+                <table class="marks-table">
+                    <thead><tr><th>Subject</th><th>Marks</th><th>Out of</th><th>Visual</th></tr></thead>
+                    <tbody>
+                        ${subjects.map(s => {
+                        const marks = exam[s.key];
+                        const barPct = Math.round(marks / maxPerSubject * 100);
+                        const barColor = barPct >= 80 ? '#2E7D32' : barPct >= 60 ? '#FF9933' : '#C62828';
+                        return `<tr>
+                                <td><strong>${s.label}</strong></td>
+                                <td><strong style="font-size:1rem;color:${barColor}">${marks}</strong></td>
+                                <td style="color:var(--muted)">${Math.round(maxPerSubject)}</td>
+                                <td>
+                                    <div class="marks-bar-wrap">
+                                        <div class="marks-bar" style="width:${barPct}%;background:${barColor};"></div>
+                                    </div>
+                                    <span style="font-size:.73rem;color:var(--muted);margin-left:.5rem;">${barPct}%</span>
+                                </td>
+                            </tr>`;
+                    }).join('')}
+                    </tbody>
+                </table>
+            </div>`;
+                }).join('');
+
+            } catch (e) {
+                // Offline fallback
+                if (loadingEl) loadingEl.innerHTML = '<i class="fa-solid fa-wifi-slash"></i> Results unavailable offline. Connect to the school network.';
+            }
+        }
+
+        function buildCalendar(history) {
+            const container = document.getElementById('calendar-container');
+            container.innerHTML = '';
+
+            // Group by month
+            const months = {};
+            Object.entries(history).forEach(([dateStr, status]) => {
+                const d = new Date(dateStr);
+                const key = `${d.getFullYear()}-${d.getMonth()}`;
+                if (!months[key]) months[key] = { year: d.getFullYear(), month: d.getMonth(), days: {} };
+                months[key].days[d.getDate()] = status;
+            });
+
+            const dayNames = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const grid = document.createElement('div');
+            grid.className = 'cal-months';
+
+            Object.values(months).slice(-2).forEach(m => {
+                const monthDiv = document.createElement('div');
+                monthDiv.className = 'cal-month';
+                monthDiv.innerHTML = `<h4>${monthNames[m.month]} ${m.year}</h4>`;
+                const calGrid = document.createElement('div');
+                calGrid.className = 'cal-grid';
+                dayNames.forEach(n => { const h = document.createElement('div'); h.className = 'cal-day-hdr'; h.textContent = n; calGrid.appendChild(h); });
+
+                const firstDay = new Date(m.year, m.month, 1).getDay();
+                for (let i = 0; i < firstDay; i++) { const e = document.createElement('div'); e.className = 'cal-day cd-empty'; calGrid.appendChild(e); }
+                const totalDays = new Date(m.year, m.month + 1, 0).getDate();
+                for (let d = 1; d <= totalDays; d++) {
+                    const cell = document.createElement('div');
+                    const dow = new Date(m.year, m.month, d).getDay();
+                    if (dow === 0 || dow === 6) { cell.className = 'cal-day cd-weekend'; cell.textContent = d; }
+                    else if (m.days[d]) { cell.className = `cal-day ${m.days[d] === 'P' ? 'cd-p' : 'cd-a'}`; cell.textContent = d; cell.title = m.days[d] === 'P' ? 'Present' : 'Absent'; }
+                    else { cell.className = 'cal-day cd-empty'; cell.textContent = d; }
+                    calGrid.appendChild(cell);
+                }
+                monthDiv.appendChild(calGrid);
+                grid.appendChild(monthDiv);
+            });
+            container.appendChild(grid);
+        }
+
+        // ============================================================
+        // PENDING ASSIGNMENTS FOR PARENT
+        // ============================================================
+        async function loadParentAssignments() {
+            const list = document.getElementById('pp-assignments-list');
+            if (!list) return;
+            const data = await fetch('http://localhost:8000/api/assignments').then(r => r.json()).catch(() => []);
+            const active = data.filter(a => a.status === 'active');
+            if (!active.length) { list.innerHTML = '<div style="text-align:center;padding:1rem;color:var(--muted);font-size:.85rem;">No pending assignments! Γ£ô</div>'; return; }
+            const subColors = { Mathematics: '#1565C0', Science: '#2E7D32', English: '#E65100', Marathi: '#6A1B9A', History: '#BF360C' };
+            list.innerHTML = active.map(a => {
+                const overdue = new Date(a.due) < new Date();
+                const c = subColors[a.subject] || '#1A237E';
+                return `<div style="display:flex;align-items:center;gap:.875rem;padding:.75rem;background:${c}08;border-radius:10px;margin-bottom:.5rem;border-left:3px solid ${c};">
+                    <div style="flex:1;"><div style="font-weight:700;font-size:.9rem;color:#1C1C2E;">${a.title}</div>
+                    <div style="font-size:.78rem;color:var(--muted);margin-top:.15rem;">${a.subject} &nbsp;ΓÇó&nbsp; Due: <strong style="color:${overdue ? '#C62828' : c}">${a.due_display}</strong></div>
+                    <div style="font-size:.78rem;color:var(--muted);margin-top:.1rem;">${a.desc.substring(0, 80)}${a.desc.length > 80 ? '...' : ''}</div></div>
+                    <span style="background:${overdue ? '#FFEBEE' : '#E8F5E9'};color:${overdue ? '#C62828' : '#2E7D32'};padding:4px 10px;border-radius:20px;font-size:.7rem;font-weight:700;white-space:nowrap;">${overdue ? 'ΓÜá Overdue' : 'ΓùÅ Active'}</span>
+                </div>`;
+            }).join('');
+        }
+
+        // ============================================================
+        // VISHWA-MITRA INLINE CHAT
+        // ============================================================
+        const vmResponses = {
+            fees: "ZP school fees are Γé╣0 under the RTE Act. For scholarship queries, contact the HM. / ZP αñ╢αñ╛αñ│αñ╛αñéαñ«αñºαÑìαñ»αÑç αñ╢αÑüαñ▓αÑìαñò αñ¿αñ╛αñ╣αÑÇ.",
+            homework: "Homework schedules are uploaded every Friday in the Student Portal. / αñùαÑâαñ╣αñ¬αñ╛αñá αñ╡αÑçαñ│αñ╛αñ¬αññαÑìαñ░αñò αñªαñ░ αñ╢αÑüαñòαÑìαñ░αñ╡αñ╛αñ░αÑÇ.",
+            attendance: "Your child's detailed attendance is shown on this page. Contact the school HM for absences exceeding 20%.",
+            exam: "Next exam: Unit Test 2 ΓÇö 18 March 2026. Final Exam ΓÇö 12-20 April 2026.",
+            meeting: "Parent-Teacher Meeting on 22 March 2026 at 10:00 AM at the school premises.",
+            default: "I'm Vishwa-Mitra! Ask me about fees ≡ƒÆ░, homework ≡ƒôÜ, attendance ≡ƒôï, or exam dates ≡ƒôà."
+        };
+
+        function getVMReply(q) {
+            const ql = q.toLowerCase();
+            if (ql.includes('fee') || ql.includes('αñ╢αÑüαñ▓αÑìαñò')) return vmResponses.fees;
+            if (ql.includes('homework') || ql.includes('αñùαÑâαñ╣αñ¬αñ╛αñá')) return vmResponses.homework;
+            if (ql.includes('attendance') || ql.includes('αñëαñ¬αñ╕αÑìαñÑαñ┐αññαÑÇ')) return vmResponses.attendance;
+            if (ql.includes('exam') || ql.includes('αñ¬αñ░αÑÇαñòαÑìαñ╖αñ╛') || ql.includes('test')) return vmResponses.exam;
+            if (ql.includes('meeting') || ql.includes('αñ¼αÑêαñáαñò')) return vmResponses.meeting;
+            return vmResponses.default;
+        }
+
+        document.getElementById('pp-va-send').addEventListener('click', async () => {
+            const input = document.getElementById('pp-va-input');
+            const q = input.value.trim();
+            if (!q) return;
+            input.value = '';
+            const replyDiv = document.getElementById('pp-va-reply');
+            replyDiv.style.display = 'block';
+            replyDiv.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Vishwa-Mitra is thinking...';
+            setTimeout(() => { replyDiv.innerHTML = `<i class="fa-solid fa-robot"></i> ${getVMReply(q)}`; }, 800);
+        });
+        document.getElementById('pp-va-input').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('pp-va-send').click(); });
+
+        // ============================================================
+        // REAL-TIME SSE ALERTS
+        // ============================================================
+        function showPPToast(msg) {
+            const toast = document.createElement('div');
+            toast.style.position = 'fixed';
+            toast.style.bottom = '20px';
+            toast.style.right = '20px';
+            toast.style.background = '#1A237E';
+            toast.style.color = '#fff';
+            toast.style.padding = '1rem 1.5rem';
+            toast.style.borderRadius = '8px';
+            toast.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            toast.style.zIndex = '9999';
+            toast.style.transform = 'translateY(100px)';
+            toast.style.transition = 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+            toast.innerHTML = msg;
+            document.body.appendChild(toast);
+
+            setTimeout(() => toast.style.transform = 'translateY(0)', 100);
+            setTimeout(() => {
+                toast.style.transform = 'translateY(100px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 6000);
+        }
+
+        const ppEventSource = new EventSource('http://localhost:8000/stream');
+        ppEventSource.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+            if (data.type === 'notice') {
+                showPPToast(`<strong>≡ƒöö ${data.title}</strong><br><span style="font-size:0.85rem;opacity:0.9">${data.message}</span>`);
+            }
+        };
+    </script>
+</body>
+
+</html>

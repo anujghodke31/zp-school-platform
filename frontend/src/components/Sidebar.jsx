@@ -1,77 +1,111 @@
 import React, { useContext } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { LogOut, Home, Users, Search, GraduationCap, Calendar, Bell, LineChart, MessageSquare } from 'lucide-react';
 
 const Sidebar = ({ role }) => {
     const { user, logout } = useContext(AuthContext);
     const navigate = useNavigate();
+    const location = useLocation();
 
     const handleLogout = () => {
         logout();
         navigate('/login');
     };
 
-    const getNavItems = () => {
-        if (role === 'Admin' || role === 'SuperAdmin') {
-            return [
-                { path: '/admin', icon: <Home size={18} />, label: 'Overview' },
-                { path: '/admin/students', icon: <GraduationCap size={18} />, label: 'Students' },
-                { path: '/admin/teachers', icon: <Users size={18} />, label: 'Teachers' },
-                { path: '/admin/events', icon: <Calendar size={18} />, label: 'Events' },
-                { path: '/admin/notices', icon: <Bell size={18} />, label: 'Notices' },
-                { path: '/admin/analytics', icon: <LineChart size={18} />, label: 'Analytics' }
-            ];
-        } else if (role === 'Teacher') {
-            return [
-                { path: '/teacher', icon: <Home size={18} />, label: 'My Classes' },
-                { path: '/teacher/elearning', icon: <Search size={18} />, label: 'E-Learning' },
-                { path: '/teacher/assignments', icon: <MessageSquare size={18} />, label: 'Assignments' },
-                { path: '/teacher/messaging', icon: <Bell size={18} />, label: 'Messaging' }
-            ];
-        } else if (role === 'Parent') {
-            return [
-                { path: '/parent', icon: <Home size={18} />, label: 'Child Progress' },
-                { path: '/parent/assignments', icon: <MessageSquare size={18} />, label: 'Homework' }
-            ];
-        }
-        return [];
-    };
+    const isAdmin = role === 'Admin' || role === 'SuperAdmin';
+    const isTeacher = role === 'Teacher';
+    const isParent = role === 'Parent';
+
+    let portalName = 'ZP Portal';
+    if (isAdmin) portalName = 'ZP Admin Panel';
+    if (isTeacher) portalName = 'ZP Teacher Portal';
+    if (isParent) portalName = 'ZP Parent Portal';
 
     return (
-        <nav className="sidebar">
-            <div className="brand">
-                <div className="logo-icon">🎓</div>
-                <div className="brand-text">
-                    <h2>MahaVidya ZP</h2>
-                    <span className="badge">{role} Portal</span>
+        <aside className="sidebar">
+            <div className="sb-brand">
+                <img src="/mh-gov-emblem.png"
+                    alt="Emblem" />
+                <div>
+                    <h2>MahaVidya</h2>
+                    <small>{portalName}</small>
                 </div>
             </div>
 
-            <div className="nav-links">
-                {getNavItems().map(item => (
-                    <NavLink
-                        to={item.path}
-                        end={item.path === '/admin' || item.path === '/teacher' || item.path === '/parent'}
-                        className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
-                        key={item.label}
-                    >
-                        {item.icon} {item.label}
-                    </NavLink>
-                ))}
-            </div>
+            <nav className="sb-nav">
+                {isAdmin && (
+                    <>
+                        <div className="sb-section">Overview</div>
+                        <div className="sb-section">Overview</div>
+                        <NavLink to="/admin" end className={() => `sb-item ${location.pathname === '/admin' && !location.search ? 'active' : ''}`}>
+                            <i className="fa-solid fa-gauge-high"></i> Dashboard
+                        </NavLink>
+                        <NavLink to="/admin?tab=students" className={() => `sb-item ${location.search === '?tab=students' ? 'active' : ''}`}>
+                            <i className="fa-solid fa-users"></i> Students
+                        </NavLink>
+                        <NavLink to="/admin?tab=teachers" className={() => `sb-item ${location.search === '?tab=teachers' ? 'active' : ''}`}>
+                            <i className="fa-solid fa-chalkboard-user"></i> Teachers
+                        </NavLink>
 
-            <div className="user-profile">
-                <div className="avatar">{user?.name?.charAt(0) || 'U'}</div>
-                <div className="user-info">
-                    <h4>{user?.name || 'User'}</h4>
-                    <span>{user?.role || role}</span>
+                        <div className="sb-section">Academic</div>
+                        <NavLink to="/admin?tab=events" className={() => `sb-item ${location.search === '?tab=events' ? 'active' : ''}`}>
+                            <i className="fa-solid fa-calendar-star"></i> Events & Holidays
+                        </NavLink>
+                        <NavLink to="/admin?tab=results" className={() => `sb-item ${location.search === '?tab=results' ? 'active' : ''}`}>
+                            <i className="fa-solid fa-file-certificate"></i> Results & Reports
+                        </NavLink>
+
+                        <div className="sb-section">Communication</div>
+                        <NavLink to="/admin?tab=announcements" className={() => `sb-item ${location.search === '?tab=announcements' ? 'active' : ''}`}>
+                            <i className="fa-solid fa-bullhorn"></i> Announcements
+                        </NavLink>
+
+                        <div className="sb-section">System</div>
+                        <NavLink to="/admin?tab=analytics" className={() => `sb-item ${location.search === '?tab=analytics' ? 'active' : ''}`}>
+                            <i className="fa-solid fa-chart-line"></i> Analytics
+                        </NavLink>
+                    </>
+                )}
+                {isTeacher && (
+                    <>
+                        <div className="sb-section">Overview</div>
+                        <NavLink to="/teacher" end className={({ isActive }) => `sb-item ${isActive ? 'active' : ''}`}>
+                            <i className="fa-solid fa-clipboard-user"></i> Attendance
+                        </NavLink>
+                        <NavLink to="/teacher?tab=elearning" className={({ isActive }) => `sb-item ${isActive ? 'active' : ''}`}>
+                            <i className="fa-solid fa-laptop-file"></i> E-Learning
+                        </NavLink>
+                        <NavLink to="/teacher?tab=messages" className={({ isActive }) => `sb-item ${isActive ? 'active' : ''}`}>
+                            <i className="fa-solid fa-message"></i> Messaging
+                        </NavLink>
+                    </>
+                )}
+                {isParent && (
+                    <>
+                        <div className="sb-section">Portal</div>
+                        <NavLink to="/parent" end className={({ isActive }) => `sb-item ${isActive ? 'active' : ''}`}>
+                            <i className="fa-solid fa-home"></i> Dashboard
+                        </NavLink>
+                        <NavLink to="/elearning" className={({ isActive }) => `sb-item ${isActive ? 'active' : ''}`}>
+                            <i className="fa-solid fa-laptop-file"></i> E-Learning
+                        </NavLink>
+                    </>
+                )}
+            </nav>
+
+            <div className="sb-footer">
+                <div className="sb-user">
+                    <div className="sb-avatar">
+                        {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                    </div>
+                    <div>
+                        <div style={{ fontSize: '.85rem', fontWeight: 600 }}>{user?.name || 'User'}</div>
+                        <div style={{ fontSize: '.7rem', opacity: .6 }}>{user?.role || role}</div>
+                    </div>
                 </div>
-                <button onClick={handleLogout} className="action-btn icon-btn" title="Logout" style={{ background: 'none' }}>
-                    <LogOut size={16} />
-                </button>
+                <button onClick={handleLogout} style={{ marginTop: '.75rem', width: '100%', background: 'rgba(255,255,255,.1)', border: 'none', color: '#fff', padding: '.4rem', borderRadius: '6px', cursor: 'pointer', fontSize: '.75rem' }}>Logout</button>
             </div>
-        </nav>
+        </aside>
     );
 };
 

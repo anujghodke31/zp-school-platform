@@ -3,11 +3,15 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import { useContext } from 'react';
 import ToastNotification from './components/ToastNotification';
+import CommandBar from './components/CommandBar';
+import AIBot from './components/AIBot';
 
 import Login from './pages/Login';
 import AdminDashboard from './pages/AdminDashboard';
 import TeacherDashboard from './pages/TeacherDashboard';
 import ParentPortal from './pages/ParentPortal';
+import ELearning from './pages/ELearning';
+import LandingPage from './pages/LandingPage';
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -24,8 +28,10 @@ const App = () => {
       <Router>
         <div className="app-container">
           <ToastNotification />
+          <CommandBar />
+          <AIBot />
           <Routes>
-            <Route path="/" element={<Navigate to="/login" replace />} />
+            <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<Login />} />
 
             <Route path="/admin/*" element={
@@ -43,6 +49,12 @@ const App = () => {
             <Route path="/parent/*" element={
               <ProtectedRoute allowedRoles={['Parent']}>
                 <ParentPortal />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/elearning/*" element={
+              <ProtectedRoute allowedRoles={['Admin', 'Teacher', 'Parent']}>
+                <ELearning />
               </ProtectedRoute>
             } />
 

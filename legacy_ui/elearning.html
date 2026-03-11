@@ -1,0 +1,801 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="MahaVidya E-Learning Portal ΓÇö NEP 2020 aligned digital learning resources for ZP school students in Maharashtra.">
+    <title>MahaVidya ΓÇö E-Learning Portal | ZP School Network</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --navy: #1A237E;
+            --navy-light: #E8EAF6;
+            --saffron: #FF9933;
+            --saffron-light: #FFF3E0;
+            --success: #2E7D32;
+            --danger: #C62828;
+            --warning: #F57C00;
+            --text: #1C1C2E;
+            --muted: #64748B;
+            --border: #E2E8F0;
+            --bg: #F0F2F8;
+            --white: #fff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Sans Devanagari', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, #1A237E, #1565C0 60%, #283593);
+            color: #fff;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, .15);
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: .875rem;
+        }
+
+        .header-logo img {
+            height: 38px;
+            filter: brightness(0) invert(1);
+        }
+
+        .header-brand h2 {
+            font-size: 1.15rem;
+            font-weight: 800;
+        }
+
+        .header-brand p {
+            font-size: .73rem;
+            opacity: .75;
+            margin-top: .1rem;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: .875rem;
+        }
+
+        .lang-btns {
+            display: flex;
+            gap: 4px;
+        }
+
+        .lang-btn {
+            background: rgba(255, 255, 255, .12);
+            border: 1px solid rgba(255, 255, 255, .3);
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: .78rem;
+            font-weight: 600;
+            transition: all .2s;
+        }
+
+        .lang-btn.active {
+            background: var(--saffron);
+            border-color: var(--saffron);
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+            background: rgba(255, 255, 255, .15);
+            border: 1px solid rgba(255, 255, 255, .3);
+            color: #fff;
+            padding: .45rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: .82rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all .2s;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, .25);
+        }
+
+        /* HERO BANNER */
+        .hero {
+            background: linear-gradient(135deg, #0D47A1, #1565C0 50%, #1976D2);
+            color: #fff;
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 20% 50%, rgba(255, 255, 255, .06) 0%, transparent 60%);
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            background: rgba(255, 255, 255, .15);
+            border: 1px solid rgba(255, 255, 255, .3);
+            color: #fff;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: .78rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 {
+            font-size: 2.4rem;
+            font-weight: 800;
+            margin-bottom: .5rem;
+        }
+
+        .hero p {
+            font-size: 1.05rem;
+            opacity: .85;
+            max-width: 560px;
+            margin: 0 auto 1.5rem;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .hs {
+            background: rgba(255, 255, 255, .12);
+            border-radius: 12px;
+            padding: .6rem 1.2rem;
+            backdrop-filter: blur(4px);
+        }
+
+        .hs strong {
+            display: block;
+            font-size: 1.3rem;
+            font-weight: 800;
+        }
+
+        .hs span {
+            font-size: .72rem;
+            opacity: .8;
+        }
+
+        /* MAIN */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        /* SUBJECT FILTER */
+        .filter-bar {
+            background: #fff;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .04);
+        }
+
+        .filter-bar span {
+            font-size: .85rem;
+            font-weight: 700;
+            color: var(--muted);
+        }
+
+        .filter-btn {
+            padding: .45rem 1.1rem;
+            border-radius: 20px;
+            border: 1.5px solid var(--border);
+            background: #fff;
+            font-size: .82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .2s;
+            color: var(--text);
+        }
+
+        .filter-btn:hover {
+            border-color: var(--navy);
+            color: var(--navy);
+        }
+
+        .filter-btn.active {
+            background: var(--navy);
+            border-color: var(--navy);
+            color: #fff;
+        }
+
+        .type-btn {
+            padding: .4rem .9rem;
+            border-radius: 20px;
+            border: 1.5px solid var(--border);
+            background: #fff;
+            font-size: .78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .2s;
+            color: var(--muted);
+        }
+
+        .type-btn.active {
+            background: var(--saffron);
+            border-color: var(--saffron);
+            color: #fff;
+        }
+
+        /* MATERIALS GRID */
+        .materials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .mat-card {
+            background: #fff;
+            border-radius: 18px;
+            border: 1.5px solid var(--border);
+            overflow: hidden;
+            transition: all .3s;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .04);
+        }
+
+        .mat-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, .12);
+        }
+
+        .mat-header {
+            padding: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: .9rem;
+        }
+
+        .mat-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+
+        .mat-meta {
+            flex: 1;
+        }
+
+        .mat-subject {
+            font-size: .68rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .07em;
+        }
+
+        .mat-title {
+            font-size: .95rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-top: .15rem;
+            line-height: 1.3;
+        }
+
+        .mat-body {
+            padding: 0 1.25rem 1.25rem;
+        }
+
+        .mat-desc {
+            font-size: .82rem;
+            color: var(--muted);
+            margin-bottom: .875rem;
+            line-height: 1.5;
+        }
+
+        .mat-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: .75rem;
+        }
+
+        .type-badge {
+            font-size: .72rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+
+        .mat-duration {
+            font-size: .75rem;
+            color: var(--muted);
+        }
+
+        .mat-source {
+            font-size: .72rem;
+            color: var(--muted);
+            margin-bottom: .875rem;
+        }
+
+        .mat-btn {
+            width: 100%;
+            border: none;
+            border-radius: 10px;
+            padding: .6rem;
+            font-size: .85rem;
+            font-weight: 700;
+            cursor: pointer;
+            color: #fff;
+            transition: all .2s;
+        }
+
+        .mat-btn:hover {
+            filter: brightness(.9);
+        }
+
+        /* QUIZ MODAL */
+        .quiz-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, .65);
+            z-index: 300;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quiz-overlay.open {
+            display: flex;
+        }
+
+        .quiz-box {
+            background: #fff;
+            border-radius: 24px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 540px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, .2);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: .875rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .quiz-q {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 1rem;
+        }
+
+        .quiz-opt {
+            padding: .75rem 1rem;
+            border-radius: 10px;
+            border: 1.5px solid var(--border);
+            margin-bottom: .5rem;
+            cursor: pointer;
+            font-size: .9rem;
+            transition: all .2s;
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+        }
+
+        .quiz-opt:hover {
+            border-color: var(--navy);
+            background: var(--navy-light);
+        }
+
+        .quiz-opt.correct {
+            background: #E8F5E9;
+            border-color: #2E7D32;
+            color: #2E7D32;
+        }
+
+        .quiz-opt.wrong {
+            background: #FFEBEE;
+            border-color: #C62828;
+            color: #C62828;
+        }
+
+        .quiz-progress {
+            background: var(--bg);
+            border-radius: 4px;
+            height: 6px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .quiz-progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(90deg, var(--navy), var(--saffron));
+            transition: width .4s;
+        }
+
+        .quiz-result {
+            text-align: center;
+            padding: 1.5rem 0;
+        }
+
+        .quiz-result .score {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--navy);
+        }
+
+        .quiz-close {
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+            cursor: pointer;
+            color: var(--muted);
+            transition: color .2s;
+        }
+
+        .quiz-close:hover {
+            color: var(--danger);
+        }
+
+        /* LANG */
+        .lang-mr {
+            display: none;
+        }
+
+        body.marathi .lang-en {
+            display: none;
+        }
+
+        body.marathi .lang-mr {
+            display: block !important;
+        }
+
+        /* EMPTY */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: #fff;
+            border-radius: 18px;
+            border: 1px solid var(--border);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--muted);
+            margin-bottom: .875rem;
+        }
+
+        @media(max-width:600px) {
+            .hero h1 {
+                font-size: 1.6rem;
+            }
+
+            .materials-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- HEADER -->
+    <div class="header">
+        <div class="header-logo">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Emblem_of_Maharashtra.svg/100px-Emblem_of_Maharashtra.svg.png"
+                alt="Emblem">
+            <div class="header-brand">
+                <h2><span class="lang-en">MahaVidya E-Learning</span><span class="lang-mr">αñ«αñ╣αñ╛αñ╡αñ┐αñªαÑìαñ»αñ╛ αñê-αñ╢αñ┐αñòαÑìαñ╖αñú</span>
+                </h2>
+                <p><span class="lang-en">ZP School Network ΓÇö Maharashtra</span><span class="lang-mr">αñ£αñ┐αñ▓αÑìαñ╣αñ╛ αñ¬αñ░αñ┐αñ╖αñª αñ╢αñ╛αñ│αñ╛
+                        αñ¿αÑçαñƒαñ╡αñ░αÑìαñò ΓÇö αñ«αñ╣αñ╛αñ░αñ╛αñ╖αÑìαñƒαÑìαñ░</span></p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <div class="lang-btns">
+                <button class="lang-btn active" onclick="setLang('en')">EN</button>
+                <button class="lang-btn" onclick="setLang('mr')">αñ«αñ░αñ╛αñáαÑÇ</button>
+            </div>
+            <a href="dashboard.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> <span
+                    class="lang-en">Dashboard</span><span class="lang-mr">αñíαÑàαñ╢αñ¼αÑïαñ░αÑìαñí</span></a>
+        </div>
+    </div>
+
+    <!-- HERO -->
+    <div class="hero">
+        <div class="hero-badge"><i class="fa-solid fa-graduation-cap"></i> <span class="lang-en">NEP 2020
+                Aligned</span><span class="lang-mr">NEP 2020 αñàαñ¿αÑüαñ░αÑéαñ¬</span></div>
+        <h1 class="lang-en">Digital Learning Portal</h1>
+        <h1 class="lang-mr">αñíαñ┐αñ£αñ┐αñƒαñ▓ αñ╢αñ┐αñòαÑìαñ╖αñú αñ¬αÑïαñ░αÑìαñƒαñ▓</h1>
+        <p class="lang-en">Access SCERT textbooks, Diksha video lessons & interactive quizzes ΓÇö all in one place.</p>
+        <p class="lang-mr">SCERT αñ¬αñ╛αñáαÑìαñ»αñ¬αÑüαñ╕αÑìαññαñòαÑç, Diksha αñ╡αÑìαñ╣αñ┐αñíαñ┐αñô αñºαñíαÑç αñåαñúαñ┐ αñçαñéαñƒαñ░αÑàαñòαÑìαñƒαñ┐αñ╡αÑìαñ╣ αñ¬αÑìαñ░αñ╢αÑìαñ¿αñ«αñéαñ£αÑüαñ╖αñ╛ αñÅαñòαñ╛αñÜ αñáαñ┐αñòαñ╛αñúαÑÇ.</p>
+        <div class="hero-stats">
+            <div class="hs"><strong>12+</strong><span class="lang-en">Resources</span><span
+                    class="lang-mr">αñ╕αñ╛αñ╣αñ┐αññαÑìαñ»</span></div>
+            <div class="hs"><strong>5</strong><span class="lang-en">Subjects</span><span class="lang-mr">αñ╡αñ┐αñ╖αñ»</span>
+            </div>
+            <div class="hs"><strong>Free</strong><span class="lang-en">Access</span><span class="lang-mr">αñ¬αÑìαñ░αñ╡αÑçαñ╢</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="container">
+        <!-- FILTER BAR -->
+        <div class="filter-bar">
+            <span class="lang-en">Subject:</span><span class="lang-mr">αñ╡αñ┐αñ╖αñ»:</span>
+            <div style="display:flex;gap:.5rem;flex-wrap:wrap;" id="subject-filters">
+                <button class="filter-btn active" data-sub="all"><span class="lang-en">All</span><span
+                        class="lang-mr">αñ╕αñ░αÑìαñ╡</span></button>
+                <button class="filter-btn" data-sub="Mathematics">≡ƒôÉ <span class="lang-en">Mathematics</span><span
+                        class="lang-mr">αñùαñúαñ┐αññ</span></button>
+                <button class="filter-btn" data-sub="Science">≡ƒö¼ <span class="lang-en">Science</span><span
+                        class="lang-mr">αñ╡αñ┐αñ£αÑìαñ₧αñ╛αñ¿</span></button>
+                <button class="filter-btn" data-sub="English">≡ƒôû English</button>
+                <button class="filter-btn" data-sub="Marathi">≡ƒôÜ αñ«αñ░αñ╛αñáαÑÇ</button>
+                <button class="filter-btn" data-sub="History">≡ƒîì <span class="lang-en">History</span><span
+                        class="lang-mr">αñçαññαñ┐αñ╣αñ╛αñ╕</span></button>
+            </div>
+            <div style="display:flex;gap:.4rem;margin-left:auto;flex-wrap:wrap;" id="type-filters">
+                <button class="type-btn active" data-type="all">All Types</button>
+                <button class="type-btn" data-type="video">≡ƒÄ¼ Video</button>
+                <button class="type-btn" data-type="pdf">≡ƒôä PDF</button>
+                <button class="type-btn" data-type="quiz">≡ƒºá Quiz</button>
+            </div>
+        </div>
+
+        <!-- MATERIALS GRID -->
+        <div class="materials-grid" id="materials-grid">
+            <!-- Filled by JS -->
+        </div>
+    </div>
+
+    <!-- QUIZ MODAL -->
+    <div class="quiz-overlay" id="quiz-overlay">
+        <div class="quiz-box">
+            <div class="quiz-header">
+                <div>
+                    <h3 style="font-size:1.05rem;font-weight:800;color:var(--navy);" id="quiz-title">Quiz</h3>
+                    <p style="font-size:.8rem;color:var(--muted);" id="quiz-subtitle">Class 7A</p>
+                </div>
+                <button class="quiz-close" onclick="closeQuiz()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="quiz-content"><!-- Filled by JS --></div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // LANGUAGE
+        // ============================================================
+        function setLang(lang) {
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
+            if (lang === 'mr') document.body.classList.add('marathi');
+            else document.body.classList.remove('marathi');
+        }
+
+        // ============================================================
+        // LOAD MATERIALS
+        // ============================================================
+        let allMaterials = [];
+        let activeSubject = 'all';
+        let activeType = 'all';
+
+        async function loadMaterials() {
+            const grid = document.getElementById('materials-grid');
+            grid.innerHTML = '<div style="padding:3rem;text-align:center;color:var(--muted);grid-column:1/-1;"><i class="fa-solid fa-spinner fa-spin fa-2x"></i><div style="margin-top:1rem;font-size:.9rem;">Loading resources...</div></div>';
+            allMaterials = await fetch('http://localhost:8000/api/elearning/materials').then(r => r.json()).catch(() => FALLBACK_MATERIALS);
+            renderMaterials();
+        }
+
+        function renderMaterials() {
+            const grid = document.getElementById('materials-grid');
+            let filtered = allMaterials;
+            if (activeSubject !== 'all') filtered = filtered.filter(m => m.subject === activeSubject);
+            if (activeType !== 'all') filtered = filtered.filter(m => m.type === activeType);
+            if (!filtered.length) {
+                grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><i class="fa-solid fa-book-open"></i><h3 style="font-size:1rem;font-weight:700;margin-bottom:.4rem;">No resources found</h3><p style="font-size:.85rem;color:var(--muted);">Try a different subject or type filter.</p></div>`;
+                return;
+            }
+            const typeBadgeData = { video: ['≡ƒÄ¼ Video', '#1565C0', '#E3F2FD'], pdf: ['≡ƒôä PDF', '#C62828', '#FFEBEE'], quiz: ['≡ƒºá Quiz', '#2E7D32', '#E8F5E9'] };
+            grid.innerHTML = filtered.map(m => {
+                const [badgeLabel, badgeColor, badgeBg] = typeBadgeData[m.type] || ['≡ƒôü', '#1A237E', '#E8EAF6'];
+                return `<div class="mat-card" onclick="handleMaterial(${m.id},'${m.type}','${m.title.replace(/'/g, "\\'")}')">
+                <div class="mat-header" style="background:${m.bg};">
+                    <div class="mat-icon" style="background:${m.color}20;color:${m.color};"><i class="fa-solid ${m.icon}"></i></div>
+                    <div class="mat-meta">
+                        <div class="mat-subject" style="color:${m.color};">${m.subject}</div>
+                        <div class="mat-title">${m.title}</div>
+                    </div>
+                </div>
+                <div class="mat-body">
+                    <div class="mat-desc">${m.desc}</div>
+                    <div class="mat-footer">
+                        <span class="type-badge" style="background:${badgeBg};color:${badgeColor};">${badgeLabel}</span>
+                        ${m.duration ? `<span class="mat-duration"><i class="fa-regular fa-clock"></i> ${m.duration}</span>` : '<span></span>'}
+                    </div>
+                    <div class="mat-source"><i class="fa-solid fa-building-columns"></i> ${m.source}</div>
+                    <button class="mat-btn" style="background:${m.color};">
+                        ${m.type === 'video' ? 'Γû╢ Watch Video' : m.type === 'pdf' ? 'Γ¼ç Download PDF' : '≡ƒºá Take Quiz'}
+                    </button>
+                </div>
+            </div>`;
+            }).join('');
+        }
+
+        function handleMaterial(id, type, title) {
+            if (type === 'quiz') { openQuiz(id, title); return; }
+            if (type === 'video') { window.open('https://diksha.gov.in', '_blank'); }
+            else { window.open('https://www.scertmaha.ac.in', '_blank'); }
+        }
+
+        // Subject filter
+        document.querySelectorAll('#subject-filters .filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('#subject-filters .filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                activeSubject = btn.dataset.sub;
+                renderMaterials();
+            });
+        });
+
+        // Type filter
+        document.querySelectorAll('#type-filters .type-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('#type-filters .type-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                activeType = btn.dataset.type;
+                renderMaterials();
+            });
+        });
+
+        // ============================================================
+        // QUIZ ENGINE
+        // ============================================================
+        const QUIZZES = {
+            3: {
+                title: 'Algebra Basics Quiz', subtitle: 'Mathematics ΓÇö Chapter 4', questions: [
+                    { q: 'If x + 5 = 12, what is x?', opts: ['5', '7', '8', '6'], ans: 1 },
+                    { q: 'What is the value of 3y when y = 4?', opts: ['7', '12', '34', '43'], ans: 1 },
+                    { q: 'Simplify: 2a + 3a', opts: ['5a', '6a', '5', '23a'], ans: 0 },
+                    { q: 'If 4x = 20, then x = ?', opts: ['4', '5', '6', '80'], ans: 1 },
+                    { q: 'Which is an algebraic expression?', opts: ['12 + 5', '2x + 3', '15 = 15', 'All equal'], ans: 1 },
+                ]
+            },
+            6: {
+                title: 'Life Processes Quiz', subtitle: 'Science ΓÇö Chapter 6 & 7', questions: [
+                    { q: 'Which gas is released during photosynthesis?', opts: ['COΓéé', 'NΓéé', 'OΓéé', 'HΓéé'], ans: 2 },
+                    { q: 'What is the green pigment in leaves called?', opts: ['Melanin', 'Chlorophyll', 'Hemoglobin', 'Keratin'], ans: 1 },
+                    { q: 'Photosynthesis occurs in which part of the plant?', opts: ['Root', 'Stem', 'Leaf', 'Flower'], ans: 2 },
+                    { q: 'Which organ is responsible for digestion?', opts: ['Heart', 'Lungs', 'Stomach', 'Skin'], ans: 2 },
+                ]
+            }
+        };
+
+        let currentQuiz = null;
+        let qIdx = 0;
+        let score = 0;
+        let answered = false;
+
+        function openQuiz(id, title) {
+            const quiz = QUIZZES[id];
+            if (!quiz) { alert('Quiz not available yet! Coming soon.'); return; }
+            currentQuiz = quiz;
+            qIdx = 0; score = 0; answered = false;
+            document.getElementById('quiz-title').textContent = quiz.title;
+            document.getElementById('quiz-subtitle').textContent = quiz.subtitle;
+            document.getElementById('quiz-overlay').classList.add('open');
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = currentQuiz.questions[qIdx];
+            const total = currentQuiz.questions.length;
+            const pct = Math.round(qIdx / total * 100);
+            document.getElementById('quiz-content').innerHTML = `
+            <div class="quiz-progress"><div class="quiz-progress-fill" style="width:${pct}%"></div></div>
+            <div style="font-size:.78rem;color:var(--muted);margin-bottom:.5rem;">Question ${qIdx + 1} of ${total}</div>
+            <div class="quiz-q">${q.q}</div>
+            <div id="quiz-opts">${q.opts.map((o, i) => `<div class="quiz-opt" data-idx="${i}" onclick="selectOpt(${i})">${String.fromCharCode(65 + i)}. ${o}</div>`).join('')}</div>
+            <div style="text-align:right;margin-top:1rem;"><button id="next-btn" style="display:none;background:var(--navy);color:#fff;border:none;border-radius:8px;padding:.55rem 1.25rem;font-size:.875rem;font-weight:700;cursor:pointer;" onclick="nextQuestion()">Next ΓåÆ</button></div>`;
+        }
+
+        function selectOpt(i) {
+            if (answered) return;
+            answered = true;
+            const q = currentQuiz.questions[qIdx];
+            document.querySelectorAll('.quiz-opt').forEach((el, idx) => {
+                if (idx === q.ans) el.classList.add('correct');
+                else if (idx === i) el.classList.add('wrong');
+                el.style.pointerEvents = 'none';
+            });
+            if (i === q.ans) score++;
+            document.getElementById('next-btn').style.display = 'inline-flex';
+        }
+
+        function nextQuestion() {
+            qIdx++;
+            answered = false;
+            if (qIdx >= currentQuiz.questions.length) showResult();
+            else renderQuestion();
+        }
+
+        function showResult() {
+            const pct = Math.round(score / currentQuiz.questions.length * 100);
+            const msg = pct >= 80 ? '≡ƒÄë Excellent! Outstanding performance!' : pct >= 60 ? '≡ƒæì Good job! Keep practicing.' : '≡ƒôÜ Keep studying ΓÇö you\'ll do better!';
+            document.getElementById('quiz-content').innerHTML = `
+            <div class="quiz-result">
+                <div class="score">${score}/${currentQuiz.questions.length}</div>
+                <div style="font-size:1rem;font-weight:700;color:var(--muted);margin:.5rem 0;">${pct}% Score</div>
+                <div style="font-size:1.05rem;font-weight:600;color:var(--navy);margin-bottom:1.5rem;">${msg}</div>
+                <div style="display:flex;gap:.75rem;justify-content:center;">
+                    <button onclick="openQuiz(${Object.entries(QUIZZES).find(([k, v]) => v === currentQuiz)?.[0]}, '${currentQuiz.title}')" style="background:var(--navy);color:#fff;border:none;border-radius:8px;padding:.6rem 1.25rem;font-size:.875rem;font-weight:700;cursor:pointer;">Γå║ Try Again</button>
+                    <button onclick="closeQuiz()" style="background:var(--bg);color:var(--text);border:1.5px solid var(--border);border-radius:8px;padding:.6rem 1.25rem;font-size:.875rem;font-weight:700;cursor:pointer;">Close</button>
+                </div>
+            </div>`;
+        }
+
+        function closeQuiz() { document.getElementById('quiz-overlay').classList.remove('open'); }
+        document.getElementById('quiz-overlay').addEventListener('click', e => { if (e.target === document.getElementById('quiz-overlay')) closeQuiz(); });
+
+        // ============================================================
+        // FALLBACK (offline)
+        // ============================================================
+        const FALLBACK_MATERIALS = [
+            { "id": 1, "subject": "Mathematics", "subject_mr": "αñùαñúαñ┐αññ", "type": "video", "title": "Fractions & Decimals", "title_mr": "αñàαñ¬αÑéαñ░αÑìαñúαñ╛αñéαñò αñåαñúαñ┐ αñªαñ╢αñ╛αñéαñ╢", "desc": "Chapter 3 ΓÇö Visual explanation with real-life examples", "duration": "18 min", "source": "Diksha Platform", "class": "7A", "color": "#1565C0", "bg": "#E3F2FD", "icon": "fa-calculator" },
+            { "id": 4, "subject": "Science", "subject_mr": "αñ╡αñ┐αñ£αÑìαñ₧αñ╛αñ¿", "type": "video", "title": "Photosynthesis Explained", "title_mr": "αñ¬αÑìαñ░αñòαñ╛αñ╢αñ╕αñéαñ╢αÑìαñ▓αÑçαñ╖αñú", "desc": "Chapter 6 ΓÇö Plant food making process with diagrams", "duration": "12 min", "source": "Diksha Platform", "class": "7A", "color": "#2E7D32", "bg": "#E8F5E9", "icon": "fa-flask" },
+        ];
+
+        loadMaterials();
+    </script>
+</body>
+
+</html>

@@ -23,6 +23,14 @@ const seedDatabase = async () => {
         console.log('Old records destroyed.');
 
         // Seed Users
+        const ceoUser = await User.create({
+            username: 'ceo',
+            passwordHash: 'ceo123',
+            name: 'ZP Chief Executive Officer',
+            role: 'SuperAdmin',
+            contactNumber: '9988776600'
+        });
+
         const adminUser = await User.create({
             username: 'admin',
             passwordHash: 'admin123',
@@ -39,7 +47,7 @@ const seedDatabase = async () => {
             contactNumber: '9988776644'
         });
 
-        console.log('Admin and Teacher generated.');
+        console.log('CEO, Admin, and Teacher generated.');
 
         // Seed Students
         const s1 = await Student.create({ roll_no: '1', name: 'Aarav Patil', className: '7A', parent_phone: '9876543210', attendance_pct: 92 });

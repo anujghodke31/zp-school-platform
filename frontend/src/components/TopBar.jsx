@@ -1,32 +1,45 @@
 import React, { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { Bell, Search, Command } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
-const TopBar = ({ title }) => {
-    const { user } = useContext(AuthContext);
+const TopBar = ({ title, subtitle, showSearch }) => {
+    const { logout } = useContext(AuthContext);
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
+    };
 
     return (
-        <header className="top-bar">
-            <div className="search-bar" onClick={() => {/* Trigger Cmd+K context potentially */ }} style={{ cursor: 'pointer' }}>
-                <Search size={16} />
-                <span>Search students, classes, or help...</span>
-                <div className="keyboard-shortcut">
-                    <Command size={12} style={{ marginRight: '2px' }} /> K
-                </div>
+        <div className="topbar">
+            <div className="topbar-title">
+                <h3>{title}</h3>
+                {subtitle && <p>{subtitle}</p>}
             </div>
 
-            <div className="top-bar-actions">
-                <button className="action-btn icon-btn" title="Translate (Coming Soon)">A/अ</button>
-                <button className="action-btn icon-btn">
-                    <Bell size={18} />
-                    <span className="notification-dot" style={{ display: 'none' }}></span>
-                </button>
-                <div className="date-display">
-                    <i className="fa-regular fa-calendar"></i>
-                    {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+            {showSearch && (
+                <div className="search-wrap" style={{ width: '300px' }}>
+                    <i className="fa-solid fa-magnifying-glass" style={{ color: 'var(--muted)' }}></i>
+                    <input type="text" placeholder="Search student by name or roll..." />
                 </div>
+            )}
+
+            <div className="topbar-right">
+                <button className="btn btn-outline btn-sm" title="Open Command Bar (Cmd+K)" onClick={() => {
+                    const evt = new KeyboardEvent('keydown', { key: 'k', metaKey: true });
+                    document.dispatchEvent(evt);
+                }}>
+                    <i className="fa-solid fa-magnifying-glass"></i> <kbd style={{ fontFamily: 'inherit', fontWeight: 'bold' }}>⌘K</kbd>
+                </button>
+                <span className="date-badge">
+                    {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                </span>
+                <button className="btn btn-outline btn-sm" onClick={() => navigate('/')}>
+                    <i className="fa-solid fa-arrow-left"></i> Home
+                </button>
             </div>
-        </header>
+        </div>
     );
 };
 
