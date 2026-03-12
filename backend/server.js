@@ -18,47 +18,77 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
 
 app.use(cors({
     origin: (origin, callback) => {
-        // Allow requests with no origin (e.g. mobile apps, curl, Postman in dev)
         if (!origin) return callback(null, true);
         if (allowedOrigins.includes(origin)) return callback(null, true);
         callback(new Error(`CORS policy: origin ${origin} not allowed`));
     },
-    credentials: true
+    credentials: true,
 }));
 app.use(express.json());
 app.use(morgan('dev'));
 
-// Serve SSE Stream Clients
+// ─── SSE — Redis Pub/Sub with in-memory fallback ─────────────────────────────
 let sseClients = [];
+
+let redisSubscriber = null;
+let redisPublisher = null;
+
+if (process.env.REDIS_URL) {
+    const Redis = require('ioredis');
+    redisPublisher = new Redis(process.env.REDIS_URL);
+    redisSubscriber = new Redis(process.env.REDIS_URL);
+
+    redisSubscriber.subscribe('zp:notices', (err) => {
+        if (err) console.error('Redis subscribe error:', err.message);
+        else console.log('SSE: Redis Pub/Sub active on channel zp:notices');
+    });
+
+    redisSubscriber.on('message', (channel, message) => {
+        sseClients.forEach(client => client.write(`data: ${message}\n\n`));
+    });
+
+    redisPublisher.on('error', (err) => console.error('Redis publisher error:', err.message));
+    redisSubscriber.on('error', (err) => console.error('Redis subscriber error:', err.message));
+} else {
+    console.log('SSE: REDIS_URL not set — using in-memory broadcast (single instance only)');
+}
+
+// SSE stream endpoint
 app.get('/api/stream', (req, res) => {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'close'); // Note: For true keep-alive we change this to 'keep-alive', adjusting for simplicity in Vite proxying
+    res.setHeader('Connection', 'keep-alive');
 
-    // Add Client
     sseClients.push(res);
 
-    // Keey-alive interval
-    const keepAlive = setInterval(() => {
-        res.write(': keepalive\n\n');
-    }, 20000);
+    const keepAlive = setInterval(() => res.write(': keepalive\n\n'), 20000);
 
     req.on('close', () => {
         clearInterval(keepAlive);
-        sseClients = sseClients.filter(client => client !== res);
+        sseClients = sseClients.filter(c => c !== res);
     });
 });
 
-// Broadcast Helper
+// Broadcast helper — uses Redis if configured, else in-memory
 app.broadcastNotice = (type, title, message) => {
     const data = JSON.stringify({ type, title, message });
-    sseClients.forEach(client => client.write(`data: ${data}\n\n`));
+    if (redisPublisher) {
+        redisPublisher.publish('zp:notices', data);
+    } else {
+        sseClients.forEach(client => client.write(`data: ${data}\n\n`));
+    }
 };
 
-// Routes
+// ─── Routes ──────────────────────────────────────────────────────────────────
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/notices', require('./routes/notices'));
 app.use('/api/data', require('./routes/data'));
+
+// ─── Global error handler ────────────────────────────────────────────────────
+app.use((err, req, res, _next) => {
+    console.error('Unhandled error:', err.message);
+    res.status(500).json({ success: false, message: err.message || 'Internal Server Error' });
+});
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

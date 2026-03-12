@@ -15,11 +15,13 @@ const Sidebar = ({ role }) => {
     const isAdmin = role === 'Admin' || role === 'SuperAdmin';
     const isTeacher = role === 'Teacher';
     const isParent = role === 'Parent';
+    const isStudent = role === 'Student';
 
     let portalName = 'ZP Portal';
     if (isAdmin) portalName = 'ZP Admin Panel';
     if (isTeacher) portalName = 'ZP Teacher Portal';
     if (isParent) portalName = 'ZP Parent Portal';
+    if (isStudent) portalName = 'ZP Student Portal';
 
     return (
         <aside className="sidebar">
@@ -93,10 +95,24 @@ const Sidebar = ({ role }) => {
                     <>
                         <div className="sb-section">Portal</div>
                         <NavLink to="/parent" end className={({ isActive }) => `sb-item ${isActive ? 'active' : ''}`}>
-                            <i className="fa-solid fa-home"></i> Dashboard
+                            <i className="fa-solid fa-home" /> Dashboard
                         </NavLink>
                         <NavLink to="/elearning" className={({ isActive }) => `sb-item ${isActive ? 'active' : ''}`}>
-                            <i className="fa-solid fa-laptop-file"></i> E-Learning
+                            <i className="fa-solid fa-laptop-file" /> E-Learning
+                        </NavLink>
+                    </>
+                )}
+                {isStudent && (
+                    <>
+                        <div className="sb-section">My Portal</div>
+                        <NavLink to="/student" end className={({ isActive }) => `sb-item ${isActive ? 'active' : ''}`}>
+                            <i className="fa-solid fa-gauge-high" /> Overview
+                        </NavLink>
+                        <NavLink to="/student?tab=assignments" className={() => `sb-item ${location.search === '?tab=assignments' ? 'active' : ''}`}>
+                            <i className="fa-solid fa-book-open" /> Assignments
+                        </NavLink>
+                        <NavLink to="/student?tab=attendance" className={() => `sb-item ${location.search === '?tab=attendance' ? 'active' : ''}`}>
+                            <i className="fa-solid fa-calendar-check" /> Attendance
                         </NavLink>
                     </>
                 )}

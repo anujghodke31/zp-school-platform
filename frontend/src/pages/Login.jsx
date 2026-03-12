@@ -28,6 +28,7 @@ const Login = () => {
             if (user.role === 'Admin' || user.role === 'SuperAdmin') navigate('/admin');
             else if (user.role === 'Teacher') navigate('/teacher');
             else if (user.role === 'Parent') navigate('/parent');
+            else if (user.role === 'Student') navigate('/student');
             else navigate('/');
         }
     }, [user, navigate]);

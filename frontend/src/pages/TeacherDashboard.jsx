@@ -1,91 +1,114 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import api from '../utils/api';
 import Sidebar from '../components/Sidebar';
 import TopBar from '../components/TopBar';
 
 const TeacherDashboard = () => {
-    const navigate = useNavigate();
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchParams] = useSearchParams();
     const activeTab = searchParams.get('tab') || 'attendance';
 
     const [students, setStudents] = useState([]);
+    const [attendance, setAttendance] = useState({});
+    const [syncing, setSyncing] = useState(false);
     const [noticeText, setNoticeText] = useState('');
 
+    const today = new Date().toISOString().slice(0, 10);
+
     useEffect(() => {
-        const fetchStudents = async () => {
-            try {
-                const res = await api.get('/data/students').catch(() => ({ data: [] }));
-                setStudents(res.data);
-            } catch (error) {
-                console.error("Failed to fetch students", error);
-            }
-        };
-        fetchStudents();
+        api.get('/data/students?limit=50')
+            .then(res => setStudents(res.data.data || []))
+            .catch(err => console.error('Failed to fetch students', err));
     }, []);
+
+    const markAttendance = (studentId, status) => {
+        setAttendance(prev => ({ ...prev, [studentId]: status }));
+    };
+
+    const syncToCloud = async () => {
+        setSyncing(true);
+        try {
+            await Promise.all(
+                Object.entries(attendance).map(([studentId, status]) =>
+                    api.post('/data/attendance', { studentId, date: today, status })
+                )
+            );
+            setAttendance({});
+        } catch (err) {
+            console.error('Attendance sync error:', err);
+        } finally {
+            setSyncing(false);
+        }
+    };
 
     const handleSendNotice = async () => {
         if (!noticeText) return;
         try {
             await api.post('/notices', { title: 'Teacher Notice', message: noticeText, audience: 'All' });
             setNoticeText('');
-            // The global ToastNotification will catch the SSE and show it.
-        } catch (error) {
-            console.error("Failed to send notice", error);
+        } catch (err) {
+            console.error('Failed to send notice', err);
         }
     };
 
     return (
-        <div className="app-container" style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg)' }}>
+        <div className="dash-layout">
             <Sidebar role="Teacher" />
-            <div className="main" style={{ marginLeft: '260px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <TopBar title="Teacher Dashboard" subtitle="Class 7A - Homeroom" />
+            <div className="dash-main">
+                <TopBar title="Teacher Dashboard" subtitle="Attendance & Communication" />
 
-                <div className="content" style={{ padding: '2rem', flex: 1 }}>
-
-                    {/* ======== ATTENDANCE PANEL ======== */}
+                <div className="dash-content">
                     {activeTab === 'attendance' && (
                         <div className="panel slide-in active">
-                            <div className="card" style={{ background: '#fff', borderRadius: '16px', border: '1px solid var(--border)', padding: '1.5rem', boxShadow: '0 2px 8px rgba(0,0,0,.04)' }}>
-                                <div className="card-title" style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--navy)', marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    Daily Attendance Register
-                                    <div style={{ display: 'flex', gap: '.75rem', alignItems: 'center' }}>
-                                        <button className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '.5rem', background: 'var(--navy)', color: '#fff', padding: '.55rem 1.1rem', borderRadius: '8px', fontWeight: 600, fontSize: '.85rem', cursor: 'pointer', border: 'none' }}><i className="fa-solid fa-cloud-arrow-up"></i> Sync to Cloud</button>
-                                    </div>
+                            <div className="panel-card">
+                                <div className="panel-title-row">
+                                    <span>Daily Attendance Register — {today}</span>
+                                    <button className="btn btn-saffron" onClick={syncToCloud} disabled={syncing || Object.keys(attendance).length === 0}>
+                                        <i className="fa-solid fa-cloud-arrow-up" /> {syncing ? 'Syncing…' : `Sync ${Object.keys(attendance).length} Record(s)`}
+                                    </button>
                                 </div>
-
-                                <div style={{ overflowX: 'auto' }}>
-                                    <table className="data-table" style={{ width: '100%', borderCollapse: 'collapse', color: 'var(--text-main)' }}>
+                                <div className="data-table-wrap">
+                                    <table className="data-table">
                                         <thead>
                                             <tr>
-                                                <th style={{ background: 'var(--navy)', color: '#fff', padding: '.75rem 1rem', textAlign: 'left', fontSize: '.78rem', fontWeight: 700, textTransform: 'uppercase' }}>Roll</th>
-                                                <th style={{ background: 'var(--navy)', color: '#fff', padding: '.75rem 1rem', textAlign: 'left', fontSize: '.78rem', fontWeight: 700, textTransform: 'uppercase' }}>Student Info</th>
-                                                <th style={{ background: 'var(--navy)', color: '#fff', padding: '.75rem 1rem', textAlign: 'left', fontSize: '.78rem', fontWeight: 700, textTransform: 'uppercase' }}>Mark Status</th>
+                                                <th className="th-navy">Roll</th>
+                                                <th className="th-navy">Student Info</th>
+                                                <th className="th-navy">Mark Status</th>
+                                                <th className="th-navy">Saved</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {students.length > 0 ? students.map(st => (
-                                                <tr key={st._id} style={{ borderBottom: '1px solid var(--border)' }}>
-                                                    <td style={{ padding: '.875rem 1rem', fontSize: '.88rem' }}>
-                                                        <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'var(--navy-light)', color: 'var(--navy)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>{st.roll_no}</div>
-                                                    </td>
-                                                    <td style={{ padding: '.875rem 1rem', fontSize: '.88rem' }}>
-                                                        <div style={{ fontWeight: 600 }}>{st.name}</div>
-                                                        <div style={{ fontSize: '.75rem', color: 'var(--muted)' }}>Parent: {st.parent_contact}</div>
-                                                    </td>
-                                                    <td style={{ padding: '.875rem 1rem', fontSize: '.88rem' }}>
-                                                        <div style={{ display: 'flex', gap: '.4rem' }}>
-                                                            <button style={{ width: '38px', height: '32px', borderRadius: '6px', border: '1.5px solid var(--success)', background: '#E8F5E9', color: 'var(--success)', fontWeight: 700, cursor: 'pointer' }}>P</button>
-                                                            <button style={{ width: '38px', height: '32px', borderRadius: '6px', border: '1.5px solid var(--border)', background: '#fff', color: 'var(--muted)', fontWeight: 700, cursor: 'pointer' }}>A</button>
+                                                <tr key={st.id} className="table-row">
+                                                    <td className="td">
+                                                        <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'var(--navy-light)', color: 'var(--navy)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>
+                                                            {st.roll_no}
                                                         </div>
+                                                    </td>
+                                                    <td className="td">
+                                                        <div style={{ fontWeight: 600 }}>{st.name}</div>
+                                                        <div className="text-muted text-xs">{st.parent_phone}</div>
+                                                    </td>
+                                                    <td className="td">
+                                                        <div style={{ display: 'flex', gap: '.4rem' }}>
+                                                            <button
+                                                                style={{ width: '38px', height: '32px', borderRadius: '6px', border: '1.5px solid var(--success)', background: attendance[st.id] === 'P' ? 'var(--success)' : '#E8F5E9', color: attendance[st.id] === 'P' ? '#fff' : 'var(--success)', fontWeight: 700, cursor: 'pointer' }}
+                                                                onClick={() => markAttendance(st.id, 'P')}
+                                                            >P</button>
+                                                            <button
+                                                                style={{ width: '38px', height: '32px', borderRadius: '6px', border: '1.5px solid var(--danger)', background: attendance[st.id] === 'A' ? 'var(--danger)' : '#FFEBEE', color: attendance[st.id] === 'A' ? '#fff' : 'var(--danger)', fontWeight: 700, cursor: 'pointer' }}
+                                                                onClick={() => markAttendance(st.id, 'A')}
+                                                            >A</button>
+                                                        </div>
+                                                    </td>
+                                                    <td className="td">
+                                                        <span className={`badge-${(st.attendance_pct ?? 100) >= 75 ? 'success' : 'danger'}`}>
+                                                            {st.attendance_pct ?? 100}%
+                                                        </span>
                                                     </td>
                                                 </tr>
                                             )) : (
-                                                <tr>
-                                                    <td colSpan="3" style={{ textAlign: 'center', padding: '2rem', color: 'var(--muted)' }}>
-                                                        <i className="fa-solid fa-spinner fa-spin"></i> Loading Database Records...
-                                                    </td>
-                                                </tr>
+                                                <tr><td colSpan="4" className="empty-state"><i className="fa-solid fa-spinner fa-spin" /> Loading students...</td></tr>
                                             )}
                                         </tbody>
                                     </table>
@@ -94,32 +117,24 @@ const TeacherDashboard = () => {
                         </div>
                     )}
 
-                    {/* ======== MESSAGING PANEL ======== */}
                     {activeTab === 'messages' && (
                         <div className="panel slide-in active">
-                            <div className="card" style={{ background: '#fff', borderRadius: '16px', border: '1px solid var(--border)', padding: '1.5rem', maxWidth: '600px' }}>
-                                <h4 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--navy)', marginBottom: '1rem' }}>Parent Communications (SSE Broadcast)</h4>
-                                <div className="form-group" style={{ marginBottom: '1rem' }}>
-                                    <label style={{ fontSize: '.82rem', fontWeight: 600, color: 'var(--navy)', display: 'block', marginBottom: '.35rem' }}>Notice Title</label>
-                                    <input type="text" className="form-input" placeholder="e.g. Science Fair Tomorrow" value="Teacher Notice" disabled style={{ width: '100%', border: '1.5px solid var(--border)', borderRadius: '8px', padding: '.6rem .875rem', fontSize: '.9rem', background: '#f8fafc' }} />
+                            <div className="panel-card" style={{ maxWidth: '600px' }}>
+                                <h4 className="panel-section-title">Parent Communications (SSE Broadcast)</h4>
+                                <div className="form-group mb-sm">
+                                    <label className="form-label">Notice Title</label>
+                                    <input className="form-input" value="Teacher Notice" disabled />
                                 </div>
-                                <div className="form-group" style={{ marginBottom: '1rem' }}>
-                                    <label style={{ fontSize: '.82rem', fontWeight: 600, color: 'var(--navy)', display: 'block', marginBottom: '.35rem' }}>Message content (English/Marathi)</label>
-                                    <textarea
-                                        className="form-input"
-                                        rows="4"
-                                        placeholder="Type your notice here..."
-                                        value={noticeText}
-                                        onChange={(e) => setNoticeText(e.target.value)}
-                                        style={{ width: '100%', border: '1.5px solid var(--border)', borderRadius: '8px', padding: '.6rem .875rem', fontSize: '.9rem' }}></textarea>
+                                <div className="form-group mb-sm">
+                                    <label className="form-label">Message (English / मराठी)</label>
+                                    <textarea className="form-input" rows="4" placeholder="Type your notice here..." value={noticeText} onChange={e => setNoticeText(e.target.value)} />
                                 </div>
-                                <button className="btn btn-saffron" onClick={handleSendNotice} style={{ display: 'inline-flex', alignItems: 'center', gap: '.5rem', width: '100%', justifyContent: 'center', padding: '.8rem', fontSize: '1rem', background: 'var(--saffron)', color: '#fff', borderRadius: '10px', fontWeight: 700, border: 'none', cursor: 'pointer' }}>
-                                    Broadcast to Parents <i className="fa-solid fa-paper-plane"></i>
+                                <button className="btn btn-saffron w-100" onClick={handleSendNotice}>
+                                    Broadcast to Parents <i className="fa-solid fa-paper-plane" />
                                 </button>
                             </div>
                         </div>
                     )}
-
                 </div>
             </div>
         </div>

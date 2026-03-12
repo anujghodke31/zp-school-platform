@@ -13,6 +13,7 @@ import TeacherDashboard from './pages/TeacherDashboard';
 import ParentPortal from './pages/ParentPortal';
 import ELearning from './pages/ELearning';
 import LandingPage from './pages/LandingPage';
+import StudentDashboard from './pages/StudentDashboard';
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -51,6 +52,12 @@ const App = () => {
             <Route path="/parent/*" element={
               <ProtectedRoute allowedRoles={['Parent']}>
                 <ParentPortal />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/student/*" element={
+              <ProtectedRoute allowedRoles={['Student']}>
+                <StudentDashboard />
               </ProtectedRoute>
             } />
 

@@ -1,4 +1,4 @@
-﻿/* ======================================================
+/* ======================================================
    MahaVidya ΓÇö Gov-Tech SaaS Platform
    5-Pillar Design System: Navy + Saffron + White
    GIGW 3.0 / WCAG 2.1 Accessible
@@ -2334,3 +2334,289 @@ h5 {
       display: none;
    }
 }
+
+/* ===========================
+   DASHBOARD LAYOUT UTILITIES
+   =========================== */
+
+/* Top-level dashboard shell */
+.dash-layout {
+   display: flex;
+   min-height: 100vh;
+   background: var(--bg-gray);
+}
+
+.dash-main {
+   margin-left: 260px;
+   flex: 1;
+   display: flex;
+   flex-direction: column;
+   min-height: 100vh;
+}
+
+.dash-content {
+   padding: 2rem;
+   flex: 1;
+}
+
+/* Panel card — white card wrapper */
+.panel-card {
+   background: var(--white);
+   border-radius: 16px;
+   border: 1px solid var(--border);
+   padding: 1.5rem;
+   box-shadow: var(--shadow-sm);
+}
+
+/* Panel title row — flex between title and CTA */
+.panel-title-row {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   font-size: 1rem;
+   font-weight: 700;
+   color: var(--navy);
+   margin-bottom: 1.25rem;
+   padding-bottom: .875rem;
+   border-bottom: 1px solid var(--border);
+}
+
+.panel-section-title {
+   font-size: 1rem;
+   font-weight: 700;
+   color: var(--navy);
+   margin-bottom: 1rem;
+   padding-bottom: .75rem;
+   border-bottom: 1px solid var(--border);
+}
+
+/* Data table wrapper with horizontal scroll */
+.data-table-wrap {
+   overflow-x: auto;
+   border-radius: 10px;
+   border: 1px solid var(--border);
+}
+
+.data-table {
+   width: 100%;
+   border-collapse: collapse;
+   color: var(--text-main);
+   font-size: .875rem;
+}
+
+.th-navy {
+   background: var(--navy);
+   color: #fff;
+   padding: .75rem 1rem;
+   text-align: left;
+   font-size: .78rem;
+   font-weight: 700;
+   text-transform: uppercase;
+   letter-spacing: .04em;
+}
+
+.table-row {
+   border-bottom: 1px solid var(--border);
+   transition: background .15s;
+}
+
+.table-row:hover {
+   background: var(--navy-light);
+}
+
+.td {
+   padding: .875rem 1rem;
+}
+
+/* Stat grid */
+.stat-grid {
+   display: grid;
+   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+   gap: 1rem;
+   margin-bottom: 1.5rem;
+}
+
+.stat-card-item {
+   background: var(--white);
+   border: 1px solid var(--border);
+   border-radius: 14px;
+   padding: 1.25rem;
+   display: flex;
+   align-items: center;
+   gap: 1rem;
+   box-shadow: var(--shadow-sm);
+   transition: box-shadow .25s;
+}
+
+.stat-card-item:hover {
+   box-shadow: var(--shadow-md);
+}
+
+.stat-icon {
+   width: 48px;
+   height: 48px;
+   border-radius: 12px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   font-size: 1.2rem;
+   flex-shrink: 0;
+}
+
+.stat-val {
+   font-size: 1.6rem;
+   font-weight: 800;
+   color: var(--navy);
+   line-height: 1;
+}
+
+.stat-lbl {
+   font-size: .78rem;
+   color: var(--text-muted);
+   margin-top: .2rem;
+}
+
+/* Badges */
+.badge-success {
+   background: #E8F5E9;
+   color: var(--success);
+   border-radius: 100px;
+   padding: .2rem .65rem;
+   font-size: .78rem;
+   font-weight: 700;
+   display: inline-block;
+}
+
+.badge-danger {
+   background: #FFEBEE;
+   color: var(--danger);
+   border-radius: 100px;
+   padding: .2rem .65rem;
+   font-size: .78rem;
+   font-weight: 700;
+   display: inline-block;
+}
+
+.badge-warning {
+   background: #FFF3E0;
+   color: var(--saffron-hover);
+   border-radius: 100px;
+   padding: .2rem .65rem;
+   font-size: .78rem;
+   font-weight: 700;
+   display: inline-block;
+}
+
+.badge-info {
+   background: #E3F2FD;
+   color: #1565C0;
+   border-radius: 100px;
+   padding: .2rem .65rem;
+   font-size: .78rem;
+   font-weight: 700;
+   display: inline-block;
+}
+
+/* Form label */
+.form-label {
+   display: block;
+   font-size: .82rem;
+   font-weight: 600;
+   color: var(--navy);
+   margin-bottom: .35rem;
+}
+
+/* Empty-state row */
+.empty-state {
+   text-align: center;
+   padding: 2rem;
+   color: var(--text-muted);
+   font-size: .9rem;
+}
+
+/* Load-more row */
+.load-more-row {
+   padding: 1rem;
+   text-align: center;
+   border-top: 1px solid var(--border);
+}
+
+/* Inline form row for quick add forms */
+.form-inline-row {
+   display: flex;
+   gap: .75rem;
+   flex-wrap: wrap;
+   align-items: center;
+   background: var(--off-white);
+   padding: .875rem;
+   border-radius: 10px;
+   margin-bottom: 1.25rem;
+}
+
+/* Events list */
+.events-list {
+   display: flex;
+   flex-direction: column;
+   gap: .75rem;
+   margin-top: .75rem;
+}
+
+.event-item {
+   display: flex;
+   align-items: center;
+   gap: 1rem;
+   padding: .875rem;
+   border: 1px solid var(--border);
+   border-radius: 12px;
+   transition: background .15s;
+}
+
+.event-item:hover {
+   background: var(--off-white);
+}
+
+.event-date-badge {
+   background: var(--saffron-light);
+   color: var(--saffron-hover);
+   border-radius: 10px;
+   min-width: 48px;
+   padding: .5rem;
+   text-align: center;
+   flex-shrink: 0;
+}
+
+.event-day {
+   font-size: 1.1rem;
+   font-weight: 800;
+   line-height: 1;
+}
+
+.event-month {
+   font-size: .65rem;
+   text-transform: uppercase;
+   letter-spacing: .05em;
+   font-weight: 600;
+}
+
+.event-title {
+   font-weight: 600;
+   font-size: .9rem;
+   color: var(--navy);
+}
+
+/* Danger icon-button (delete row) */
+.btn-icon-danger {
+   background: #FFEBEE;
+   border: 1px solid #EF9A9A;
+   color: var(--danger);
+   border-radius: 8px;
+   padding: .35rem .65rem;
+   cursor: pointer;
+   font-size: .85rem;
+   transition: background .15s;
+}
+
+.btn-icon-danger:hover {
+   background: var(--danger);
+   color: #fff;
+}
