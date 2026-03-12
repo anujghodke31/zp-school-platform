@@ -4,7 +4,7 @@ import api from '../utils/api';
 import Sidebar from '../components/Sidebar';
 import TopBar from '../components/TopBar';
 
-// Admin sub-panel components
+// Existing panels
 import OverviewPanel from '../components/admin/OverviewPanel';
 import StudentsPanel from '../components/admin/StudentsPanel';
 import TeachersPanel from '../components/admin/TeachersPanel';
@@ -15,7 +15,17 @@ import AnnouncementsPanel from '../components/admin/AnnouncementsPanel';
 import TimetablePanel from '../components/admin/TimetablePanel';
 import ResultsPanel from '../components/admin/ResultsPanel';
 
-// Modal components
+// New blueprint panels
+import MdmPanel from '../components/admin/MdmPanel';
+import FeePanel from '../components/admin/FeePanel';
+import ScholarshipPanel from '../components/admin/ScholarshipPanel';
+import LeavePanel from '../components/admin/LeavePanel';
+import ExamPanel from '../components/admin/ExamPanel';
+import LibraryPanel from '../components/admin/LibraryPanel';
+import UDISEPanel from '../components/admin/UDISEPanel';
+import ReportCardPanel from '../components/admin/ReportCardPanel';
+
+// Modals
 import AddUserModal from '../components/AddUserModal';
 import AddClassModal from '../components/AddClassModal';
 import AddSubjectModal from '../components/AddSubjectModal';
@@ -25,7 +35,6 @@ const AdminDashboard = () => {
     const [searchParams] = useSearchParams();
     const activeTab = searchParams.get('tab') || 'overview';
 
-    // Data state
     const [stats, setStats] = useState({});
     const [students, setStudents] = useState([]);
     const [studentCursor, setStudentCursor] = useState(null);
@@ -35,7 +44,6 @@ const AdminDashboard = () => {
     const [subjects, setSubjects] = useState([]);
     const [events, setEvents] = useState([]);
 
-    // Modal state
     const [isUserModalOpen, setIsUserModalOpen] = useState(false);
     const [userModalType, setUserModalType] = useState('student');
     const [isClassModalOpen, setIsClassModalOpen] = useState(false);
@@ -96,9 +104,8 @@ const AdminDashboard = () => {
         <div className="dash-layout">
             <Sidebar role="Admin" />
             <div className="dash-main">
-                <TopBar title="Dashboard Overview" subtitle="School-wide summary and quick actions" />
+                <TopBar title="Admin Dashboard" subtitle="School-wide management & operations" />
 
-                {/* Modals */}
                 <AddUserModal isOpen={isUserModalOpen} onClose={() => setIsUserModalOpen(false)} type={userModalType} onUserAdded={fetchAll} />
                 <AddClassModal isOpen={isClassModalOpen} onClose={() => setIsClassModalOpen(false)} onAdded={fetchAll} />
                 <AddSubjectModal isOpen={isSubjectModalOpen} onClose={() => setIsSubjectModalOpen(false)} onAdded={fetchAll} />
@@ -142,23 +149,25 @@ const AdminDashboard = () => {
                         />
                     )}
 
-                    {activeTab === 'events' && (
-                        <EventsPanel events={events} onRefresh={fetchAll} />
-                    )}
+                    {activeTab === 'events' && <EventsPanel events={events} onRefresh={fetchAll} />}
 
                     {activeTab === 'timetable' && (
                         <TimetablePanel classes={classes} subjects={subjects} teachers={teachers} />
                     )}
 
-                    {activeTab === 'results' && (
-                        <ResultsPanel classes={classes} />
-                    )}
-
-                    {activeTab === 'analytics' && (
-                        <ResultsPanel classes={classes} />
-                    )}
-
+                    {activeTab === 'results' && <ResultsPanel classes={classes} />}
+                    {activeTab === 'analytics' && <ResultsPanel classes={classes} />}
                     {activeTab === 'announcements' && <AnnouncementsPanel />}
+
+                    {/* ── New Blueprint Panels ─────────────────────────────── */}
+                    {activeTab === 'mdm' && <MdmPanel />}
+                    {activeTab === 'fees' && <FeePanel classes={classes} />}
+                    {activeTab === 'scholarships' && <ScholarshipPanel classes={classes} />}
+                    {activeTab === 'leave' && <LeavePanel isAdmin={true} />}
+                    {activeTab === 'exams' && <ExamPanel classes={classes} subjects={subjects} />}
+                    {activeTab === 'library' && <LibraryPanel />}
+                    {activeTab === 'udise' && <UDISEPanel />}
+                    {activeTab === 'report-card' && <ReportCardPanel students={students} />}
                 </div>
             </div>
         </div>

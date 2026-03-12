@@ -451,4 +451,299 @@ router.get('/attendance', protect, async (req, res) => {
     }
 });
 
+
+// ─── MID-DAY MEAL (MDM) ────────────────────────────────────────────────────────
+// GET /api/data/mdm — daily logs (optional ?month=2026-03)
+router.get('/mdm', protect, async (req, res) => {
+    try {
+        const { month } = req.query;
+        let q = db.collection('mdm').orderBy('date', 'desc').limit(60);
+        const snap = await q.get();
+        let data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        if (month) data = data.filter(r => r.date && r.date.startsWith(month));
+        res.json({ success: true, data });
+    } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+});
+
+// POST /api/data/mdm — add/upsert daily MDM log
+router.post('/mdm', protect, roleProtect('Admin', 'Teacher'), async (req, res) => {
+    try {
+        const { date, menuId, menu, studentsFed, cookName, remarks } = req.body;
+        if (!date) return res.status(400).json({ success: false, message: 'date required' });
+        const docId = `mdm_${date}`;
+        await db.collection('mdm').doc(docId).set({ date, menuId, menu, studentsFed: Number(studentsFed) || 0, cookName, remarks, updatedAt: new Date() }, { merge: true });
+        res.json({ success: true, id: docId });
+    } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+});
+
+// GET /api/data/mdm/stock — MDM stock inventory
+router.get('/mdm/stock', protect, async (req, res) => {
+    try {
+        const snap = await db.collection('mdm_stock').orderBy('updatedAt', 'desc').get();
+        res.json({ success: true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
+    } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+});
+
+// POST /api/data/mdm/stock — add/update a stock item
+router.post('/mdm/stock', protect, roleProtect('Admin', 'Teacher'), async (req, res) => {
+    try {
+        const { item, quantity, unit, updatedBy } = req.body;
+        const ref = await db.collection('mdm_stock').add({ item, quantity: Number(quantity) || 0, unit, updatedBy, updatedAt: new Date() });
+        res.json({ success: true, id: ref.id });
+    } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+});
+
+// GET /api/data/mdm/report — monthly aggregate
+router.get('/mdm/report', protect, async (req, res) => {
+    try {
+        const { month } = req.query;
+        const snap = await db.collection('mdm').get();
+        let logs = snap.docs.map(d => d.data());
+        if (month) logs = logs.filter(l => l.date && l.date.startsWith(month));
+        const totalDays = logs.length;
+        const totalStudents = logs.reduce((s, l) => s + (l.studentsFed || 0), 0);
+        const avgPerDay = totalDays ? Math.round(totalStudents / totalDays) : 0;
+        res.json({ success: true, totalDays, totalStudentsMealDays: totalStudents, avgPerDay, logs });
+    } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+});
+
+// ─── FEE MANAGEMENT ────────────────────────────────────────────────────────────
+// GET /api/data/fees?classId=X
+router.get('/fees', protect, async (req, res) => {
+    try {
+        const { classId } = req.query;
+        let q = db.collection('fees');
+        if (classId) q = q.where('classId', '==', classId);
+        const snap = await q.get();
+        res.json({ success: true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
+    } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+});
+
+// POST /api/data/fees — record a fee payment
+router.post('/fees', protect, roleProtect('Admin'), async (req, res) => {
+    try {
+        const { studentId, studentName, classId, amount, category, status, paymentMode, receiptNo, paidOn } = req.body;
+        if (!studentId) return res.status(400).json({ success: false, message: 'studentId required' });
+        const ref = await db.collection('fees').add({ studentId, studentName, classId, amount: Number(amount) || 0, category: category || 'General', status: status || 'Unpaid', paymentMode, receiptNo, paidOn, createdAt: new Date() });
+        res.json({ success: true, id: ref.id });
+    } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+});
+
+// PATCH /api/data/fees/:id — update payment status
+router.patch('/fees/:id', protect, roleProtect('Admin'), async (req, res) => {
+    try {
+        await db.collection('fees').doc(req.params.id).update({ ...req.body, updatedAt: new Date() });
+        res.json({ success: true });
+    } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+});
+
+// ─── SCHOLARSHIP / SCHEME TRACKING ────────────────────────────────────────────
+// GET /api/data/scholarships?studentId=X
+router.get('/scholarships', protect, async (req, res) => {
+    try {
+        const { studentId, classId } = req.query;
+        let q = db.collection('scholarships');
+        if (studentId) q = q.where('studentId', '==', studentId);
+        if (classId) q = q.where('classId', '==', classId);
+        const snap = await q.get();
+        res.json({ success: true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
+    } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+});
+
+// POST /api/data/scholarships — add scheme for a student
+router.post('/scholarships', protect, roleProtect('Admin'), async (req, res) => {
+    try {
+        const { studentId, studentName, classId, schemeName, benefit, status, disbursementDate } = req.body;
+        const ref = await db.collection('scholarships').add({ studentId, studentName, classId, schemeName, benefit, status: status || 'Approved', disbursementDate, createdAt: new Date() });
+        res.json({ success: true, id: ref.id });
+    } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+});
+
+// PATCH /api/data/scholarships/:id
+router.patch('/scholarships/:id', protect, roleProtect('Admin'), async (req, res) => {
+    try {
+        await db.collection('scholarships').doc(req.params.id).update({ ...req.body, updatedAt: new Date() });
+        res.json({ success: true });
+    } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+});
+
+// ─── TEACHER LEAVE MANAGEMENT ─────────────────────────────────────────────────
+// GET /api/data/leave — list leave requests (admin sees all, teacher sees own)
+router.get('/leave', protect, async (req, res) => {
+    try {
+        let q = db.collection('leave_requests').orderBy('createdAt', 'desc');
+        if (req.user.role === 'Teacher') q = q.where('teacherId', '==', req.user.id);
+        const snap = await q.get();
+        res.json({ success: true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
+    } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+});
+
+// POST /api/data/leave — submit a leave request
+router.post('/leave', protect, roleProtect('Teacher', 'Admin'), async (req, res) => {
+    try {
+        const { fromDate, toDate, leaveType, reason } = req.body;
+        if (!fromDate || !toDate) return res.status(400).json({ success: false, message: 'fromDate and toDate required' });
+        const ref = await db.collection('leave_requests').add({
+            teacherId: req.user.id,
+            teacherName: req.user.name,
+            fromDate, toDate, leaveType: leaveType || 'Casual', reason,
+            status: 'Pending', createdAt: new Date(),
+        });
+        res.status(201).json({ success: true, id: ref.id });
+    } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+});
+
+// PATCH /api/data/leave/:id — approve/reject leave (Admin only)
+router.patch('/leave/:id', protect, roleProtect('Admin', 'SuperAdmin'), async (req, res) => {
+    try {
+        const { status, remarks } = req.body;
+        if (!['Approved', 'Rejected'].includes(status)) return res.status(400).json({ success: false, message: 'status must be Approved or Rejected' });
+        await db.collection('leave_requests').doc(req.params.id).update({ status, remarks, decidedBy: req.user.name, decidedAt: new Date() });
+        res.json({ success: true });
+    } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+});
+
+// ─── EXAM SCHEDULE ─────────────────────────────────────────────────────────────
+router.get('/exam-schedule', protect, async (req, res) => {
+    try {
+        const { classId } = req.query;
+        let q = db.collection('exam_schedule').orderBy('examDate');
+        if (classId) q = q.where('classId', '==', classId);
+        const snap = await q.get();
+        res.json({ success: true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
+    } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+});
+
+router.post('/exam-schedule', protect, roleProtect('Admin', 'Teacher'), async (req, res) => {
+    try {
+        const { classId, subjectId, subjectName, examName, examType, examDate, startTime, endTime, totalMarks, venue } = req.body;
+        if (!classId || !examDate) return res.status(400).json({ success: false, message: 'classId and examDate required' });
+        const ref = await db.collection('exam_schedule').add({ classId, subjectId, subjectName, examName, examType: examType || 'Unit Test', examDate, startTime, endTime, totalMarks: Number(totalMarks) || 100, venue, createdAt: new Date() });
+        res.status(201).json({ success: true, id: ref.id });
+    } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+});
+
+router.delete('/exam-schedule/:id', protect, roleProtect('Admin'), async (req, res) => {
+    try {
+        await db.collection('exam_schedule').doc(req.params.id).delete();
+        res.json({ success: true });
+    } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+});
+
+// ─── DIGITAL LIBRARY ──────────────────────────────────────────────────────────
+router.get('/library', protect, async (req, res) => {
+    try {
+        const snap = await db.collection('library').orderBy('title').get();
+        res.json({ success: true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
+    } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+});
+
+router.post('/library', protect, roleProtect('Admin', 'Teacher'), async (req, res) => {
+    try {
+        const { title, author, subject, totalCopies, availableCopies, isbn, category } = req.body;
+        if (!title) return res.status(400).json({ success: false, message: 'title required' });
+        const ref = await db.collection('library').add({ title, author, subject, totalCopies: Number(totalCopies) || 1, availableCopies: Number(availableCopies ?? totalCopies) || 1, isbn, category: category || 'General', issuedTo: [], createdAt: new Date() });
+        res.status(201).json({ success: true, id: ref.id });
+    } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+});
+
+// POST /api/data/library/:id/issue — issue book to a student
+router.post('/library/:id/issue', protect, roleProtect('Admin', 'Teacher'), async (req, res) => {
+    try {
+        const { studentId, studentName, dueDate } = req.body;
+        const ref = db.collection('library').doc(req.params.id);
+        const doc = await ref.get();
+        if (!doc.exists) return res.status(404).json({ success: false, message: 'Book not found' });
+        const book = doc.data();
+        if ((book.availableCopies || 0) < 1) return res.status(400).json({ success: false, message: 'No copies available' });
+        const issuedTo = [...(book.issuedTo || []), { studentId, studentName, issuedOn: new Date().toISOString().slice(0, 10), dueDate, status: 'Issued' }];
+        await ref.update({ availableCopies: book.availableCopies - 1, issuedTo });
+        res.json({ success: true });
+    } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+});
+
+// POST /api/data/library/:id/return — return a book
+router.post('/library/:id/return', protect, roleProtect('Admin', 'Teacher'), async (req, res) => {
+    try {
+        const { studentId } = req.body;
+        const ref = db.collection('library').doc(req.params.id);
+        const doc = await ref.get();
+        if (!doc.exists) return res.status(404).json({ success: false, message: 'Book not found' });
+        const book = doc.data();
+        const issuedTo = (book.issuedTo || []).map(r => r.studentId === studentId && r.status === 'Issued' ? { ...r, status: 'Returned', returnedOn: new Date().toISOString().slice(0, 10) } : r);
+        await ref.update({ availableCopies: book.availableCopies + 1, issuedTo });
+        res.json({ success: true });
+    } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+});
+
+// ─── UDISE CSV EXPORT ─────────────────────────────────────────────────────────
+// GET /api/data/udise-export — returns CSV text of all students in UDISE format
+router.get('/udise-export', protect, roleProtect('Admin', 'SuperAdmin'), async (req, res) => {
+    try {
+        const snap = await db.collection('students').orderBy('roll_no').get();
+        const students = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+        const headers = ['UDISE_Code', 'State', 'District', 'Block', 'School_Name', 'Roll_No', 'Student_Name', 'DOB', 'Gender', 'Category', 'Aadhaar_No', 'Mother_Name', 'Father_Name', 'Parent_Phone', 'Class', 'Section', 'Admission_No', 'Religion', 'Minority', 'Disability', 'BPL', 'Attendance_Pct'];
+        const rows = students.map(s => [
+            s.udise_code || '',
+            s.state || 'Maharashtra',
+            s.district || '',
+            s.block || '',
+            s.school_name || '',
+            s.roll_no || '',
+            s.name || '',
+            s.dob || '',
+            s.gender || '',
+            s.category || '',
+            s.aadhaar || '',
+            s.mother_name || '',
+            s.father_name || '',
+            s.parent_phone || '',
+            s.class || '',
+            s.section || '',
+            s.admission_no || '',
+            s.religion || '',
+            s.minority === true ? 'Yes' : 'No',
+            s.disability || 'None',
+            s.bpl === true ? 'Yes' : 'No',
+            s.attendance_pct ?? 100,
+        ]);
+
+        const csv = [headers, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', 'attachment; filename="UDISE_Students_Export.csv"');
+        res.send(csv);
+    } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+});
+
+// ─── REPORT CARD ──────────────────────────────────────────────────────────────
+// GET /api/data/report-card/:studentId — aggregated marks + attendance for a student
+router.get('/report-card/:studentId', protect, async (req, res) => {
+    try {
+        const { studentId } = req.params;
+        const [studentDoc, marksSnap, attendanceSnap] = await Promise.all([
+            db.collection('students').doc(studentId).get(),
+            db.collection('results').where('studentId', '==', studentId).get(),
+            db.collection('attendance').where('studentId', '==', studentId).get(),
+        ]);
+
+        if (!studentDoc.exists) return res.status(404).json({ success: false, message: 'Student not found' });
+        const student = { id: studentDoc.id, ...studentDoc.data() };
+        const marks = marksSnap.docs.map(d => d.data());
+        const attendance = attendanceSnap.docs.map(d => d.data());
+        const present = attendance.filter(a => a.status === 'P').length;
+        const attendancePct = attendance.length ? Math.round((present / attendance.length) * 100) : (student.attendance_pct ?? 100);
+
+        // Group marks by exam type
+        const byExam = marks.reduce((acc, m) => {
+            const key = m.examType || 'Unknown';
+            if (!acc[key]) acc[key] = [];
+            acc[key].push(m);
+            return acc;
+        }, {});
+
+        res.json({ success: true, student, byExam, attendancePct, totalPresent: present, totalDays: attendance.length });
+    } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+});
+
 module.exports = router;

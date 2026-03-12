@@ -3,6 +3,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../utils/api';
 import Sidebar from '../components/Sidebar';
 import TopBar from '../components/TopBar';
+import FeePanel from '../components/admin/FeePanel';
+import ScholarshipPanel from '../components/admin/ScholarshipPanel';
 
 const ParentPortal = () => {
     const navigate = useNavigate();
@@ -136,6 +138,8 @@ const ParentPortal = () => {
                             </div>
                         </div>
                     )}
+                    {activeTab === 'fees' && <FeePanel classes={[]} />}
+                    {activeTab === 'scholarships' && <ScholarshipPanel classes={[]} />}
                 </div>
             </div>
         </div>

@@ -4,6 +4,8 @@ import api from '../utils/api';
 import Sidebar from '../components/Sidebar';
 import TopBar from '../components/TopBar';
 import { AuthContext } from '../context/AuthContext';
+import LibraryPanel from '../components/admin/LibraryPanel';
+import ReportCardPanel from '../components/admin/ReportCardPanel';
 
 const StudentDashboard = () => {
     const { user } = useContext(AuthContext);
@@ -184,6 +186,9 @@ const StudentDashboard = () => {
                             </div>
                         </div>
                     )}
+
+                    {activeTab === 'library' && <LibraryPanel />}
+                    {activeTab === 'report-card' && user && <ReportCardPanel students={[{ id: user._id, name: user.name, class: user.class }]} />}
                 </div>
             </div>
         </div>

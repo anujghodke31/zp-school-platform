@@ -70,9 +70,26 @@ const Sidebar = ({ role }) => {
                             <i className="fa-solid fa-bullhorn"></i> Announcements
                         </NavLink>
 
+                        <div className="sb-section">Operations</div>
+                        <NavLink to="/admin?tab=mdm" className={() => `sb-item ${location.search === '?tab=mdm' ? 'active' : ''}`}>
+                            <i className="fa-solid fa-utensils"></i> Mid-Day Meal
+                        </NavLink>
+                        <NavLink to="/admin?tab=fees" className={() => `sb-item ${location.search === '?tab=fees' ? 'active' : ''}`}>
+                            <i className="fa-solid fa-money-bill-wave"></i> Fee Management
+                        </NavLink>
+                        <NavLink to="/admin?tab=scholarships" className={() => `sb-item ${location.search === '?tab=scholarships' ? 'active' : ''}`}>
+                            <i className="fa-solid fa-award"></i> Scholarships
+                        </NavLink>
+                        <NavLink to="/admin?tab=leave" className={() => `sb-item ${location.search === '?tab=leave' ? 'active' : ''}`}>
+                            <i className="fa-solid fa-calendar-xmark"></i> Leave Requests
+                        </NavLink>
+
                         <div className="sb-section">System</div>
                         <NavLink to="/admin?tab=analytics" className={() => `sb-item ${location.search === '?tab=analytics' ? 'active' : ''}`}>
                             <i className="fa-solid fa-chart-line" /> Analytics
+                        </NavLink>
+                        <NavLink to="/admin?tab=udise" className={() => `sb-item ${location.search === '?tab=udise' ? 'active' : ''}`}>
+                            <i className="fa-solid fa-file-export"></i> UDISE Export
                         </NavLink>
                         <NavLink to="/blueprint" className={({ isActive }) => `sb-item ${isActive ? 'active' : ''}`}>
                             <i className="fa-solid fa-map" /> System Blueprint
@@ -90,6 +107,12 @@ const Sidebar = ({ role }) => {
                         </NavLink>
                         <NavLink to="/teacher?tab=messages" className={({ isActive }) => `sb-item ${isActive ? 'active' : ''}`}>
                             <i className="fa-solid fa-message"></i> Messaging
+                        </NavLink>
+                        <NavLink to="/teacher?tab=leave" className={({ isActive }) => `sb-item ${isActive ? 'active' : ''}`}>
+                            <i className="fa-solid fa-calendar-xmark"></i> Leave Request
+                        </NavLink>
+                        <NavLink to="/teacher?tab=exams" className={({ isActive }) => `sb-item ${isActive ? 'active' : ''}`}>
+                            <i className="fa-solid fa-calendar-check"></i> Exam Schedule
                         </NavLink>
                     </>
                 )}
