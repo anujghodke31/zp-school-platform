@@ -3,16 +3,28 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 
+// Load env vars first — must be before any process.env reads
+dotenv.config();
+
 // Initialize Firebase Admin
 require('./firebase');
 
-// Load env vars
-dotenv.config();
-
 const app = express();
 
-// Middleware
-app.use(cors());
+// CORS — restrict to known origins; set ALLOWED_ORIGINS in .env as comma-separated list
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+    : ['http://localhost:5173'];
+
+app.use(cors({
+    origin: (origin, callback) => {
+        // Allow requests with no origin (e.g. mobile apps, curl, Postman in dev)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.includes(origin)) return callback(null, true);
+        callback(new Error(`CORS policy: origin ${origin} not allowed`));
+    },
+    credentials: true
+}));
 app.use(express.json());
 app.use(morgan('dev'));
 

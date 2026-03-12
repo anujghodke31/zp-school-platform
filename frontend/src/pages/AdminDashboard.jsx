@@ -130,28 +130,28 @@ const AdminDashboard = () => {
                                 <div className="stat-card" style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1.25rem 1.5rem', background: '#fff', borderRadius: '16px', border: '1px solid var(--border)' }}>
                                     <div className="stat-icon" style={{ width: '48px', height: '48px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', background: 'var(--navy-light)', color: 'var(--navy)' }}><i className="fa-solid fa-users"></i></div>
                                     <div>
-                                        <div className="stat-val" style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--navy)' }}>{stats.totalStudents || 18450}</div>
+                                        <div className="stat-val" style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--navy)' }}>{stats.totalStudents ?? '—'}</div>
                                         <div className="stat-lbl" style={{ fontSize: '.78rem', color: 'var(--muted)', fontWeight: 500 }}>Total Students</div>
                                     </div>
                                 </div>
                                 <div className="stat-card" style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1.25rem 1.5rem', background: '#fff', borderRadius: '16px', border: '1px solid var(--border)' }}>
                                     <div className="stat-icon" style={{ width: '48px', height: '48px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', background: '#E8F5E9', color: 'var(--success)' }}><i className="fa-solid fa-percent"></i></div>
                                     <div>
-                                        <div className="stat-val" style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--navy)' }}>{stats.attendanceRate || 82}%</div>
+                                        <div className="stat-val" style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--navy)' }}>{stats.avg_attendance != null ? `${stats.avg_attendance}%` : '—'}</div>
                                         <div className="stat-lbl" style={{ fontSize: '.78rem', color: 'var(--muted)', fontWeight: 500 }}>Avg Attendance</div>
                                     </div>
                                 </div>
                                 <div className="stat-card" style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1.25rem 1.5rem', background: '#fff', borderRadius: '16px', border: '1px solid var(--border)' }}>
                                     <div className="stat-icon" style={{ width: '48px', height: '48px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', background: '#FFEBEE', color: 'var(--danger)' }}><i className="fa-solid fa-triangle-exclamation"></i></div>
                                     <div>
-                                        <div className="stat-val" style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--navy)' }}>{stats.atRiskStudents || 142}</div>
+                                        <div className="stat-val" style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--navy)' }}>{stats.at_risk_count ?? '—'}</div>
                                         <div className="stat-lbl" style={{ fontSize: '.78rem', color: 'var(--muted)', fontWeight: 500 }}>At-Risk Students</div>
                                     </div>
                                 </div>
                                 <div className="stat-card" style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1.25rem 1.5rem', background: '#fff', borderRadius: '16px', border: '1px solid var(--border)' }}>
                                     <div className="stat-icon" style={{ width: '48px', height: '48px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', background: 'var(--saffron-light)', color: 'var(--warning)' }}><i className="fa-solid fa-chalkboard-user"></i></div>
                                     <div>
-                                        <div className="stat-val" style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--navy)' }}>{stats.totalTeachers || 840}</div>
+                                        <div className="stat-val" style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--navy)' }}>{stats.total_teachers ?? '—'}</div>
                                         <div className="stat-lbl" style={{ fontSize: '.78rem', color: 'var(--muted)', fontWeight: 500 }}>Teachers</div>
                                     </div>
                                 </div>

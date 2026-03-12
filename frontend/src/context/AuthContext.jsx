@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '../config/firebase';
-import axios from 'axios';
+import api from '../utils/api';
 
 export const AuthContext = createContext();
 
@@ -13,10 +13,10 @@ export const AuthProvider = ({ children }) => {
         const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
             if (firebaseUser) {
                 try {
-                    // Get token
+                    // Get fresh token
                     const token = await firebaseUser.getIdToken();
-                    // Fetch user role/profile from our backend
-                    const res = await axios.get('http://localhost:8000/api/auth/me', {
+                    // Fetch user role/profile from backend via shared api utility
+                    const res = await api.get('/auth/me', {
                         headers: { Authorization: `Bearer ${token}` }
                     });
                     
