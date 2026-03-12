@@ -3,13 +3,13 @@ import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { auth } from '../config/firebase';
-import axios from 'axios';
+import api from '../utils/api';
 
 const Register = () => {
     const [role, setRole] = useState('Parent');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const { user, setUser } = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -17,6 +17,7 @@ const Register = () => {
             if (user.role === 'Admin' || user.role === 'SuperAdmin') navigate('/admin');
             else if (user.role === 'Teacher') navigate('/teacher');
             else if (user.role === 'Parent') navigate('/parent');
+            else if (user.role === 'Student') navigate('/student');
             else navigate('/');
         }
     }, [user, navigate]);
@@ -30,13 +31,13 @@ const Register = () => {
             const result = await signInWithPopup(auth, provider);
             const idToken = await result.user.getIdToken();
 
-            const res = await axios.post('http://localhost:8000/api/auth/register', { role }, {
+            // POST to backend to write the Firestore user doc with chosen role.
+            // After this succeeds, AuthContext's onAuthStateChanged fires automatically,
+            // calls /api/auth/me, and sets the user — no manual setUser needed.
+            await api.post('/auth/register', { role }, {
                 headers: { Authorization: `Bearer ${idToken}` }
             });
-
-            if (res.data.success) {
-                setUser(res.data.user);
-            }
+            // Navigation handled by useEffect when user state populates via onAuthStateChanged
         } catch (err) {
             console.error('Registration Error:', err);
             setError(err.response?.data?.message || err.message || 'Registration failed.');

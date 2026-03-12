@@ -14,6 +14,7 @@ import ParentPortal from './pages/ParentPortal';
 import ELearning from './pages/ELearning';
 import LandingPage from './pages/LandingPage';
 import StudentDashboard from './pages/StudentDashboard';
+import ZPBlueprint from './pages/ZPBlueprint';
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -68,6 +69,7 @@ const App = () => {
             } />
 
             <Route path="/unauthorized" element={<div className="p-8 text-white text-center mt-20"><h1>Unauthorized Access</h1><p>You do not have permission to view this page.</p></div>} />
+            <Route path="/blueprint" element={<ZPBlueprint />} />
             <Route path="*" element={<div className="p-8 text-white text-center mt-20"><h1>404 Not Found</h1></div>} />
           </Routes>
         </div>

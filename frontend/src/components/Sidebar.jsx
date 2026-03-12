@@ -38,7 +38,6 @@ const Sidebar = ({ role }) => {
                 {isAdmin && (
                     <>
                         <div className="sb-section">Overview</div>
-                        <div className="sb-section">Overview</div>
                         <NavLink to="/admin" end className={() => `sb-item ${location.pathname === '/admin' && !location.search ? 'active' : ''}`}>
                             <i className="fa-solid fa-gauge-high"></i> Dashboard
                         </NavLink>
@@ -73,7 +72,10 @@ const Sidebar = ({ role }) => {
 
                         <div className="sb-section">System</div>
                         <NavLink to="/admin?tab=analytics" className={() => `sb-item ${location.search === '?tab=analytics' ? 'active' : ''}`}>
-                            <i className="fa-solid fa-chart-line"></i> Analytics
+                            <i className="fa-solid fa-chart-line" /> Analytics
+                        </NavLink>
+                        <NavLink to="/blueprint" className={({ isActive }) => `sb-item ${isActive ? 'active' : ''}`}>
+                            <i className="fa-solid fa-map" /> System Blueprint
                         </NavLink>
                     </>
                 )}
