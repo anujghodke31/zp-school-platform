@@ -80,6 +80,12 @@ const Sidebar = ({ role }) => {
                         <NavLink to="/admin?tab=scholarships" className={() => `sb-item ${location.search === '?tab=scholarships' ? 'active' : ''}`}>
                             <i className="fa-solid fa-award"></i> Scholarships
                         </NavLink>
+                        <NavLink to="/admin?tab=exams" className={() => `sb-item ${location.search === '?tab=exams' ? 'active' : ''}`}>
+                            <i className="fa-solid fa-calendar-check"></i> Exam Planner
+                        </NavLink>
+                        <NavLink to="/admin?tab=events" className={() => `sb-item ${location.search === '?tab=events' ? 'active' : ''}`}>
+                            <i className="fa-solid fa-calendar-star"></i> Events & Holidays
+                        </NavLink>
                         <NavLink to="/admin?tab=leave" className={() => `sb-item ${location.search === '?tab=leave' ? 'active' : ''}`}>
                             <i className="fa-solid fa-calendar-xmark"></i> Leave Requests
                         </NavLink>
@@ -119,8 +125,17 @@ const Sidebar = ({ role }) => {
                 {isParent && (
                     <>
                         <div className="sb-section">Portal</div>
-                        <NavLink to="/parent" end className={({ isActive }) => `sb-item ${isActive ? 'active' : ''}`}>
+                        <NavLink to="/parent" end className={({ isActive }) => `sb-item ${location.pathname === '/parent' && !location.search ? 'active' : ''}`}>
                             <i className="fa-solid fa-home" /> Dashboard
+                        </NavLink>
+                        <NavLink to="/parent?tab=assignments" className={() => `sb-item ${location.search === '?tab=assignments' ? 'active' : ''}`}>
+                            <i className="fa-solid fa-book-open" /> Assignments
+                        </NavLink>
+                        <NavLink to="/parent?tab=fees" className={() => `sb-item ${location.search === '?tab=fees' ? 'active' : ''}`}>
+                            <i className="fa-solid fa-money-bill-wave" /> Fee Status
+                        </NavLink>
+                        <NavLink to="/parent?tab=scholarships" className={() => `sb-item ${location.search === '?tab=scholarships' ? 'active' : ''}`}>
+                            <i className="fa-solid fa-award" /> Scholarships
                         </NavLink>
                         <NavLink to="/elearning" className={({ isActive }) => `sb-item ${isActive ? 'active' : ''}`}>
                             <i className="fa-solid fa-laptop-file" /> E-Learning
@@ -130,7 +145,7 @@ const Sidebar = ({ role }) => {
                 {isStudent && (
                     <>
                         <div className="sb-section">My Portal</div>
-                        <NavLink to="/student" end className={({ isActive }) => `sb-item ${isActive ? 'active' : ''}`}>
+                        <NavLink to="/student" end className={({ isActive }) => `sb-item ${location.pathname === '/student' && !location.search ? 'active' : ''}`}>
                             <i className="fa-solid fa-gauge-high" /> Overview
                         </NavLink>
                         <NavLink to="/student?tab=assignments" className={() => `sb-item ${location.search === '?tab=assignments' ? 'active' : ''}`}>
@@ -138,6 +153,12 @@ const Sidebar = ({ role }) => {
                         </NavLink>
                         <NavLink to="/student?tab=attendance" className={() => `sb-item ${location.search === '?tab=attendance' ? 'active' : ''}`}>
                             <i className="fa-solid fa-calendar-check" /> Attendance
+                        </NavLink>
+                        <NavLink to="/student?tab=library" className={() => `sb-item ${location.search === '?tab=library' ? 'active' : ''}`}>
+                            <i className="fa-solid fa-book-bookmark" /> Library Books
+                        </NavLink>
+                        <NavLink to="/student?tab=report-card" className={() => `sb-item ${location.search === '?tab=report-card' ? 'active' : ''}`}>
+                            <i className="fa-solid fa-file-certificate" /> Report Card
                         </NavLink>
                     </>
                 )}

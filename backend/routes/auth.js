@@ -27,6 +27,7 @@ router.get('/me', protect, async (req, res) => {
 // @access  Public (verifies token inline)
 router.post('/register', async (req, res) => {
     try {
+        const { admin, db } = require('../firebase');
         const { role } = req.body;
         const authHeader = req.headers.authorization;
         
@@ -65,8 +66,8 @@ router.post('/register', async (req, res) => {
             }
         });
     } catch (error) {
-        console.error("Registration error:", error);
-        res.status(500).json({ success: false, message: 'Server Error during registration' });
+        console.error("Registration error STACK:", error.stack || error);
+        res.status(500).json({ success: false, message: 'Server Error during registration: ' + error.message });
     }
 });
 

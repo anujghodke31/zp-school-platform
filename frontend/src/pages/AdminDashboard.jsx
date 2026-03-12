@@ -35,6 +35,7 @@ const AdminDashboard = () => {
     const [searchParams] = useSearchParams();
     const activeTab = searchParams.get('tab') || 'overview';
 
+    const [events, setEvents] = useState([]);
     const [stats, setStats] = useState({});
     const [students, setStudents] = useState([]);
     const [studentCursor, setStudentCursor] = useState(null);
@@ -42,7 +43,6 @@ const AdminDashboard = () => {
     const [teacherCursor, setTeacherCursor] = useState(null);
     const [classes, setClasses] = useState([]);
     const [subjects, setSubjects] = useState([]);
-    const [events, setEvents] = useState([]);
 
     const [isUserModalOpen, setIsUserModalOpen] = useState(false);
     const [userModalType, setUserModalType] = useState('student');
@@ -149,7 +149,9 @@ const AdminDashboard = () => {
                         />
                     )}
 
-                    {activeTab === 'events' && <EventsPanel events={events} onRefresh={fetchAll} />}
+                    {activeTab === 'events' && (
+                        <EventsPanel events={events} onRefresh={() => api.get('/data/events?limit=20').then(res => setEvents(res.data.data || [])).catch(console.error)} />
+                    )}
 
                     {activeTab === 'timetable' && (
                         <TimetablePanel classes={classes} subjects={subjects} teachers={teachers} />

@@ -284,6 +284,15 @@ router.delete('/subjects/:id', protect, roleProtect('Admin', 'SuperAdmin'), asyn
 });
 
 // ─── EVENTS ───────────────────────────────────────────────────────────────────
+router.get('/events/public', async (req, res) => {
+    try {
+        const snap = await db.collection('events').orderBy('date', 'asc').limit(5).get();
+        res.json({ success: true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
+    } catch (err) {
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
+});
+
 router.get('/events', protect, async (req, res) => {
     try {
         const snap = await db.collection('events').orderBy('date', 'asc').get();

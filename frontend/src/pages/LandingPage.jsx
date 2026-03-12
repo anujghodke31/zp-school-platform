@@ -63,6 +63,29 @@ const LandingPage = () => {
         }
     }, []);
 
+    const [events, setEvents] = React.useState([]);
+    const [notices, setNotices] = React.useState([]);
+
+    useEffect(() => {
+        // Fetch public data for the landing page
+        const fetchPublicData = async () => {
+            try {
+                // Use absolute URL or relative depending on setup, but typically api utility handles it. We don't have api util imported here.
+                // Oh wait, I need to import api or use fetch. Let's use fetch.
+                const baseUrl = window.location.hostname === 'localhost' ? 'http://localhost:8000/api' : '/api';
+                const [eventsRes, noticesRes] = await Promise.all([
+                    fetch(`${baseUrl}/data/events/public`).then(r => r.json()),
+                    fetch(`${baseUrl}/notices/public`).then(r => r.json())
+                ]);
+                if (eventsRes.success) setEvents(eventsRes.data);
+                if (noticesRes.success) setNotices(noticesRes.data);
+            } catch (err) {
+                console.error("Error fetching public data:", err);
+            }
+        };
+        fetchPublicData();
+    }, []);
+
     return (
         <div style={{ fontFamily: 'var(--font-base)', color: 'var(--text-main)', background: 'var(--bg-main)' }}>
             {/* STICKY HEADER */}
@@ -168,6 +191,72 @@ const LandingPage = () => {
                         <div style={{ flex: 1 }}>
                             <h2 style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0, color: 'white' }}>34</h2>
                             <p style={{ margin: 0, fontWeight: 500, opacity: 0.9 }}>Districts Covered</p>
+                        </div>
+                    </div>
+                </section>
+
+                {/* NEWS & EVENTS SECTION */}
+                <section style={{ padding: '80px 0', background: 'white' }}>
+                    <div className="container">
+                        <div style={{ display: 'flex', gap: '40px', flexWrap: 'wrap' }}>
+                            {/* Announcements & News */}
+                            <div style={{ flex: '1 1 500px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '2px solid var(--border)', paddingBottom: '15px', marginBottom: '25px' }}>
+                                    <h2 style={{ fontSize: '1.8rem', color: 'var(--navy)', margin: 0 }}>
+                                        <i className="fa-solid fa-bullhorn" style={{ color: 'var(--saffron)', marginRight: '10px' }}></i>
+                                        News & Announcements
+                                    </h2>
+                                    <Link to="/login" style={{ fontSize: '0.9rem', color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>View All <i className="fa-solid fa-arrow-right"></i></Link>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                                    {notices.length > 0 ? notices.map(notice => (
+                                        <div key={notice.id} style={{ padding: '20px', background: 'var(--bg-main)', borderRadius: '12px', borderLeft: '4px solid var(--primary)', transition: 'transform 0.2s, box-shadow 0.2s' }}
+                                             onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = 'var(--shadow-sm)'; }}
+                                             onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}>
+                                            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '5px', fontWeight: 600 }}>
+                                                {new Date(notice.createdAt?._seconds ? notice.createdAt._seconds * 1000 : new Date()).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                            </div>
+                                            <h3 style={{ fontSize: '1.2rem', margin: '0 0 8px', color: 'var(--navy)' }}>{notice.title}</h3>
+                                            <p style={{ fontSize: '0.95rem', color: 'var(--text-main)', margin: 0 }}>{notice.message}</p>
+                                        </div>
+                                    )) : (
+                                        <div style={{ padding: '30px', textAlign: 'center', color: 'var(--text-muted)', background: 'var(--bg-main)', borderRadius: '12px', border: '1px dashed var(--border)' }}>
+                                            No recent announcements.
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Upcoming Events */}
+                            <div style={{ flex: '1 1 400px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '2px solid var(--border)', paddingBottom: '15px', marginBottom: '25px' }}>
+                                    <h2 style={{ fontSize: '1.8rem', color: 'var(--navy)', margin: 0 }}>
+                                        <i className="fa-solid fa-calendar-star" style={{ color: 'var(--success)', marginRight: '10px' }}></i>
+                                        Upcoming Events
+                                    </h2>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                                    {events.length > 0 ? events.map((ev, i) => {
+                                        const dateObj = new Date(ev.date);
+                                        return (
+                                            <div key={ev.id || i} style={{ display: 'flex', gap: '20px', alignItems: 'center', padding: '15px', background: 'var(--bg-main)', borderRadius: '12px', border: '1px solid var(--border)' }}>
+                                                <div style={{ background: 'var(--navy)', color: 'white', padding: '10px 15px', borderRadius: '10px', textAlign: 'center', minWidth: '70px' }}>
+                                                    <div style={{ fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '1px', opacity: 0.9 }}>{dateObj.toLocaleDateString('en-US', { month: 'short' })}</div>
+                                                    <div style={{ fontSize: '1.6rem', fontWeight: 800, lineHeight: 1 }}>{dateObj.getDate()}</div>
+                                                </div>
+                                                <div>
+                                                    <h4 style={{ fontSize: '1.1rem', margin: '0 0 5px', color: 'var(--navy)' }}>{ev.title}</h4>
+                                                    <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', margin: 0 }}>{ev.description || 'School-wide Event'}</p>
+                                                </div>
+                                            </div>
+                                        );
+                                    }) : (
+                                        <div style={{ padding: '30px', textAlign: 'center', color: 'var(--text-muted)', background: 'var(--bg-main)', borderRadius: '12px', border: '1px dashed var(--border)' }}>
+                                            No upcoming events scheduled.
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>

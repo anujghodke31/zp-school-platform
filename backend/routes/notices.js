@@ -33,6 +33,20 @@ router.post('/', protect, roleProtect('Admin', 'SuperAdmin', 'Teacher'), async (
     }
 });
 
+// @route   GET /api/notices/public
+// @desc    Get latest notices for public landing page
+// @access  Public
+router.get('/public', async (req, res) => {
+    try {
+        const snapshot = await db.collection('notices').orderBy('createdAt', 'desc').limit(5).get();
+        const notices = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        res.json({ success: true, data: notices });
+    } catch (err) {
+        console.error("Error fetching public notices:", err);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
+});
+
 // @route   GET /api/notices
 // @desc    Get all notices
 // @access  Protected (All)

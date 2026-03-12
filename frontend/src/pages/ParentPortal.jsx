@@ -54,60 +54,62 @@ const ParentPortal = () => {
     };
 
     return (
-        <div className="app-container" style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg)' }}>
+        <div className="dash-layout">
             <Sidebar role="Parent" />
-            <div className="main" style={{ marginLeft: '260px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <div className="dash-main">
                 <TopBar title="Parent Portal" subtitle="Track your child's progress" />
 
                 {/* ====== STUDENT HERO ====== */}
-                <div className="student-hero" style={{ background: 'linear-gradient(135deg, var(--navy), #3949AB)', color: '#fff', padding: '2rem 1.5rem' }}>
-                    <div className="sh-inner" style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-                        <div className="sh-avatar" style={{ width: '70px', height: '70px', borderRadius: '50%', background: 'var(--saffron)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', fontWeight: 800, border: '3px solid rgba(255,255,255,.4)', flexShrink: 0 }}>A</div>
+                <div className="student-hero">
+                    <div className="sh-inner">
+                        <div className="sh-avatar">A</div>
                         <div>
                             <div className="sh-info">
-                                <h2 style={{ fontSize: '1.4rem', fontWeight: 800 }}>Aanya Patil</h2>
-                                <p style={{ fontSize: '.85rem', opacity: .8, marginTop: '.2rem' }}>Class 7A | Roll No: 12 | ZP Primary School, Maharashtra</p>
+                                <h2>Aanya Patil</h2>
+                                <p style={{ opacity: .8, fontSize: '.875rem', marginTop: '.25rem' }}>Class 7A | Roll No: 12 | ZP Primary School, Maharashtra</p>
                             </div>
-                            <div className="sh-stats" style={{ display: 'flex', gap: '1.25rem', marginTop: '1rem', flexWrap: 'wrap' }}>
-                                <div className="sh-stat" style={{ background: 'rgba(255,255,255,.15)', borderRadius: '10px', padding: '.6rem 1rem', textAlign: 'center', backdropFilter: 'blur(4px)' }}>
-                                    <strong style={{ display: 'block', fontSize: '1.4rem', fontWeight: 800 }}>92%</strong>
-                                    <small style={{ fontSize: '.7rem', opacity: .8 }}>Attendance</small>
+                            <div className="sh-stats">
+                                <div className="sh-stat">
+                                    <strong>92%</strong>
+                                    <small>Attendance</small>
                                 </div>
-                                <div className="sh-stat" style={{ background: 'rgba(255,255,255,.15)', borderRadius: '10px', padding: '.6rem 1rem', textAlign: 'center', backdropFilter: 'blur(4px)' }}>
-                                    <strong style={{ display: 'block', fontSize: '1.4rem', fontWeight: 800 }}>A</strong>
-                                    <small style={{ fontSize: '.7rem', opacity: .8 }}>Current Grade</small>
+                                <div className="sh-stat">
+                                    <strong>A</strong>
+                                    <small>Current Grade</small>
                                 </div>
-                                <div className="sh-stat" style={{ background: 'rgba(255,255,255,.15)', borderRadius: '10px', padding: '.6rem 1rem', textAlign: 'center', backdropFilter: 'blur(4px)' }}>
-                                    <strong style={{ display: 'block', fontSize: '1.4rem', fontWeight: 800 }}>Gold</strong>
-                                    <small style={{ fontSize: '.7rem', opacity: .8 }}>Reading Badge</small>
+                                <div className="sh-stat">
+                                    <strong>Gold</strong>
+                                    <small>Reading Badge</small>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="content" style={{ padding: '2rem', flex: 1, maxWidth: '900px', margin: '0 auto', width: '100%' }}>
+                <div className="dash-content">
 
                     {/* ====== PORTAL DASHBOARD (ATTENDANCE) ====== */}
                     {activeTab === 'dashboard' && (
-                        <div className="section-card slide-in" style={{ background: 'var(--white)', borderRadius: '16px', padding: '1.5rem', border: '1px solid var(--border)', marginBottom: '1.25rem', boxShadow: '0 2px 8px rgba(0,0,0,.04)' }}>
-                            <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--navy)', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '.5rem', paddingBottom: '.75rem', borderBottom: '1px solid var(--border)' }}>
-                                <i className="fa-solid fa-calendar-check" style={{ color: 'var(--navy)' }}></i> Attendance Summary
-                            </h3>
+                        <div className="panel slide-in active">
+                            <div className="panel-card">
+                                <h4 className="panel-section-title">
+                                    <i className="fa-solid fa-calendar-check" style={{ color: 'var(--success)' }}></i> Attendance Summary
+                                </h4>
 
-                            <div className="cal-months" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '1rem' }}>
-                                <div className="cal-month">
-                                    <h4 style={{ fontSize: '.85rem', fontWeight: 700, color: 'var(--navy)', marginBottom: '.5rem', textAlign: 'center' }}>August (94%)</h4>
-                                    <div className="cal-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '3px' }}>
-                                        {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => <div key={'h1' + i} className="cal-day-hdr" style={{ fontSize: '.6rem', textAlign: 'center', color: 'var(--muted)', fontWeight: 600, padding: '2px' }}>{d}</div>)}
-                                        {generateCalendar(31, 2)}
+                                <div className="cal-months" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginTop: '1rem' }}>
+                                    <div className="cal-month">
+                                        <h4 style={{ fontSize: '.9rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '.5rem', textAlign: 'center' }}>August (94%)</h4>
+                                        <div className="cal-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px' }}>
+                                            {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => <div key={'h1' + i} className="cal-day-hdr" style={{ fontSize: '.7rem', textAlign: 'center', color: 'var(--text-muted)', fontWeight: 600, padding: '2px' }}>{d}</div>)}
+                                            {generateCalendar(31, 2)}
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="cal-month">
-                                    <h4 style={{ fontSize: '.85rem', fontWeight: 700, color: 'var(--navy)', marginBottom: '.5rem', textAlign: 'center' }}>September (Current)</h4>
-                                    <div className="cal-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '3px' }}>
-                                        {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => <div key={'h2' + i} className="cal-day-hdr" style={{ fontSize: '.6rem', textAlign: 'center', color: 'var(--muted)', fontWeight: 600, padding: '2px' }}>{d}</div>)}
-                                        {generateCalendar(30, 5).slice(0, 24)}
+                                    <div className="cal-month">
+                                        <h4 style={{ fontSize: '.9rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '.5rem', textAlign: 'center' }}>September (Current)</h4>
+                                        <div className="cal-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px' }}>
+                                            {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => <div key={'h2' + i} className="cal-day-hdr" style={{ fontSize: '.7rem', textAlign: 'center', color: 'var(--text-muted)', fontWeight: 600, padding: '2px' }}>{d}</div>)}
+                                            {generateCalendar(30, 5).slice(0, 24)}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -116,28 +118,31 @@ const ParentPortal = () => {
 
                     {/* ====== HOMEWORK/ASSIGNMENTS ====== */}
                     {activeTab === 'assignments' && (
-                        <div className="section-card slide-in" style={{ background: 'var(--white)', borderRadius: '16px', padding: '1.5rem', border: '1px solid var(--border)', marginBottom: '1.25rem', boxShadow: '0 2px 8px rgba(0,0,0,.04)' }}>
-                            <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--navy)', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '.5rem', paddingBottom: '.75rem', borderBottom: '1px solid var(--border)' }}>
-                                <i className="fa-solid fa-book-open" style={{ color: 'var(--warning)' }}></i> Active Assignments
-                            </h3>
+                        <div className="panel slide-in active">
+                            <div className="panel-card">
+                                <h4 className="panel-section-title">
+                                    <i className="fa-solid fa-book-open" style={{ color: 'var(--warning)' }}></i> Active Assignments
+                                </h4>
 
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '.75rem' }}>
-                                {assignments.length > 0 ? assignments.map((a, i) => (
-                                    <div key={i} style={{ padding: '1rem', border: '1px solid var(--border)', borderRadius: '12px', borderLeft: '4px solid var(--navy)' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '.5rem' }}>
-                                            <strong style={{ fontSize: '.9rem' }}>{a.title || "Science Project Formulation"}</strong>
-                                            <span style={{ fontSize: '.75rem', color: 'var(--danger)', fontWeight: 600 }}><i className="fa-regular fa-clock"></i> Due: {a.due_date ? new Date(a.due_date).toLocaleDateString() : 'Next week'}</span>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '.75rem' }}>
+                                    {assignments.length > 0 ? assignments.map((a, i) => (
+                                        <div key={i} style={{ padding: '1rem', border: '1px solid var(--border)', borderRadius: '12px', borderLeft: '4px solid var(--navy)', background: 'var(--bg-main)' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '.5rem' }}>
+                                                <strong style={{ fontSize: '.9rem', color: 'var(--text-main)' }}>{a.title || "Science Project Formulation"}</strong>
+                                                <span className="badge-warning" style={{ fontSize: '.75rem' }}><i className="fa-regular fa-clock"></i> Due: {a.due_date ? new Date(a.due_date).toLocaleDateString() : 'Next week'}</span>
+                                            </div>
+                                            <p className="text-muted text-sm">{a.description || "Research on environmental issues."}</p>
                                         </div>
-                                        <p style={{ fontSize: '.8rem', color: 'var(--muted)', marginBottom: '.5rem' }}>{a.description || "Research on environmental issues."}</p>
-                                    </div>
-                                )) : (
-                                    <div style={{ padding: '1rem', border: '1px solid var(--border)', borderRadius: '12px', textAlign: 'center', color: 'var(--muted)' }}>
-                                        <i className="fa-solid fa-spinner fa-spin"></i> Loading Assignments...
-                                    </div>
-                                )}
+                                    )) : (
+                                        <div className="empty-state">
+                                            <i className="fa-solid fa-spinner fa-spin"></i> Loading Assignments...
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     )}
+                    
                     {activeTab === 'fees' && <FeePanel classes={[]} />}
                     {activeTab === 'scholarships' && <ScholarshipPanel classes={[]} />}
                 </div>
