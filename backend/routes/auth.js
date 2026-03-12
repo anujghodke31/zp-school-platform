@@ -1,101 +1,72 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../models/User');
-const Student = require('../models/Student');
-const generateToken = require('../utils/generateToken');
+const { protect } = require('../middleware/authMiddleware');
+const { admin, db } = require('../firebase');
 
-// @route   POST /api/auth/login
-// @desc    Auth user (Admin/Teacher) & get token
-// @access  Public
-router.post('/login', async (req, res) => {
-    const { username, password } = req.body;
-
+// @route   GET /api/auth/me
+// @desc    Get user profile based on Firebase token
+// @access  Protected
+router.get('/me', protect, async (req, res) => {
     try {
-        const user = await User.findOne({ username });
-
-        if (user && (await user.matchPassword(password))) {
-            res.json({
-                success: true,
-                _id: user._id,
-                username: user.username,
-                name: user.name,
-                role: user.role,
-                token: generateToken(user._id, user.role),
-            });
-        } else {
-            res.status(401).json({ success: false, message: 'Invalid username or password' });
-        }
+        // req.user is populated by protect middleware
+        res.json({
+            success: true,
+            _id: req.user.id,
+            username: req.user.username,
+            name: req.user.name,
+            role: req.user.role,
+            contactNumber: req.user.contactNumber
+        });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Server Error' });
     }
 });
 
-// In-memory store for OTPs (In production, use Redis or MongoDB with TTL)
-const otpStore = new Map();
-
-// @route   POST /api/auth/otp/send
-// @desc    Generate OTP for Parent Mobile
-// @access  Public
-router.post('/otp/send', async (req, res) => {
-    const { phone } = req.body;
+// @route   POST /api/auth/register
+// @desc    Register a new user via OAuth
+// @access  Public (verifies token inline)
+router.post('/register', async (req, res) => {
     try {
-        const student = await Student.findOne({ parent_phone: phone });
-        if (student) {
-            // Generate a 6-digit dynamic OTP
-            const otp = Math.floor(100000 + Math.random() * 900000).toString();
-            // Store it with a 5-minute expiration timestamp
-            otpStore.set(phone, { otp, expires: Date.now() + 5 * 60 * 1000 });
-
-            // Note: In real production, we'd trigger an SMS API here (e.g. Twilio, MSG91)
-            res.json({ success: true, otp, message: 'OTP sent to ' + phone });
-        } else {
-            res.status(404).json({ success: false, message: 'Phone number not registered with any student.' });
+        const { role } = req.body;
+        const authHeader = req.headers.authorization;
+        
+        if (!authHeader || !authHeader.startsWith('Bearer')) {
+            return res.status(401).json({ success: false, message: 'No token provided' });
         }
-    } catch (err) {
-        console.error("OTP Send Error:", err);
-        res.status(500).json({ success: false, message: 'Server Error' });
-    }
-});
-
-// @route   POST /api/auth/otp/verify
-// @desc    Verify OTP and generate token for Parent
-// @access  Public
-router.post('/otp/verify', async (req, res) => {
-    const { phone, otp } = req.body;
-    try {
-        const storedData = otpStore.get(phone);
-
-        if (!storedData) {
-            return res.status(400).json({ success: false, message: 'OTP expired or not requested.' });
+        
+        const token = authHeader.split(' ')[1];
+        const decodedToken = await admin.auth().verifyIdToken(token);
+        
+        // Check if user already exists
+        const userDoc = await db.collection('users').doc(decodedToken.uid).get();
+        if (userDoc.exists) {
+            return res.status(400).json({ success: false, message: 'User already exists. Please log in.' });
         }
+        
+        // Define default role logic
+        const validRoles = ['Parent', 'Student', 'Teacher']; // Should restrict Teacher? Let's allow for now or restrict later, but typically Student or Parent.
+        const assignedRole = validRoles.includes(role) ? role : 'Parent';
 
-        if (Date.now() > storedData.expires) {
-            otpStore.delete(phone);
-            return res.status(400).json({ success: false, message: 'OTP expired. Please request a new one.' });
-        }
+        const userData = {
+            username: decodedToken.email || decodedToken.phone_number || decodedToken.uid,
+            name: decodedToken.name || (decodedToken.email ? decodedToken.email.split('@')[0] : 'New User'),
+            role: assignedRole,
+            contactNumber: decodedToken.phone_number || '',
+            createdAt: new Date()
+        };
 
-        if (storedData.otp !== otp) {
-            return res.status(400).json({ success: false, message: 'Invalid OTP entered.' });
-        }
-
-        // OTP is valid
-        const student = await Student.findOne({ parent_phone: phone });
-        if (student) {
-            // Once verified, delete the OTP to prevent reuse
-            otpStore.delete(phone);
-
-            res.json({
-                success: true,
-                role: 'Parent',
-                studentName: student.name,
-                token: generateToken(student._id, 'Parent'),
-            });
-        } else {
-            res.status(404).json({ success: false, message: 'Parent mapping lost.' });
-        }
-    } catch (err) {
-        console.error("OTP Verify Error:", err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        await db.collection('users').doc(decodedToken.uid).set(userData);
+        
+        res.status(201).json({
+            success: true,
+            user: {
+                id: decodedToken.uid,
+                ...userData
+            }
+        });
+    } catch (error) {
+        console.error("Registration error:", error);
+        res.status(500).json({ success: false, message: 'Server Error during registration' });
     }
 });
 

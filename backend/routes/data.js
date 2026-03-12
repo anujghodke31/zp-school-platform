@@ -1,31 +1,31 @@
 const express = require('express');
 const router = express.Router();
 const { protect, roleProtect } = require('../middleware/authMiddleware');
-const Student = require('../models/Student');
-const Attendance = require('../models/Attendance');
-const Assignment = require('../models/Assignment');
+const { db, admin } = require('../firebase');
 
 // @route   GET /api/data/admin/stats
 // @desc    Get top-level stats for Admin Dashboard
 // @access  Protected (Admin/SuperAdmin)
 router.get('/admin/stats', protect, roleProtect('Admin', 'SuperAdmin'), async (req, res) => {
     try {
-        const totalStudents = await Student.countDocuments();
-        const totalAssignments = await Assignment.countDocuments();
-        // Since teachers/users are mostly hardcoded/demoed via script, we can mock or count `User`
+        const studentsSnap = await db.collection('students').count().get();
+        const assignmentsSnap = await db.collection('assignments').count().get();
+        const schoolsSnap = await db.collection('schools').count().get();
+        const teachersSnap = await db.collection('users').where('role', '==', 'Teacher').count().get();
 
         res.json({
             success: true,
-            total_students: totalStudents || 10,
-            total_teachers: 8,
-            total_classes: 4,
-            avg_attendance: 87.4,
-            at_risk_count: 2,
-            total_assignments: totalAssignments || 5,
-            schools_in_network: 40,
-            active_sessions: 6
+            total_students: studentsSnap.data().count,
+            total_teachers: teachersSnap.data().count,
+            total_classes: 0, // This could be derived from schools or students
+            avg_attendance: 0, // Needs aggregation logic which we skip for simplicity now
+            at_risk_count: 0,
+            total_assignments: assignmentsSnap.data().count,
+            schools_in_network: schoolsSnap.data().count,
+            active_sessions: 0
         });
     } catch (err) {
+        console.error("Stats error:", err);
         res.status(500).json({ success: false, message: 'Server Error' });
     }
 });
@@ -35,7 +35,8 @@ router.get('/admin/stats', protect, roleProtect('Admin', 'SuperAdmin'), async (r
 // @access  Protected (Admin/Teacher)
 router.get('/students', protect, roleProtect('Admin', 'SuperAdmin', 'Teacher'), async (req, res) => {
     try {
-        const students = await Student.find({});
+        const snapshot = await db.collection('students').get();
+        const students = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         res.json(students);
     } catch (err) {
         res.status(500).json({ success: false, message: 'Server Error' });
@@ -53,20 +54,48 @@ router.post('/students', protect, roleProtect('Admin', 'SuperAdmin', 'Teacher'),
             return res.status(400).json({ success: false, message: 'All fields are required.' });
         }
 
-        const studentExists = await Student.findOne({ roll_no, className });
-        if (studentExists) {
+        // Check if student exists in this class
+        const existingSnap = await db.collection('students')
+            .where('roll_no', '==', roll_no)
+            .where('className', '==', className)
+            .get();
+
+        if (!existingSnap.empty) {
             return res.status(400).json({ success: false, message: 'Student with this Roll No already exists in this class.' });
         }
 
-        const student = await Student.create({
+        const studentRef = await db.collection('students').add({
             roll_no,
             name,
             className,
             parent_phone,
-            attendance_pct: 100 // Default for new student
+            attendance_pct: 100, // Default for new student
+            createdAt: admin.firestore.FieldValue.serverTimestamp()
         });
 
-        res.status(201).json({ success: true, message: 'Student added successfully', student });
+        // Add parent to Firebase Auth
+        try {
+            // Check if parent account already exists
+            await admin.auth().getUserByPhoneNumber('+91' + parent_phone); // Ensure E.164 format
+        } catch (authErr) {
+            if (authErr.code === 'auth/user-not-found') {
+                // We create a dummy password or handle SMS login later
+                const parentAuth = await admin.auth().createUser({
+                    phoneNumber: '+91' + parent_phone,
+                    displayName: name + "'s Parent"
+                });
+                
+                await db.collection('users').doc(parentAuth.uid).set({
+                    role: 'Parent',
+                    name: name + "'s Parent",
+                    contactNumber: parent_phone,
+                    students: [studentRef.id],
+                    createdAt: admin.firestore.FieldValue.serverTimestamp()
+                });
+            }
+        }
+
+        res.status(201).json({ success: true, message: 'Student added successfully', student: { id: studentRef.id, roll_no, name } });
     } catch (err) {
         console.error("Add Student Error:", err);
         res.status(500).json({ success: false, message: 'Server Error' });
@@ -78,15 +107,13 @@ router.post('/students', protect, roleProtect('Admin', 'SuperAdmin', 'Teacher'),
 // @access  Protected (All)
 router.get('/assignments', protect, async (req, res) => {
     try {
-        const assignments = await Assignment.find({}).sort({ dueDate: 1 });
+        const snapshot = await db.collection('assignments').orderBy('dueDate', 'asc').get();
+        const assignments = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         res.json(assignments);
     } catch (err) {
         res.status(500).json({ success: false, message: 'Server Error' });
     }
 });
-
-// We need to import the User model at the top since we are adding staff
-const User = require('../models/User');
 
 // @route   POST /api/data/staff
 // @desc    Add a new staff member (Teacher or Admin)
@@ -99,20 +126,32 @@ router.post('/staff', protect, roleProtect('Admin', 'SuperAdmin'), async (req, r
             return res.status(400).json({ success: false, message: 'Missing required staff fields.' });
         }
 
-        const userExists = await User.findOne({ username });
-        if (userExists) {
-            return res.status(400).json({ success: false, message: 'Staff username already exists.' });
+        // We use username as email for Firebase Auth (e.g., admin@zp.local)
+        const email = `${username}@zp.local`;
+
+        try {
+            const newAuthUser = await admin.auth().createUser({
+                email,
+                password,
+                displayName: name,
+            });
+
+            await db.collection('users').doc(newAuthUser.uid).set({
+                username,
+                email,
+                name,
+                role,
+                contactNumber: contactNumber || null,
+                createdAt: admin.firestore.FieldValue.serverTimestamp()
+            });
+
+            res.status(201).json({ success: true, message: `${role} added successfully`, user: { username, role, name } });
+        } catch (authErr) {
+            if (authErr.code === 'auth/email-already-exists') {
+                return res.status(400).json({ success: false, message: 'Staff username already exists.' });
+            }
+            throw authErr;
         }
-
-        const staff = await User.create({
-            username,
-            passwordHash: password, // The pre-save hook in User model will hash this
-            name,
-            role,
-            contactNumber
-        });
-
-        res.status(201).json({ success: true, message: `${role} added successfully`, user: { username, role, name } });
     } catch (err) {
         console.error("Add Staff Error:", err);
         res.status(500).json({ success: false, message: 'Server Error' });
@@ -124,9 +163,18 @@ router.post('/staff', protect, roleProtect('Admin', 'SuperAdmin'), async (req, r
 // @access  Protected (SuperAdmin/Admin)
 router.get('/staff', protect, roleProtect('Admin', 'SuperAdmin'), async (req, res) => {
     try {
-        const staff = await User.find({ role: { $in: ['Teacher', 'Admin', 'SuperAdmin'] } })
-            .select('-passwordHash') // Don't send hashes back
-            .sort({ role: 1, name: 1 });
+        const snapshot = await db.collection('users').where('role', 'in', ['Teacher', 'Admin', 'SuperAdmin']).get();
+        const staff = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        
+        // Sort by role then name
+        staff.sort((a, b) => {
+            if (a.role < b.role) return -1;
+            if (a.role > b.role) return 1;
+            if (a.name < b.name) return -1;
+            if (a.name > b.name) return 1;
+            return 0;
+        });
+
         res.json(staff);
     } catch (err) {
         res.status(500).json({ success: false, message: 'Server Error' });

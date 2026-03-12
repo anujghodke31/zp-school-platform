@@ -48,6 +48,15 @@ const Sidebar = ({ role }) => {
                         </NavLink>
 
                         <div className="sb-section">Academic</div>
+                        <NavLink to="/admin?tab=timetable" className={() => `sb-item ${location.search === '?tab=timetable' ? 'active' : ''}`}>
+                            <i className="fa-solid fa-clock"></i> Timetable
+                        </NavLink>
+                        <NavLink to="/admin?tab=classes" className={() => `sb-item ${location.search === '?tab=classes' ? 'active' : ''}`}>
+                            <i className="fa-solid fa-chalkboard"></i> Classes
+                        </NavLink>
+                        <NavLink to="/admin?tab=subjects" className={() => `sb-item ${location.search === '?tab=subjects' ? 'active' : ''}`}>
+                            <i className="fa-solid fa-book"></i> Subjects
+                        </NavLink>
                         <NavLink to="/admin?tab=events" className={() => `sb-item ${location.search === '?tab=events' ? 'active' : ''}`}>
                             <i className="fa-solid fa-calendar-star"></i> Events & Holidays
                         </NavLink>

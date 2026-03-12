@@ -1,19 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TopBar from '../components/TopBar';
-
-const FALLBACK_MATERIALS = [
-    { id: 1, subject: "Mathematics", subject_mr: "गणित", type: "video", title: "Fractions & Decimals", title_mr: "अपूर्णांक आणि दशांश", desc: "Chapter 3 — Visual explanation with real-life examples", duration: "18 min", source: "Diksha Platform", class: "7A", color: "#1565C0", bg: "#E3F2FD", icon: "fa-calculator" },
-    { id: 4, subject: "Science", subject_mr: "विज्ञान", type: "video", title: "Photosynthesis Explained", title_mr: "प्रकाशसंश्लेषण", desc: "Chapter 6 — Plant food making process with diagrams", duration: "12 min", source: "Diksha Platform", class: "7A", color: "#2E7D32", bg: "#E8F5E9", icon: "fa-flask" },
-];
+import { db } from '../config/firebase';
+import { collection, getDocs } from 'firebase/firestore';
 
 const ELearning = () => {
     const navigate = useNavigate();
     const [activeSubject, setActiveSubject] = useState('all');
     const [activeType, setActiveType] = useState('all');
+    const [materials, setMaterials] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    // For now use mock data as the backend elearning route isn't fully scaffolded yet
-    const materials = FALLBACK_MATERIALS;
+    useEffect(() => {
+        const fetchMaterials = async () => {
+            try {
+                const querySnapshot = await getDocs(collection(db, 'materials'));
+                const mats = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                setMaterials(mats);
+            } catch (error) {
+                console.error("Error fetching materials:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchMaterials();
+    }, []);
 
     const filteredMaterials = materials.filter(m => {
         const matchSubject = activeSubject === 'all' || m.subject === activeSubject;

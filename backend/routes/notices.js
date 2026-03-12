@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { protect, roleProtect } = require('../middleware/authMiddleware');
-const Notice = require('../models/Notice');
+const { db, admin } = require('../firebase');
 
 // @route   POST /api/notices
 // @desc    Create a notice and trigger SSE broadcast
@@ -10,20 +10,25 @@ router.post('/', protect, roleProtect('Admin', 'SuperAdmin', 'Teacher'), async (
     try {
         const { title, message, audience } = req.body;
 
-        const notice = await Notice.create({
+        const noticeRef = await db.collection('notices').add({
             title,
             message,
             audience,
-            createdBy: req.user._id
+            createdBy: req.user.id,
+            createdAt: admin.firestore.FieldValue.serverTimestamp()
         });
+        
+        const noticeDoc = await noticeRef.get();
+        const notice = { id: noticeDoc.id, ...noticeDoc.data() };
 
-        // Trigger SSE Broadcast attached via middleware/app instance (this is a simple approach)
+        // Trigger SSE Broadcast attached via middleware/app instance
         if (req.app.broadcastNotice) {
             req.app.broadcastNotice('notice', title, message);
         }
 
         res.status(201).json({ success: true, notice });
     } catch (err) {
+        console.error("Error creating notice:", err);
         res.status(500).json({ success: false, message: 'Server Error' });
     }
 });
@@ -33,9 +38,14 @@ router.post('/', protect, roleProtect('Admin', 'SuperAdmin', 'Teacher'), async (
 // @access  Protected (All)
 router.get('/', protect, async (req, res) => {
     try {
-        const notices = await Notice.find({}).sort({ createdAt: -1 });
+        const snapshot = await db.collection('notices').orderBy('createdAt', 'desc').get();
+        const notices = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
         res.json(notices);
     } catch (err) {
+        console.error("Error fetching notices:", err);
         res.status(500).json({ success: false, message: 'Server Error' });
     }
 });

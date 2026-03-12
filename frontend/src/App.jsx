@@ -7,6 +7,7 @@ import CommandBar from './components/CommandBar';
 import AIBot from './components/AIBot';
 
 import Login from './pages/Login';
+import Register from './pages/Register';
 import AdminDashboard from './pages/AdminDashboard';
 import TeacherDashboard from './pages/TeacherDashboard';
 import ParentPortal from './pages/ParentPortal';
@@ -33,6 +34,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
 
             <Route path="/admin/*" element={
               <ProtectedRoute allowedRoles={['Admin', 'SuperAdmin']}>

@@ -1,13 +1,16 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
+import { signInWithEmailAndPassword, RecaptchaVerifier, signInWithPhoneNumber, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { auth, db } from '../config/firebase';
+import { doc, getDoc } from 'firebase/firestore';
+import { Link } from 'react-router-dom';
 
 const Login = () => {
     const [activeTab, setActiveTab] = useState('staff');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const { login } = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
     const navigate = useNavigate();
 
     // Staff State
@@ -19,21 +22,66 @@ const Login = () => {
     const [otp, setOtp] = useState('');
     const [otpSent, setOtpSent] = useState(false);
 
+    // Navigate on successful login
+    useEffect(() => {
+        if (user) {
+            if (user.role === 'Admin' || user.role === 'SuperAdmin') navigate('/admin');
+            else if (user.role === 'Teacher') navigate('/teacher');
+            else if (user.role === 'Parent') navigate('/parent');
+            else navigate('/');
+        }
+    }, [user, navigate]);
+
     const handleStaffLogin = async (e) => {
         e.preventDefault();
         setError('');
         setLoading(true);
         try {
-            const res = await axios.post('http://localhost:8000/api/auth/login', { username, password });
-            if (res.data.success) {
-                login(res.data);
-                if (res.data.role === 'Admin' || res.data.role === 'SuperAdmin') navigate('/admin');
-                else navigate('/teacher');
-            }
+            // Add domain for username if it's not an email
+            const email = username.includes('@') ? username : `${username}@zp.local`;
+            await signInWithEmailAndPassword(auth, email, password);
+            // Navigation handled by useEffect when user state populates
         } catch (err) {
-            setError(err.response?.data?.message || 'Login failed');
-        } finally {
+            setError('Login failed. Please check your credentials.');
             setLoading(false);
+        }
+    };
+
+    const handleGoogleSignIn = async () => {
+        setError('');
+        setLoading(true);
+        try {
+            const provider = new GoogleAuthProvider();
+            const result = await signInWithPopup(auth, provider);
+            const user = result.user;
+
+            // Check if user exists in Firestore
+            const userRef = doc(db, 'users', user.uid);
+            const userSnap = await getDoc(userRef);
+
+            if (!userSnap.exists()) {
+                auth.signOut();
+                setError('Account not found. Please Register first.');
+                setLoading(false);
+                return;
+            }
+            // Navigation handled by useEffect
+        } catch (err) {
+            console.error('Google Sign-In Error:', err);
+            setError(`Google Sign-In failed: ${err.message || err.code || 'Unknown error'}`);
+            setLoading(false);
+        }
+    };
+
+    const setupRecaptcha = () => {
+        if (!window.recaptchaVerifier) {
+            auth.useDeviceLanguage();
+            window.recaptchaVerifier = new RecaptchaVerifier(auth, 'sign-in-button', {
+                'size': 'invisible',
+                'callback': (response) => {
+                    // reCAPTCHA solved
+                }
+            });
         }
     };
 
@@ -43,11 +91,20 @@ const Login = () => {
         setError('');
         setLoading(true);
         try {
-            const res = await axios.post('http://localhost:8000/api/auth/otp/send', { phone });
+            setupRecaptcha();
+            const appVerifier = window.recaptchaVerifier;
+            const phoneNumber = phone.startsWith('+') ? phone : `+91${phone}`;
+            
+            const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
+            window.confirmationResult = confirmationResult;
             setOtpSent(true);
-            alert(`Demo OTP sent: ${res.data.otp}`); // For testing purposes
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to send OTP');
+            console.error(err);
+            setError(err.message || 'Failed to send OTP');
+            if (window.recaptchaVerifier) {
+                window.recaptchaVerifier.clear();
+                window.recaptchaVerifier = null;
+            }
         } finally {
             setLoading(false);
         }
@@ -58,14 +115,10 @@ const Login = () => {
         setError('');
         setLoading(true);
         try {
-            const res = await axios.post('http://localhost:8000/api/auth/otp/verify', { phone, otp });
-            if (res.data.success) {
-                login(res.data);
-                navigate('/parent');
-            }
+            await window.confirmationResult.confirm(otp);
+            // Navigation handled by useEffect
         } catch (err) {
-            setError(err.response?.data?.message || 'Invalid OTP');
-        } finally {
+            setError('Invalid OTP');
             setLoading(false);
         }
     };
@@ -113,11 +166,26 @@ const Login = () => {
                                     <input type="password" className="form-input" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required />
                                 </div>
                             </div>
-                            <button type="submit" className="btn btn-primary w-100 btn-lg" disabled={loading}>
+                            <button type="submit" className="btn btn-primary w-100 btn-lg" disabled={loading} style={{ marginBottom: '1rem' }}>
                                 <span>{loading ? 'Authenticating...' : 'Sign In Securely'}</span>
                                 <i className="fa-solid fa-arrow-right-to-bracket"></i>
                             </button>
-                            <p className="text-center mt-sm text-sm text-muted">Demo: <strong>admin</strong> / <strong>admin123</strong> &nbsp;|&nbsp; <strong>teacher</strong> / <strong>teacher123</strong></p>
+                            
+                            <div className="divider" style={{ display: 'flex', alignItems: 'center', margin: '1rem 0', color: 'var(--muted)', fontSize: '0.85rem' }}>
+                                <hr style={{ flex: 1, borderTop: '1px solid var(--border)' }} />
+                                <span style={{ padding: '0 10px' }}>OR</span>
+                                <hr style={{ flex: 1, borderTop: '1px solid var(--border)' }} />
+                            </div>
+
+                            <button type="button" className="btn w-100 btn-lg" onClick={handleGoogleSignIn} disabled={loading} style={{ background: '#fff', color: '#333', border: '1px solid #ccc', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px' }}>
+                                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style={{ width: '18px' }} />
+                                <span>Sign in with Google</span>
+                            </button>
+
+                            <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.9rem', borderTop: '1px solid var(--border)', paddingTop: '1.5rem' }}>
+                                <span style={{ color: 'var(--muted)' }}>Don't have an account? </span>
+                                <Link to="/register" style={{ color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>Register Here</Link>
+                            </div>
                         </form>
                     </div>
                 )}
@@ -131,6 +199,8 @@ const Login = () => {
                             </div>
                         )}
 
+                        <div id="recaptcha-container"></div>
+
                         {!otpSent ? (
                             <form onSubmit={handleSendOTP}>
                                 <div className="form-group">
@@ -140,11 +210,11 @@ const Login = () => {
                                         <input type="tel" className="form-input" placeholder="+91 98765 43210" value={phone} onChange={e => setPhone(e.target.value)} required />
                                     </div>
                                 </div>
-                                <button type="submit" className="btn btn-primary w-100 btn-lg" disabled={loading}>
+                                <button type="submit" id="sign-in-button" className="btn btn-primary w-100 btn-lg" disabled={loading}>
                                     <span>{loading ? 'Sending...' : 'Send OTP via SMS'}</span>
                                     <i className="fa-solid fa-paper-plane"></i>
                                 </button>
-                                <p className="text-xs text-muted mt-sm text-center">OTP sent via <strong>Sandes</strong> Government SMS Gateway</p>
+                                <p className="text-xs text-muted mt-sm text-center">OTP sent via <strong>Firebase Auth</strong> Secure Gateway</p>
                             </form>
                         ) : (
                             <form onSubmit={handleParentLogin}>

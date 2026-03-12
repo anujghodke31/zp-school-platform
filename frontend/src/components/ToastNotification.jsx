@@ -1,34 +1,38 @@
 import React, { useEffect, useState } from 'react';
 import { BellRing, X } from 'lucide-react';
+import { db } from '../config/firebase';
+import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
 
 const ToastNotification = () => {
     const [toasts, setToasts] = useState([]);
 
     useEffect(() => {
-        // Connect to Node.js SSE stream
-        const eventSource = new EventSource('http://localhost:8000/api/stream');
+        const q = query(collection(db, 'notices'), orderBy('createdAt', 'desc'), limit(1));
+        let initialLoad = true;
 
-        eventSource.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            if (data.type === 'notice') {
-                const id = Date.now();
-                setToasts(prev => [...prev, { id, title: data.title, message: data.message }]);
-
-                // Auto dismiss after 5 seconds
-                setTimeout(() => {
-                    setToasts(prev => prev.filter(t => t.id !== id));
-                }, 5000);
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            if (initialLoad) {
+                initialLoad = false;
+                return;
             }
-        };
 
-        eventSource.onerror = (error) => {
-            console.error("SSE Error:", error);
-            // In a production app, we would handle reconnection logic gracefully
-        };
+            snapshot.docChanges().forEach((change) => {
+                if (change.type === 'added') {
+                    const data = change.doc.data();
+                    const id = change.doc.id;
+                    setToasts(prev => [...prev, { id, title: data.title, message: data.message }]);
 
-        return () => {
-            eventSource.close();
-        };
+                    // Auto dismiss after 5 seconds
+                    setTimeout(() => {
+                        setToasts(prev => prev.filter(t => t.id !== id));
+                    }, 5000);
+                }
+            });
+        }, (error) => {
+            console.error("Firestore listener error:", error);
+        });
+
+        return () => unsubscribe();
     }, []);
 
     const removeToast = (id) => {

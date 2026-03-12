@@ -2,13 +2,12 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
-const connectDB = require('./db');
+
+// Initialize Firebase Admin
+require('./firebase');
 
 // Load env vars
 dotenv.config();
-
-// Connect to Database
-connectDB();
 
 const app = express();
 

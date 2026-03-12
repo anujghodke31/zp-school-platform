@@ -4,6 +4,11 @@ import api from '../utils/api';
 import Sidebar from '../components/Sidebar';
 import TopBar from '../components/TopBar';
 import AddUserModal from '../components/AddUserModal';
+import AddClassModal from '../components/AddClassModal';
+import AddSubjectModal from '../components/AddSubjectModal';
+import AssignTeacherModal from '../components/AssignTeacherModal';
+import { db } from '../config/firebase';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 
 const AdminDashboard = () => {
     const navigate = useNavigate();
@@ -18,11 +23,18 @@ const AdminDashboard = () => {
     });
     const [students, setStudents] = useState([]);
     const [teachers, setTeachers] = useState([]);
+    const [events, setEvents] = useState([]);
+    const [classes, setClasses] = useState([]);
+    const [subjects, setSubjects] = useState([]);
     const [noticeText, setNoticeText] = useState('');
 
     // Modal State
     const [isUserModalOpen, setIsUserModalOpen] = useState(false);
     const [userModalType, setUserModalType] = useState('student');
+    const [isClassModalOpen, setIsClassModalOpen] = useState(false);
+    const [isSubjectModalOpen, setIsSubjectModalOpen] = useState(false);
+    const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+    const [selectedTeacher, setSelectedTeacher] = useState(null);
 
     const fetchAdminData = async () => {
         try {
@@ -34,6 +46,18 @@ const AdminDashboard = () => {
             setStats(statsRes.data);
             setStudents(studentsRes.data);
             setTeachers(staffRes.data);
+
+            const eventsQuery = query(collection(db, 'events'), orderBy('date', 'asc'));
+            const eventsSnapshot = await getDocs(eventsQuery);
+            setEvents(eventsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+
+            const classesQuery = query(collection(db, 'classes'), orderBy('grade', 'asc'));
+            const classesSnapshot = await getDocs(classesQuery);
+            setClasses(classesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+
+            const subjectsQuery = query(collection(db, 'subjects'), orderBy('name', 'asc'));
+            const subjectsSnapshot = await getDocs(subjectsQuery);
+            setSubjects(subjectsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
         } catch (error) {
             console.error("Failed to fetch admin data", error);
         }
@@ -46,6 +70,11 @@ const AdminDashboard = () => {
     const openAddUserModal = (type) => {
         setUserModalType(type);
         setIsUserModalOpen(true);
+    };
+
+    const openAssignModal = (teacher) => {
+        setSelectedTeacher(teacher);
+        setIsAssignModalOpen(true);
     };
 
     const handleSendNotice = async () => {
@@ -70,6 +99,26 @@ const AdminDashboard = () => {
                     onClose={() => setIsUserModalOpen(false)}
                     type={userModalType}
                     onUserAdded={fetchAdminData}
+                />
+                
+                <AddClassModal
+                    isOpen={isClassModalOpen}
+                    onClose={() => setIsClassModalOpen(false)}
+                    onAdded={fetchAdminData}
+                />
+
+                <AddSubjectModal
+                    isOpen={isSubjectModalOpen}
+                    onClose={() => setIsSubjectModalOpen(false)}
+                    onAdded={fetchAdminData}
+                />
+
+                <AssignTeacherModal
+                    isOpen={isAssignModalOpen}
+                    onClose={() => setIsAssignModalOpen(false)}
+                    teacher={selectedTeacher}
+                    classes={classes}
+                    subjects={subjects}
                 />
 
                 <div className="content" style={{ padding: '2rem', flex: 1, position: 'relative', zIndex: 100 }}>
@@ -203,6 +252,7 @@ const AdminDashboard = () => {
                                                 <th style={{ background: 'var(--navy)', color: '#fff', padding: '.75rem 1rem', textAlign: 'left', fontSize: '.78rem', fontWeight: 700, textTransform: 'uppercase' }}>Role</th>
                                                 <th style={{ background: 'var(--navy)', color: '#fff', padding: '.75rem 1rem', textAlign: 'left', fontSize: '.78rem', fontWeight: 700, textTransform: 'uppercase' }}>Contact</th>
                                                 <th style={{ background: 'var(--navy)', color: '#fff', padding: '.75rem 1rem', textAlign: 'left', fontSize: '.78rem', fontWeight: 700, textTransform: 'uppercase' }}>Status</th>
+                                                <th style={{ background: 'var(--navy)', color: '#fff', padding: '.75rem 1rem', textAlign: 'left', fontSize: '.78rem', fontWeight: 700, textTransform: 'uppercase' }}>Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -216,12 +266,111 @@ const AdminDashboard = () => {
                                                     <td style={{ padding: '.875rem 1rem', fontSize: '.88rem' }}>{t.role}</td>
                                                     <td style={{ padding: '.875rem 1rem', fontSize: '.88rem' }}>{t.contactNumber || 'N/A'}</td>
                                                     <td style={{ padding: '.875rem 1rem', fontSize: '.88rem' }}><span style={{ background: '#E8F5E9', color: '#2E7D32', padding: '3px 8px', borderRadius: '20px', fontSize: '.75rem', fontWeight: 600 }}>● Active</span></td>
+                                                    <td style={{ padding: '.875rem 1rem', fontSize: '.88rem' }}>
+                                                        {t.role === 'Teacher' && (
+                                                            <button className="btn btn-sm" onClick={() => openAssignModal(t)} style={{ cursor: 'pointer', background: 'var(--navy)', color: '#fff', border: 'none', padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem' }}>Assign Subject</button>
+                                                        )}
+                                                    </td>
                                                 </tr>
                                             )) : (
                                                 <tr>
                                                     <td colSpan="5" style={{ textAlign: 'center', padding: '2rem', color: 'var(--muted)' }}>
                                                         <i className="fa-solid fa-spinner fa-spin"></i> Loading Database Records...
                                                     </td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* ======== TIMETABLE PANEL ======== */}
+                    {activeTab === 'timetable' && (
+                        <div className="panel slide-in active">
+                            <div className="card" style={{ background: '#fff', borderRadius: '16px', border: '1px solid var(--border)', padding: '4rem 1.5rem', textAlign: 'center' }}>
+                                <i className="fa-solid fa-calendar-week" style={{ fontSize: '3rem', color: 'var(--muted)', marginBottom: '1rem' }}></i>
+                                <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--navy)' }}>Timetable Management</h3>
+                                <p style={{ color: 'var(--muted)', marginTop: '.5rem' }}>Basic timetable data structure is established. Full visual scheduler interface coming soon.</p>
+                                <button className="btn btn-primary" onClick={() => alert('Timetable builder opening...')} style={{ marginTop: '1.5rem', display: 'inline-flex', alignItems: 'center', gap: '.5rem', background: 'var(--navy)', color: '#fff', padding: '.55rem 1.1rem', borderRadius: '8px', fontWeight: 600, fontSize: '.85rem', cursor: 'pointer', border: 'none' }}><i className="fa-solid fa-plus"></i> Create Schedule</button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* ======== CLASSES PANEL ======== */}
+                    {activeTab === 'classes' && (
+                        <div className="panel slide-in active">
+                            <div className="card" style={{ background: '#fff', borderRadius: '16px', border: '1px solid var(--border)', padding: '1.5rem', boxShadow: '0 2px 8px rgba(0,0,0,.04)' }}>
+                                <div className="card-title" style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--navy)', marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    Classes & Sections Management
+                                    <button className="btn btn-primary" onClick={() => setIsClassModalOpen(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: '.5rem', background: 'var(--navy)', color: '#fff', padding: '.55rem 1.1rem', borderRadius: '8px', fontWeight: 600, fontSize: '.85rem', cursor: 'pointer', border: 'none' }}><i className="fa-solid fa-plus"></i> Add Class</button>
+                                </div>
+                                <div style={{ overflowX: 'auto' }}>
+                                    <table className="data-table" style={{ width: '100%', borderCollapse: 'collapse', color: 'var(--text-main)' }}>
+                                        <thead>
+                                            <tr>
+                                                <th style={{ background: 'var(--navy)', color: '#fff', padding: '.75rem 1rem', textAlign: 'left', fontSize: '.78rem', fontWeight: 700, textTransform: 'uppercase' }}>Grade/Class</th>
+                                                <th style={{ background: 'var(--navy)', color: '#fff', padding: '.75rem 1rem', textAlign: 'left', fontSize: '.78rem', fontWeight: 700, textTransform: 'uppercase' }}>Section</th>
+                                                <th style={{ background: 'var(--navy)', color: '#fff', padding: '.75rem 1rem', textAlign: 'left', fontSize: '.78rem', fontWeight: 700, textTransform: 'uppercase' }}>Room</th>
+                                                <th style={{ background: 'var(--navy)', color: '#fff', padding: '.75rem 1rem', textAlign: 'left', fontSize: '.78rem', fontWeight: 700, textTransform: 'uppercase' }}>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {classes.length > 0 ? classes.map((cls) => (
+                                                <tr key={cls.id} style={{ borderBottom: '1px solid var(--border)' }}>
+                                                    <td style={{ padding: '.875rem 1rem', fontSize: '.88rem' }}><strong>{cls.grade}</strong></td>
+                                                    <td style={{ padding: '.875rem 1rem', fontSize: '.88rem' }}>{cls.section}</td>
+                                                    <td style={{ padding: '.875rem 1rem', fontSize: '.88rem' }}>{cls.room || 'N/A'}</td>
+                                                    <td style={{ padding: '.875rem 1rem', fontSize: '.88rem' }}>
+                                                        <button className="btn-icon" style={{ cursor: 'pointer', color: 'var(--danger)', background: 'transparent', border: 'none' }}><i className="fa-solid fa-trash"></i></button>
+                                                    </td>
+                                                </tr>
+                                            )) : (
+                                                <tr>
+                                                    <td colSpan="4" style={{ textAlign: 'center', padding: '2rem', color: 'var(--muted)' }}>No classes found. Please add a class.</td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* ======== SUBJECTS PANEL ======== */}
+                    {activeTab === 'subjects' && (
+                        <div className="panel slide-in active">
+                            <div className="card" style={{ background: '#fff', borderRadius: '16px', border: '1px solid var(--border)', padding: '1.5rem', boxShadow: '0 2px 8px rgba(0,0,0,.04)' }}>
+                                <div className="card-title" style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--navy)', marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    Subjects Master List
+                                    <button className="btn btn-primary" onClick={() => setIsSubjectModalOpen(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: '.5rem', background: 'var(--navy)', color: '#fff', padding: '.55rem 1.1rem', borderRadius: '8px', fontWeight: 600, fontSize: '.85rem', cursor: 'pointer', border: 'none' }}><i className="fa-solid fa-plus"></i> Add Subject</button>
+                                </div>
+                                <div style={{ overflowX: 'auto' }}>
+                                    <table className="data-table" style={{ width: '100%', borderCollapse: 'collapse', color: 'var(--text-main)' }}>
+                                        <thead>
+                                            <tr>
+                                                <th style={{ background: 'var(--navy)', color: '#fff', padding: '.75rem 1rem', textAlign: 'left', fontSize: '.78rem', fontWeight: 700, textTransform: 'uppercase' }}>Subject Name</th>
+                                                <th style={{ background: 'var(--navy)', color: '#fff', padding: '.75rem 1rem', textAlign: 'left', fontSize: '.78rem', fontWeight: 700, textTransform: 'uppercase' }}>Code</th>
+                                                <th style={{ background: 'var(--navy)', color: '#fff', padding: '.75rem 1rem', textAlign: 'left', fontSize: '.78rem', fontWeight: 700, textTransform: 'uppercase' }}>Type</th>
+                                                <th style={{ background: 'var(--navy)', color: '#fff', padding: '.75rem 1rem', textAlign: 'left', fontSize: '.78rem', fontWeight: 700, textTransform: 'uppercase' }}>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {subjects.length > 0 ? subjects.map((sub) => (
+                                                <tr key={sub.id} style={{ borderBottom: '1px solid var(--border)' }}>
+                                                    <td style={{ padding: '.875rem 1rem', fontSize: '.88rem' }}><strong>{sub.name}</strong></td>
+                                                    <td style={{ padding: '.875rem 1rem', fontSize: '.88rem' }}>{sub.code}</td>
+                                                    <td style={{ padding: '.875rem 1rem', fontSize: '.88rem' }}>
+                                                        <span style={{ background: sub.type === 'Theory' ? '#E3F2FD' : sub.type === 'Practical' ? '#E8F5E9' : '#FFF3E0', color: sub.type === 'Theory' ? '#1565C0' : sub.type === 'Practical' ? '#2E7D32' : '#E65100', padding: '3px 8px', borderRadius: '12px', fontSize: '.75rem', fontWeight: 600 }}>{sub.type}</span>
+                                                    </td>
+                                                    <td style={{ padding: '.875rem 1rem', fontSize: '.88rem' }}>
+                                                       <button className="btn-icon" style={{ cursor: 'pointer', color: 'var(--danger)', background: 'transparent', border: 'none' }}><i className="fa-solid fa-trash"></i></button>
+                                                    </td>
+                                                </tr>
+                                            )) : (
+                                                <tr>
+                                                    <td colSpan="4" style={{ textAlign: 'center', padding: '2rem', color: 'var(--muted)' }}>No subjects found. Please add a subject.</td>
                                                 </tr>
                                             )}
                                         </tbody>
@@ -240,30 +389,25 @@ const AdminDashboard = () => {
                                     <button className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '.5rem', background: 'var(--navy)', color: '#fff', padding: '.55rem 1.1rem', borderRadius: '8px', fontWeight: 600, fontSize: '.85rem', cursor: 'pointer', border: 'none' }}><i className="fa-solid fa-plus"></i> Add Event</button>
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '.5rem' }}>
-                                    <div className="event-item" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '.875rem 1rem', background: 'var(--bg)', borderRadius: '10px' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '.875rem' }}>
-                                            <div style={{ background: 'var(--navy)', color: '#fff', borderRadius: '8px', padding: '.35rem .65rem', textAlign: 'center', minWidth: '44px' }}>
-                                                <div style={{ fontSize: '1.1rem', fontWeight: 800, lineHeight: 1 }}>15</div>
-                                                <div style={{ fontSize: '.6rem', fontWeight: 700, textTransform: 'uppercase', opacity: .8 }}>Aug</div>
+                                    {events.length > 0 ? events.map(event => {
+                                        const eventDate = new Date(event.date);
+                                        return (
+                                            <div key={event.id} className="event-item" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '.875rem 1rem', background: 'var(--bg)', borderRadius: '10px' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '.875rem' }}>
+                                                    <div style={{ background: 'var(--navy)', color: '#fff', borderRadius: '8px', padding: '.35rem .65rem', textAlign: 'center', minWidth: '44px' }}>
+                                                        <div style={{ fontSize: '1.1rem', fontWeight: 800, lineHeight: 1 }}>{eventDate.getDate().toString().padStart(2, '0')}</div>
+                                                        <div style={{ fontSize: '.6rem', fontWeight: 700, textTransform: 'uppercase', opacity: .8 }}>{eventDate.toLocaleString('default', { month: 'short' })}</div>
+                                                    </div>
+                                                    <div>
+                                                        <div style={{ fontSize: '.95rem', fontWeight: 700, color: 'var(--navy)', marginBottom: '.15rem' }}>{event.title}</div>
+                                                        <div style={{ fontSize: '.75rem', color: 'var(--muted)' }}>{event.description}</div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <div style={{ fontSize: '.95rem', fontWeight: 700, color: 'var(--navy)', marginBottom: '.15rem' }}>Independence Day</div>
-                                                <div style={{ fontSize: '.75rem', color: 'var(--muted)' }}>Flag hoisting at 8:00 AM</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="event-item" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '.875rem 1rem', background: 'var(--bg)', borderRadius: '10px' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '.875rem' }}>
-                                            <div style={{ background: 'var(--warning)', color: '#fff', borderRadius: '8px', padding: '.35rem .65rem', textAlign: 'center', minWidth: '44px' }}>
-                                                <div style={{ fontSize: '1.1rem', fontWeight: 800, lineHeight: 1 }}>05</div>
-                                                <div style={{ fontSize: '.6rem', fontWeight: 700, textTransform: 'uppercase', opacity: .8 }}>Sep</div>
-                                            </div>
-                                            <div>
-                                                <div style={{ fontSize: '.95rem', fontWeight: 700, color: 'var(--navy)', marginBottom: '.15rem' }}>Teacher's Day Celebration</div>
-                                                <div style={{ fontSize: '.75rem', color: 'var(--muted)' }}>Half-day cultural program</div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                        );
+                                    }) : (
+                                        <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--muted)' }}>No upcoming events found.</div>
+                                    )}
                                 </div>
                             </div>
                         </div>

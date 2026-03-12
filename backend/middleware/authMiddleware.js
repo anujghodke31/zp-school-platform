@@ -1,33 +1,36 @@
-const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const { admin, db } = require('../firebase');
 
 const protect = async (req, res, next) => {
     let token;
 
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
         try {
-            // Get token from header
             token = req.headers.authorization.split(' ')[1];
 
-            // Verify token
-            const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret_avocado_toast');
+            // Verify Firebase ID token
+            const decodedToken = await admin.auth().verifyIdToken(token);
+            
+            // Get user record from Firestore
+            const userDoc = await db.collection('users').doc(decodedToken.uid).get();
+            
+            if (!userDoc.exists) {
+                return res.status(401).json({ success: false, message: 'User record not found in database' });
+            }
 
-            // Get user from the token
-            req.user = await User.findById(decoded.id).select('-passwordHash');
+            req.user = { id: decodedToken.uid, ...userDoc.data() };
+            // Provide _id for backwards compatibility with existing code where _id might be used
+            req.user._id = req.user.id;
 
             next();
         } catch (error) {
-            console.error(error);
+            console.error("Token verification failed:", error);
             res.status(401).json({ success: false, message: 'Not authorized, token failed' });
         }
-    }
-
-    if (!token) {
+    } else {
         res.status(401).json({ success: false, message: 'Not authorized, no token' });
     }
 };
 
-// Role-based authorization middleware
 const roleProtect = (...roles) => {
     return (req, res, next) => {
         if (req.user && roles.includes(req.user.role)) {
