@@ -137,3 +137,11 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Firebase Service Account credentials — NEVER commit these
+firebase-service-account.json
+backend/firebase-service-account.json
+**/firebase-service-account*.json
+
+# Backend env files
+backend/.env
