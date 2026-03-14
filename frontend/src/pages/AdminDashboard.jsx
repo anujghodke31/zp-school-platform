@@ -1,29 +1,29 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import api from '../utils/api';
 import Sidebar from '../components/Sidebar';
 import TopBar from '../components/TopBar';
 
-// Existing panels
-import OverviewPanel from '../components/admin/OverviewPanel';
-import StudentsPanel from '../components/admin/StudentsPanel';
-import TeachersPanel from '../components/admin/TeachersPanel';
-import ClassesPanel from '../components/admin/ClassesPanel';
-import SubjectsPanel from '../components/admin/SubjectsPanel';
-import EventsPanel from '../components/admin/EventsPanel';
-import AnnouncementsPanel from '../components/admin/AnnouncementsPanel';
-import TimetablePanel from '../components/admin/TimetablePanel';
-import ResultsPanel from '../components/admin/ResultsPanel';
+// Existing panels - Lazy Loaded
+const OverviewPanel = React.lazy(() => import('../components/admin/OverviewPanel'));
+const StudentsPanel = React.lazy(() => import('../components/admin/StudentsPanel'));
+const TeachersPanel = React.lazy(() => import('../components/admin/TeachersPanel'));
+const ClassesPanel = React.lazy(() => import('../components/admin/ClassesPanel'));
+const SubjectsPanel = React.lazy(() => import('../components/admin/SubjectsPanel'));
+const EventsPanel = React.lazy(() => import('../components/admin/EventsPanel'));
+const AnnouncementsPanel = React.lazy(() => import('../components/admin/AnnouncementsPanel'));
+const TimetablePanel = React.lazy(() => import('../components/admin/TimetablePanel'));
+const ResultsPanel = React.lazy(() => import('../components/admin/ResultsPanel'));
 
-// New blueprint panels
-import MdmPanel from '../components/admin/MdmPanel';
-import FeePanel from '../components/admin/FeePanel';
-import ScholarshipPanel from '../components/admin/ScholarshipPanel';
-import LeavePanel from '../components/admin/LeavePanel';
-import ExamPanel from '../components/admin/ExamPanel';
-import LibraryPanel from '../components/admin/LibraryPanel';
-import UDISEPanel from '../components/admin/UDISEPanel';
-import ReportCardPanel from '../components/admin/ReportCardPanel';
+// New blueprint panels - Lazy Loaded
+const MdmPanel = React.lazy(() => import('../components/admin/MdmPanel'));
+const FeePanel = React.lazy(() => import('../components/admin/FeePanel'));
+const ScholarshipPanel = React.lazy(() => import('../components/admin/ScholarshipPanel'));
+const LeavePanel = React.lazy(() => import('../components/admin/LeavePanel'));
+const ExamPanel = React.lazy(() => import('../components/admin/ExamPanel'));
+const LibraryPanel = React.lazy(() => import('../components/admin/LibraryPanel'));
+const UDISEPanel = React.lazy(() => import('../components/admin/UDISEPanel'));
+const ReportCardPanel = React.lazy(() => import('../components/admin/ReportCardPanel'));
 
 // Modals
 import AddUserModal from '../components/AddUserModal';
@@ -74,7 +74,35 @@ const AdminDashboard = () => {
         }
     }, []);
 
-    useEffect(() => { fetchAll(); }, [fetchAll]);
+    useEffect(() => {
+        let isMounted = true;
+        const load = async () => {
+            try {
+                const [statsRes, studentsRes, staffRes, classesRes, subjectsRes, eventsRes] = await Promise.all([
+                    api.get('/data/admin/stats').catch(() => ({ data: {} })),
+                    api.get('/data/students?limit=20').catch(() => ({ data: { data: [], nextCursor: null } })),
+                    api.get('/data/staff?limit=20').catch(() => ({ data: { data: [], nextCursor: null } })),
+                    api.get('/data/classes').catch(() => ({ data: { data: [] } })),
+                    api.get('/data/subjects').catch(() => ({ data: { data: [] } })),
+                    api.get('/data/events').catch(() => ({ data: { data: [] } })),
+                ]);
+                if (isMounted) {
+                    setStats(statsRes.data);
+                    setStudents(studentsRes.data.data || []);
+                    setStudentCursor(studentsRes.data.nextCursor || null);
+                    setTeachers(staffRes.data.data || []);
+                    setTeacherCursor(staffRes.data.nextCursor || null);
+                    setClasses(classesRes.data.data || []);
+                    setSubjects(subjectsRes.data.data || []);
+                    setEvents(eventsRes.data.data || []);
+                }
+            } catch (err) {
+                console.error('Failed to fetch admin data:', err);
+            }
+        };
+        load();
+        return () => { isMounted = false; };
+    }, []);
 
     const loadMoreStudents = async () => {
         if (!studentCursor) return;
@@ -112,64 +140,66 @@ const AdminDashboard = () => {
                 <AssignTeacherModal isOpen={isAssignModalOpen} onClose={() => setIsAssignModalOpen(false)} teacher={selectedTeacher} classes={classes} subjects={subjects} />
 
                 <div className="dash-content">
-                    {activeTab === 'overview' && <OverviewPanel stats={stats} />}
+                    <Suspense fallback={<div className="panel-wrap" style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>Loading panel...</div>}>
+                        {activeTab === 'overview' && <OverviewPanel stats={stats} />}
 
-                    {activeTab === 'students' && (
-                        <StudentsPanel
-                            students={students}
-                            nextCursor={studentCursor}
-                            onAddStudent={type => { setUserModalType(type); setIsUserModalOpen(true); }}
-                            onLoadMore={loadMoreStudents}
-                        />
-                    )}
+                        {activeTab === 'students' && (
+                            <StudentsPanel
+                                students={students}
+                                nextCursor={studentCursor}
+                                onAddStudent={type => { setUserModalType(type); setIsUserModalOpen(true); }}
+                                onLoadMore={loadMoreStudents}
+                            />
+                        )}
 
-                    {activeTab === 'teachers' && (
-                        <TeachersPanel
-                            teachers={teachers}
-                            nextCursor={teacherCursor}
-                            onAddStaff={() => { setUserModalType('staff'); setIsUserModalOpen(true); }}
-                            onAssign={t => { setSelectedTeacher(t); setIsAssignModalOpen(true); }}
-                            onLoadMore={loadMoreTeachers}
-                        />
-                    )}
+                        {activeTab === 'teachers' && (
+                            <TeachersPanel
+                                teachers={teachers}
+                                nextCursor={teacherCursor}
+                                onAddStaff={() => { setUserModalType('staff'); setIsUserModalOpen(true); }}
+                                onAssign={t => { setSelectedTeacher(t); setIsAssignModalOpen(true); }}
+                                onLoadMore={loadMoreTeachers}
+                            />
+                        )}
 
-                    {activeTab === 'classes' && (
-                        <ClassesPanel
-                            classes={classes}
-                            onAddClass={() => setIsClassModalOpen(true)}
-                            onDeleteClass={handleDeleteClass}
-                        />
-                    )}
+                        {activeTab === 'classes' && (
+                            <ClassesPanel
+                                classes={classes}
+                                onAddClass={() => setIsClassModalOpen(true)}
+                                onDeleteClass={handleDeleteClass}
+                            />
+                        )}
 
-                    {activeTab === 'subjects' && (
-                        <SubjectsPanel
-                            subjects={subjects}
-                            onAddSubject={() => setIsSubjectModalOpen(true)}
-                            onDeleteSubject={handleDeleteSubject}
-                        />
-                    )}
+                        {activeTab === 'subjects' && (
+                            <SubjectsPanel
+                                subjects={subjects}
+                                onAddSubject={() => setIsSubjectModalOpen(true)}
+                                onDeleteSubject={handleDeleteSubject}
+                            />
+                        )}
 
-                    {activeTab === 'events' && (
-                        <EventsPanel events={events} onRefresh={() => api.get('/data/events?limit=20').then(res => setEvents(res.data.data || [])).catch(console.error)} />
-                    )}
+                        {activeTab === 'events' && (
+                            <EventsPanel events={events} onRefresh={() => api.get('/data/events?limit=20').then(res => setEvents(res.data.data || [])).catch(console.error)} />
+                        )}
 
-                    {activeTab === 'timetable' && (
-                        <TimetablePanel classes={classes} subjects={subjects} teachers={teachers} />
-                    )}
+                        {activeTab === 'timetable' && (
+                            <TimetablePanel classes={classes} subjects={subjects} teachers={teachers} />
+                        )}
 
-                    {activeTab === 'results' && <ResultsPanel classes={classes} />}
-                    {activeTab === 'analytics' && <ResultsPanel classes={classes} />}
-                    {activeTab === 'announcements' && <AnnouncementsPanel />}
+                        {activeTab === 'results' && <ResultsPanel classes={classes} />}
+                        {activeTab === 'analytics' && <ResultsPanel classes={classes} />}
+                        {activeTab === 'announcements' && <AnnouncementsPanel />}
 
-                    {/* ── New Blueprint Panels ─────────────────────────────── */}
-                    {activeTab === 'mdm' && <MdmPanel />}
-                    {activeTab === 'fees' && <FeePanel classes={classes} />}
-                    {activeTab === 'scholarships' && <ScholarshipPanel classes={classes} />}
-                    {activeTab === 'leave' && <LeavePanel isAdmin={true} />}
-                    {activeTab === 'exams' && <ExamPanel classes={classes} subjects={subjects} />}
-                    {activeTab === 'library' && <LibraryPanel />}
-                    {activeTab === 'udise' && <UDISEPanel />}
-                    {activeTab === 'report-card' && <ReportCardPanel students={students} />}
+                        {/* ── New Blueprint Panels ─────────────────────────────── */}
+                        {activeTab === 'mdm' && <MdmPanel />}
+                        {activeTab === 'fees' && <FeePanel classes={classes} />}
+                        {activeTab === 'scholarships' && <ScholarshipPanel classes={classes} />}
+                        {activeTab === 'leave' && <LeavePanel isAdmin={true} />}
+                        {activeTab === 'exams' && <ExamPanel classes={classes} />}
+                        {activeTab === 'library' && <LibraryPanel />}
+                        {activeTab === 'udise' && <UDISEPanel />}
+                        {activeTab === 'report-card' && <ReportCardPanel students={students} />}
+                    </Suspense>
                 </div>
             </div>
         </div>

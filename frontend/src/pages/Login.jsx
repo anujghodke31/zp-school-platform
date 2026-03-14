@@ -53,7 +53,7 @@ const Login = () => {
             try {
                 await api.get('/auth/me', { headers: { Authorization: `Bearer ${idToken}` } });
                 // If OK — AuthContext will pick up the user via onAuthStateChanged
-            } catch (apiErr) {
+            } catch {
                 // User not registered in our system
                 await auth.signOut();
                 setError('Account not found. Please register first.');

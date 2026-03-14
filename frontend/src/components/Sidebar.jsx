@@ -125,7 +125,7 @@ const Sidebar = ({ role }) => {
                 {isParent && (
                     <>
                         <div className="sb-section">Portal</div>
-                        <NavLink to="/parent" end className={({ isActive }) => `sb-item ${location.pathname === '/parent' && !location.search ? 'active' : ''}`}>
+                        <NavLink to="/parent" end className={() => `sb-item ${location.pathname === '/parent' && !location.search ? 'active' : ''}`}>
                             <i className="fa-solid fa-home" /> Dashboard
                         </NavLink>
                         <NavLink to="/parent?tab=assignments" className={() => `sb-item ${location.search === '?tab=assignments' ? 'active' : ''}`}>
@@ -145,7 +145,7 @@ const Sidebar = ({ role }) => {
                 {isStudent && (
                     <>
                         <div className="sb-section">My Portal</div>
-                        <NavLink to="/student" end className={({ isActive }) => `sb-item ${location.pathname === '/student' && !location.search ? 'active' : ''}`}>
+                        <NavLink to="/student" end className={() => `sb-item ${location.pathname === '/student' && !location.search ? 'active' : ''}`}>
                             <i className="fa-solid fa-gauge-high" /> Overview
                         </NavLink>
                         <NavLink to="/student?tab=assignments" className={() => `sb-item ${location.search === '?tab=assignments' ? 'active' : ''}`}>

@@ -9,7 +9,7 @@ const ELearning = () => {
     const [activeSubject, setActiveSubject] = useState('all');
     const [activeType, setActiveType] = useState('all');
     const [materials, setMaterials] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchMaterials = async () => {

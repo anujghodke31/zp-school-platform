@@ -1,7 +1,6 @@
 import { useState } from "react";
 
 const saffron = "#FF6B00";
-const saffronLight = "#FF8C2A";
 const deepBlue = "#0A1628";
 const navyBlue = "#0D2045";
 const cardBg = "#0F2A4A";
