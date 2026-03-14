@@ -21,6 +21,12 @@ const CommandBar = () => {
         ? allResults.filter(r => r.title.toLowerCase().includes(query.toLowerCase()) || r.sub.toLowerCase().includes(query.toLowerCase()))
         : allResults;
 
+    const executeAction = React.useCallback((item) => {
+        if (!item) return;
+        setIsOpen(false);
+        navigate(item.path);
+    }, [navigate]);
+
     useEffect(() => {
         const handleKeyDown = (e) => {
             if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -48,22 +54,17 @@ const CommandBar = () => {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [isOpen, results, activeIndex]);
+    }, [isOpen, results, activeIndex, executeAction]);
 
     useEffect(() => {
         if (isOpen && inputRef.current) {
             inputRef.current.focus();
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setActiveIndex(0);
         } else {
             setQuery('');
         }
     }, [isOpen]);
-
-    const executeAction = (item) => {
-        if (!item) return;
-        setIsOpen(false);
-        navigate(item.path);
-    };
 
     if (!isOpen) return null;
 

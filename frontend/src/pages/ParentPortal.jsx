@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import api from '../utils/api';
 import Sidebar from '../components/Sidebar';
 import TopBar from '../components/TopBar';
@@ -7,7 +7,6 @@ import FeePanel from '../components/admin/FeePanel';
 import ScholarshipPanel from '../components/admin/ScholarshipPanel';
 
 const ParentPortal = () => {
-    const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const activeTab = searchParams.get('tab') || 'dashboard';
 

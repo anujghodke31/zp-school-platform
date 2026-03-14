@@ -45,7 +45,7 @@ const MdmPanel = () => {
     const submitStock = async e => {
         e.preventDefault(); setLoading(true); setMsg('');
         try {
-            await api.post('/data/mdm/stock', stackForm);
+            await api.post('/data/mdm/stock', stockForm);
             setMsg('✓ Stock added'); fetchStock();
             setStockForm({ item: '', quantity: '', unit: 'kg' });
         } catch { setMsg('Error adding stock'); } finally { setLoading(false); }

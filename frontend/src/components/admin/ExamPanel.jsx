@@ -3,7 +3,7 @@ import api from '../../utils/api';
 
 const EXAM_TYPES = ['Unit Test', 'Mid-Term', 'Annual', 'Pre-Board', 'Monthly'];
 
-const ExamPanel = ({ classes = [], subjects = [] }) => {
+const ExamPanel = ({ classes = [] }) => {
     const [exams, setExams] = useState([]);
     const [loading, setLoading] = useState(false);
     const [msg, setMsg] = useState('');
