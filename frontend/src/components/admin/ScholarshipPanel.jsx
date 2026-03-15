@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../utils/api';
 
 const SCHEMES = ['eKalyan Scholarship', 'Uniform Allowance', 'Free Textbooks', 'Saral Scholarship', 'SC/ST Merit', 'OBC Scholarship', 'Mid-Day Meal Benefit'];
@@ -12,15 +12,15 @@ const ScholarshipPanel = ({ classes = [] }) => {
     const [filterClass, setFilterClass] = useState('');
     const [form, setForm] = useState({ studentId: '', studentName: '', classId: '', schemeName: SCHEMES[0], benefit: '', status: 'Approved', disbursementDate: '' });
 
-    const fetch = async () => {
+    const fetch = useCallback(async () => {
         setLoading(true);
         try {
             const r = await api.get(`/data/scholarships${filterClass ? `?classId=${filterClass}` : ''}`);
             if (r.data.success) setData(r.data.data);
         } finally { setLoading(false); }
-    };
+    }, [filterClass]);
 
-    useEffect(() => { fetch(); }, [filterClass]);
+    useEffect(() => { fetch(); }, [fetch]);
 
     const submit = async e => {
         e.preventDefault(); setMsg('');

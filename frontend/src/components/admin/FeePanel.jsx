@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../utils/api';
 
 const STATUS_COLORS = { Paid: 'badge-green', Unpaid: 'badge-red', Partial: 'badge-yellow' };
@@ -11,15 +11,15 @@ const FeePanel = ({ classes = [] }) => {
     const [showForm, setShowForm] = useState(false);
     const [form, setForm] = useState({ studentId: '', studentName: '', classId: '', amount: '', category: 'General', status: 'Unpaid', paymentMode: 'Cash', receiptNo: '', paidOn: '' });
 
-    const fetchFees = async () => {
+    const fetchFees = useCallback(async () => {
         setLoading(true);
         try {
             const r = await api.get(`/data/fees${filterClass ? `?classId=${filterClass}` : ''}`);
             if (r.data.success) setFees(r.data.data);
         } finally { setLoading(false); }
-    };
+    }, [filterClass]);
 
-    useEffect(() => { fetchFees(); }, [filterClass]);
+    useEffect(() => { fetchFees(); }, [fetchFees]);
 
     const submit = async e => {
         e.preventDefault(); setMsg('');
