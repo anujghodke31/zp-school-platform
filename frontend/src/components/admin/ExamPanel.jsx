@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../utils/api';
 
 const EXAM_TYPES = ['Unit Test', 'Mid-Term', 'Annual', 'Pre-Board', 'Monthly'];
@@ -11,15 +11,15 @@ const ExamPanel = ({ classes = [] }) => {
     const [filterClass, setFilterClass] = useState('');
     const [form, setForm] = useState({ classId: '', subjectName: '', examName: '', examType: EXAM_TYPES[0], examDate: '', startTime: '09:00', endTime: '12:00', totalMarks: '100', venue: '' });
 
-    const fetch = async () => {
+    const fetch = useCallback(async () => {
         setLoading(true);
         try {
             const r = await api.get(`/data/exam-schedule${filterClass ? `?classId=${filterClass}` : ''}`);
             if (r.data.success) setExams(r.data.data);
         } finally { setLoading(false); }
-    };
+    }, [filterClass]);
 
-    useEffect(() => { fetch(); }, [filterClass]);
+    useEffect(() => { fetch(); }, [fetch]);
 
     const submit = async e => {
         e.preventDefault(); setMsg('');

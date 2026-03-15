@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { db } from '../config/firebase';
 import { collection, addDoc, query, where, getDocs, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
 
@@ -9,13 +9,7 @@ const AssignTeacherModal = ({ isOpen, onClose, teacher, classes, subjects }) => 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-    useEffect(() => {
-        if (isOpen && teacher) {
-            fetchAssignments();
-        }
-    }, [isOpen, teacher]);
-
-    const fetchAssignments = async () => {
+    const fetchAssignments = useCallback(async () => {
         if (!teacher) return;
         setLoading(true);
         try {
@@ -28,8 +22,13 @@ const AssignTeacherModal = ({ isOpen, onClose, teacher, classes, subjects }) => 
         } finally {
             setLoading(false);
         }
-    };
+    }, [teacher]);
 
+    useEffect(() => {
+        if (isOpen && teacher) {
+            fetchAssignments();
+        }
+    }, [isOpen, teacher, fetchAssignments]);
     const handleAssign = async (e) => {
         e.preventDefault();
         setError('');

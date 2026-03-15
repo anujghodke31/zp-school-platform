@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../utils/api';
 
 const grades = { 90: 'A+', 80: 'A', 70: 'B', 60: 'C', 50: 'D', 0: 'F' };
@@ -25,7 +25,7 @@ const ResultsPanel = ({ classes }) => {
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    const fetchResults = async () => {
+    const fetchResults = useCallback(async () => {
         if (!classId) return;
         setLoading(true);
         try {
@@ -38,9 +38,9 @@ const ResultsPanel = ({ classes }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [classId, examType]);
 
-    useEffect(() => { fetchResults(); }, [classId, examType]);
+    useEffect(() => { fetchResults(); }, [classId, examType, fetchResults]);
 
     const sorted = [...results].sort((a, b) => b.percentage - a.percentage);
     const top3 = sorted.slice(0, 3);
