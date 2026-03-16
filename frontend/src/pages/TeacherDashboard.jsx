@@ -3,8 +3,9 @@ import { useSearchParams } from 'react-router-dom';
 import api from '../utils/api';
 import Sidebar from '../components/Sidebar';
 import TopBar from '../components/TopBar';
-import LeavePanel from '../components/admin/LeavePanel';
-import ExamPanel from '../components/admin/ExamPanel';
+
+const LeavePanel = React.lazy(() => import('../components/admin/LeavePanel'));
+const ExamPanel = React.lazy(() => import('../components/admin/ExamPanel'));
 
 const TeacherDashboard = () => {
     const [searchParams] = useSearchParams();
@@ -93,8 +94,10 @@ const TeacherDashboard = () => {
                         </div>
                     )}
 
-                    {activeTab === 'leave' && <LeavePanel isAdmin={false} />}
-                    {activeTab === 'exams' && <ExamPanel classes={classes} subjects={subjects} />}
+                    <React.Suspense fallback={<div>Loading...</div>}>
+                        {activeTab === 'leave' && <LeavePanel isAdmin={false} />}
+                        {activeTab === 'exams' && <ExamPanel classes={classes} subjects={subjects} />}
+                    </React.Suspense>
                 </div>
             </div>
         </div>

@@ -3,8 +3,9 @@ import { useSearchParams } from 'react-router-dom';
 import api from '../utils/api';
 import Sidebar from '../components/Sidebar';
 import TopBar from '../components/TopBar';
-import FeePanel from '../components/admin/FeePanel';
-import ScholarshipPanel from '../components/admin/ScholarshipPanel';
+
+const FeePanel = React.lazy(() => import('../components/admin/FeePanel'));
+const ScholarshipPanel = React.lazy(() => import('../components/admin/ScholarshipPanel'));
 
 const ParentPortal = () => {
     const [searchParams] = useSearchParams();
@@ -142,8 +143,10 @@ const ParentPortal = () => {
                         </div>
                     )}
                     
-                    {activeTab === 'fees' && <FeePanel classes={[]} />}
-                    {activeTab === 'scholarships' && <ScholarshipPanel classes={[]} />}
+                    <React.Suspense fallback={<div>Loading...</div>}>
+                        {activeTab === 'fees' && <FeePanel classes={[]} />}
+                        {activeTab === 'scholarships' && <ScholarshipPanel classes={[]} />}
+                    </React.Suspense>
                 </div>
             </div>
         </div>

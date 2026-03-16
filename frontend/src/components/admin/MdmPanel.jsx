@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../utils/api';
 
 const months = Array.from({ length: 12 }, (_, i) => {
@@ -17,21 +17,21 @@ const MdmPanel = () => {
     const [loading, setLoading] = useState(false);
     const [msg, setMsg] = useState('');
 
-    const fetchLogs = async () => {
+    const fetchLogs = useCallback(async () => {
         const r = await api.get(`/data/mdm?month=${month}`);
         if (r.data.success) setLogs(r.data.data);
-    };
-    const fetchStock = async () => {
+    }, [month]);
+    const fetchStock = useCallback(async () => {
         const r = await api.get('/data/mdm/stock');
         if (r.data.success) setStock(r.data.data);
-    };
-    const fetchReport = async () => {
+    }, []);
+    const fetchReport = useCallback(async () => {
         const r = await api.get(`/data/mdm/report?month=${month}`);
         if (r.data.success) setReport(r.data);
-    };
+    }, [month]);
 
-    useEffect(() => { fetchLogs(); fetchReport(); }, [month]);
-    useEffect(() => { if (tab === 'stock') fetchStock(); }, [tab]);
+    useEffect(() => { fetchLogs(); fetchReport(); }, [month, fetchLogs, fetchReport]);
+    useEffect(() => { if (tab === 'stock') fetchStock(); }, [tab, fetchStock]);
 
     const submitDaily = async e => {
         e.preventDefault(); setLoading(true); setMsg('');

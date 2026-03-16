@@ -4,8 +4,9 @@ import api from '../utils/api';
 import Sidebar from '../components/Sidebar';
 import TopBar from '../components/TopBar';
 import { AuthContext } from '../context/AuthContext';
-import LibraryPanel from '../components/admin/LibraryPanel';
-import ReportCardPanel from '../components/admin/ReportCardPanel';
+
+const LibraryPanel = React.lazy(() => import('../components/admin/LibraryPanel'));
+const ReportCardPanel = React.lazy(() => import('../components/admin/ReportCardPanel'));
 
 const StudentDashboard = () => {
     const { user } = useContext(AuthContext);
@@ -187,8 +188,10 @@ const StudentDashboard = () => {
                         </div>
                     )}
 
-                    {activeTab === 'library' && <LibraryPanel />}
-                    {activeTab === 'report-card' && user && <ReportCardPanel students={[{ id: user._id, name: user.name, class: user.class }]} />}
+                    <React.Suspense fallback={<div>Loading...</div>}>
+                        {activeTab === 'library' && <LibraryPanel />}
+                        {activeTab === 'report-card' && user && <ReportCardPanel students={[{ id: user._id, name: user.name, class: user.class }]} />}
+                    </React.Suspense>
                 </div>
             </div>
         </div>
