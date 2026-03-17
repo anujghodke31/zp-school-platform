@@ -1,20 +1,54 @@
 const admin = require('firebase-admin');
 
 let serviceAccount;
+let db;
 
-// Prefer FIREBASE_SERVICE_ACCOUNT env var (JSON string) over the file
-// This avoids committing the secret key to version control.
-if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-    serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-} else {
-    // Fallback: local file (must NOT be committed; add to .gitignore)
-    serviceAccount = require('./firebase-service-account.json');
+try {
+    // Prefer FIREBASE_SERVICE_ACCOUNT env var (JSON string) over the file
+    // This avoids committing the secret key to version control.
+    if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+        serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+    } else {
+        // Fallback: local file (must NOT be committed; add to .gitignore)
+        try {
+            serviceAccount = require('./firebase-service-account.json');
+        } catch (err) {
+            console.warn('⚠️ Firebase service account file missing and FIREBASE_SERVICE_ACCOUNT env var not set.');
+            console.warn('⚠️ Running without Firebase connection. Real data features will fail.');
+            // Do not initialize if we don't have credentials
+            serviceAccount = null;
+        }
+    }
+
+    if (serviceAccount) {
+        admin.initializeApp({
+            credential: admin.credential.cert(serviceAccount),
+        });
+        db = admin.firestore();
+        console.log('✅ Firebase initialized successfully.');
+    } else {
+        // Create dummy db object that warns when used to prevent immediate crash but document failure
+        db = {
+            collection: () => ({
+                doc: () => ({
+                    get: async () => { throw new Error('Firebase not configured'); },
+                    set: async () => { throw new Error('Firebase not configured'); },
+                    update: async () => { throw new Error('Firebase not configured'); },
+                    delete: async () => { throw new Error('Firebase not configured'); }
+                }),
+                get: async () => { throw new Error('Firebase not configured'); },
+                add: async () => { throw new Error('Firebase not configured'); }
+            })
+        };
+    }
+} catch (error) {
+    console.error('❌ Error initializing Firebase:', error.message);
+    // Dummy DB for the same reason
+    db = {
+        collection: () => ({
+            get: async () => { throw new Error('Firebase not configured'); }
+        })
+    };
 }
-
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-});
-
-const db = admin.firestore();
 
 module.exports = { admin, db };
