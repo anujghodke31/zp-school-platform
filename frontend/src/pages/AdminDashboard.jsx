@@ -50,17 +50,34 @@ const AdminDashboard = () => {
     const [isSubjectModalOpen, setIsSubjectModalOpen] = useState(false);
     const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
     const [selectedTeacher, setSelectedTeacher] = useState(null);
+    const [dataError, setDataError] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     const fetchAll = useCallback(async () => {
         try {
+            setIsLoading(true);
+            setDataError(null);
             const [statsRes, studentsRes, staffRes, classesRes, subjectsRes, eventsRes] = await Promise.all([
-                api.get('/data/admin/stats').catch(() => ({ data: {} })),
-                api.get('/data/students?limit=20').catch(() => ({ data: { data: [], nextCursor: null } })),
-                api.get('/data/staff?limit=20').catch(() => ({ data: { data: [], nextCursor: null } })),
-                api.get('/data/classes').catch(() => ({ data: { data: [] } })),
-                api.get('/data/subjects').catch(() => ({ data: { data: [] } })),
-                api.get('/data/events').catch(() => ({ data: { data: [] } })),
+                api.get('/data/admin/stats').catch((err) => ({ error: err, data: {} })),
+                api.get('/data/students?limit=20').catch((err) => ({ error: err, data: { data: [], nextCursor: null } })),
+                api.get('/data/staff?limit=20').catch((err) => ({ error: err, data: { data: [], nextCursor: null } })),
+                api.get('/data/classes').catch((err) => ({ error: err, data: { data: [] } })),
+                api.get('/data/subjects').catch((err) => ({ error: err, data: { data: [] } })),
+                api.get('/data/events').catch((err) => ({ error: err, data: { data: [] } })),
             ]);
+
+            const responses = [statsRes, studentsRes, staffRes, classesRes, subjectsRes, eventsRes];
+            const hasError = responses.some(res => res.error);
+
+            if (hasError) {
+                const firstError = responses.find(res => res.error)?.error;
+                if (firstError?.response?.data?.message?.includes('Firebase not configured') || firstError?.message?.includes('Firebase not configured')) {
+                    setDataError('Database is not configured. Real data features will fail. Please set up Firebase credentials.');
+                } else {
+                    setDataError('Failed to load some dashboard data. Please try again later.');
+                }
+            }
+
             setStats(statsRes.data);
             setStudents(studentsRes.data.data || []);
             setStudentCursor(studentsRes.data.nextCursor || null);
@@ -69,8 +86,11 @@ const AdminDashboard = () => {
             setClasses(classesRes.data.data || []);
             setSubjects(subjectsRes.data.data || []);
             setEvents(eventsRes.data.data || []);
+            setIsLoading(false);
         } catch (err) {
             console.error('Failed to fetch admin data:', err);
+            setDataError('An unexpected error occurred while loading data.');
+            setIsLoading(false);
         }
     }, []);
 
@@ -78,15 +98,30 @@ const AdminDashboard = () => {
         let isMounted = true;
         const load = async () => {
             try {
+                setIsLoading(true);
+                setDataError(null);
                 const [statsRes, studentsRes, staffRes, classesRes, subjectsRes, eventsRes] = await Promise.all([
-                    api.get('/data/admin/stats').catch(() => ({ data: {} })),
-                    api.get('/data/students?limit=20').catch(() => ({ data: { data: [], nextCursor: null } })),
-                    api.get('/data/staff?limit=20').catch(() => ({ data: { data: [], nextCursor: null } })),
-                    api.get('/data/classes').catch(() => ({ data: { data: [] } })),
-                    api.get('/data/subjects').catch(() => ({ data: { data: [] } })),
-                    api.get('/data/events').catch(() => ({ data: { data: [] } })),
+                    api.get('/data/admin/stats').catch((err) => ({ error: err, data: {} })),
+                    api.get('/data/students?limit=20').catch((err) => ({ error: err, data: { data: [], nextCursor: null } })),
+                    api.get('/data/staff?limit=20').catch((err) => ({ error: err, data: { data: [], nextCursor: null } })),
+                    api.get('/data/classes').catch((err) => ({ error: err, data: { data: [] } })),
+                    api.get('/data/subjects').catch((err) => ({ error: err, data: { data: [] } })),
+                    api.get('/data/events').catch((err) => ({ error: err, data: { data: [] } })),
                 ]);
+
                 if (isMounted) {
+                    const responses = [statsRes, studentsRes, staffRes, classesRes, subjectsRes, eventsRes];
+                    const hasError = responses.some(res => res.error);
+
+                    if (hasError) {
+                        const firstError = responses.find(res => res.error)?.error;
+                        if (firstError?.response?.data?.message?.includes('Firebase not configured') || firstError?.message?.includes('Firebase not configured')) {
+                            setDataError('Database is not configured. Real data features will fail. Please set up Firebase credentials.');
+                        } else {
+                            setDataError('Failed to load some dashboard data. Please try again later.');
+                        }
+                    }
+
                     setStats(statsRes.data);
                     setStudents(studentsRes.data.data || []);
                     setStudentCursor(studentsRes.data.nextCursor || null);
@@ -95,9 +130,14 @@ const AdminDashboard = () => {
                     setClasses(classesRes.data.data || []);
                     setSubjects(subjectsRes.data.data || []);
                     setEvents(eventsRes.data.data || []);
+                    setIsLoading(false);
                 }
             } catch (err) {
                 console.error('Failed to fetch admin data:', err);
+                if (isMounted) {
+                    setDataError('An unexpected error occurred while loading data.');
+                    setIsLoading(false);
+                }
             }
         };
         load();
@@ -140,6 +180,18 @@ const AdminDashboard = () => {
                 <AssignTeacherModal isOpen={isAssignModalOpen} onClose={() => setIsAssignModalOpen(false)} teacher={selectedTeacher} classes={classes} subjects={subjects} />
 
                 <div className="dash-content">
+                    {dataError && (
+                        <div style={{ backgroundColor: '#fee2e2', color: '#991b1b', padding: '1rem', borderRadius: '0.5rem', marginBottom: '1.5rem', border: '1px solid #f87171' }}>
+                            <i className="fa-solid fa-triangle-exclamation" style={{ marginRight: '0.5rem' }}></i>
+                            {dataError}
+                        </div>
+                    )}
+                    {isLoading ? (
+                        <div style={{ display: 'flex', justifyContent: 'center', padding: '3rem' }}>
+                            <div className="spinner" style={{ width: '40px', height: '40px', border: '4px solid rgba(0,0,0,0.1)', borderTopColor: 'var(--navy)', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+                            <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
+                        </div>
+                    ) : (
                     <Suspense fallback={<div className="panel-wrap" style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>Loading panel...</div>}>
                         {activeTab === 'overview' && <OverviewPanel stats={stats} />}
 
@@ -200,6 +252,7 @@ const AdminDashboard = () => {
                         {activeTab === 'udise' && <UDISEPanel />}
                         {activeTab === 'report-card' && <ReportCardPanel students={students} />}
                     </Suspense>
+                    )}
                 </div>
             </div>
         </div>
