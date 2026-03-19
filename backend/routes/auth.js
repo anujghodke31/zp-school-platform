@@ -27,7 +27,6 @@ router.get('/me', protect, async (req, res) => {
 // @access  Public (verifies token inline)
 router.post('/register', async (req, res) => {
     try {
-        const { admin, db } = require('../firebase');
         const { role } = req.body;
         const authHeader = req.headers.authorization;
         

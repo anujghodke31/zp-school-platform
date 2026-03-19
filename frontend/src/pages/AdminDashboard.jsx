@@ -96,53 +96,19 @@ const AdminDashboard = () => {
 
     useEffect(() => {
         let isMounted = true;
-        const load = async () => {
-            try {
-                setIsLoading(true);
-                setDataError(null);
-                const [statsRes, studentsRes, staffRes, classesRes, subjectsRes, eventsRes] = await Promise.all([
-                    api.get('/data/admin/stats').catch((err) => ({ error: err, data: {} })),
-                    api.get('/data/students?limit=20').catch((err) => ({ error: err, data: { data: [], nextCursor: null } })),
-                    api.get('/data/staff?limit=20').catch((err) => ({ error: err, data: { data: [], nextCursor: null } })),
-                    api.get('/data/classes').catch((err) => ({ error: err, data: { data: [] } })),
-                    api.get('/data/subjects').catch((err) => ({ error: err, data: { data: [] } })),
-                    api.get('/data/events').catch((err) => ({ error: err, data: { data: [] } })),
-                ]);
 
-                if (isMounted) {
-                    const responses = [statsRes, studentsRes, staffRes, classesRes, subjectsRes, eventsRes];
-                    const hasError = responses.some(res => res.error);
-
-                    if (hasError) {
-                        const firstError = responses.find(res => res.error)?.error;
-                        if (firstError?.response?.data?.message?.includes('Firebase not configured') || firstError?.message?.includes('Firebase not configured')) {
-                            setDataError('Database is not configured. Real data features will fail. Please set up Firebase credentials.');
-                        } else {
-                            setDataError('Failed to load some dashboard data. Please try again later.');
-                        }
-                    }
-
-                    setStats(statsRes.data);
-                    setStudents(studentsRes.data.data || []);
-                    setStudentCursor(studentsRes.data.nextCursor || null);
-                    setTeachers(staffRes.data.data || []);
-                    setTeacherCursor(staffRes.data.nextCursor || null);
-                    setClasses(classesRes.data.data || []);
-                    setSubjects(subjectsRes.data.data || []);
-                    setEvents(eventsRes.data.data || []);
-                    setIsLoading(false);
-                }
-            } catch (err) {
-                console.error('Failed to fetch admin data:', err);
-                if (isMounted) {
-                    setDataError('An unexpected error occurred while loading data.');
-                    setIsLoading(false);
-                }
+        // Wrapped in an async self-invoking function to avoid synchronous setState warnings
+        const initLoad = async () => {
+            if (isMounted) {
+                await fetchAll();
             }
         };
-        load();
-        return () => { isMounted = false; };
-    }, []);
+        initLoad();
+
+        return () => {
+            isMounted = false;
+        };
+    }, [fetchAll]);
 
     const loadMoreStudents = async () => {
         if (!studentCursor) return;
