@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 
 const AddUserModal = ({ isOpen, onClose, type, onUserAdded }) => {
     const [loading, setLoading] = useState(false);
@@ -27,15 +27,12 @@ const AddUserModal = ({ isOpen, onClose, type, onUserAdded }) => {
         setLoading(true);
 
         try {
-            const token = JSON.parse(localStorage.getItem('userInfo'))?.token;
-            const config = { headers: { Authorization: `Bearer ${token}` } };
-
             if (type === 'student') {
                 const payload = { roll_no: rollNo, name, className, parent_phone: parentPhone };
-                await axios.post('http://localhost:8000/api/data/students', payload, config);
+                await api.post('/data/students', payload);
             } else {
                 const payload = { username, password, name, role, contactNumber };
-                await axios.post('http://localhost:8000/api/data/staff', payload, config);
+                await api.post('/data/staff', payload);
             }
 
             onUserAdded();
