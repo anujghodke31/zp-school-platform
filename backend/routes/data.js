@@ -11,32 +11,40 @@ const PAGE_LIMIT = 20;
 // @access  Protected (Admin/SuperAdmin)
 router.get('/admin/stats', protect, roleProtect('Admin', 'SuperAdmin'), async (req, res) => {
     try {
-        const [assignmentsSnap, schoolsSnap, studentsSnap, teachersSnap] = await Promise.all([
+        const [
+            assignmentsSnap,
+            schoolsSnap,
+            studentsSnap,
+            teachersSnap,
+            atRiskSnap,
+            avgAttendanceSnap
+        ] = await Promise.all([
             db.collection('assignments').count().get(),
             db.collection('schools').count().get(),
-            db.collection('students').get(),
+            db.collection('students').count().get(),
             db.collection('users').where('role', '==', 'Teacher').count().get(),
+            db.collection('students').where('attendance_pct', '<', 75).count().get(),
+            db.collection('students').aggregate({ avg: admin.firestore.AggregateField.average('attendance_pct') }).get()
         ]);
 
-        const students = studentsSnap.docs.map(d => d.data());
-        const total = students.length;
+        const total_students = studentsSnap.data().count;
+        const total_teachers = teachersSnap.data().count;
+        const total_assignments = assignmentsSnap.data().count;
+        const schools_in_network = schoolsSnap.data().count;
+        const at_risk_count = atRiskSnap.data().count;
 
-        // Real average attendance from stored attendance_pct per student
-        const avg_attendance = total
-            ? Math.round(students.reduce((sum, s) => sum + (s.attendance_pct ?? 100), 0) / total)
-            : 0;
-
-        // At-risk: below 75% attendance
-        const at_risk_count = students.filter(s => (s.attendance_pct ?? 100) < 75).length;
+        // Note: The average aggregate might be null if there are no students or no attendance_pct fields
+        const avgVal = avgAttendanceSnap.data().avg;
+        const avg_attendance = total_students > 0 ? (avgVal != null ? Math.round(avgVal) : 100) : 0;
 
         res.json({
             success: true,
-            total_students: total,
-            total_teachers: teachersSnap.data().count,
+            total_students,
+            total_teachers,
             avg_attendance,
             at_risk_count,
-            total_assignments: assignmentsSnap.data().count,
-            schools_in_network: schoolsSnap.data().count,
+            total_assignments,
+            schools_in_network,
         });
     } catch (err) {
         console.error('Stats error:', err);
