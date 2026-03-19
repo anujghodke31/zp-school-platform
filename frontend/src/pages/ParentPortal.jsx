@@ -16,8 +16,8 @@ const ParentPortal = () => {
     useEffect(() => {
         const fetchAssignments = async () => {
             try {
-                const res = await api.get('/data/assignments').catch(() => ({ data: [] }));
-                setAssignments(res.data);
+                const res = await api.get('/data/assignments').catch(() => ({ data: { data: [] } }));
+                setAssignments(res.data.data || []);
             } catch (error) {
                 console.error("Failed to fetch assignments", error);
             }
