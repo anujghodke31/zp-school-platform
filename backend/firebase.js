@@ -28,27 +28,91 @@ try {
         console.log('✅ Firebase initialized successfully.');
     } else {
         // Create dummy db object that warns when used to prevent immediate crash but document failure
-        db = {
-            collection: () => ({
-                doc: () => ({
-                    get: async () => { throw new Error('Firebase not configured'); },
-                    set: async () => { throw new Error('Firebase not configured'); },
-                    update: async () => { throw new Error('Firebase not configured'); },
-                    delete: async () => { throw new Error('Firebase not configured'); }
-                }),
+        const dummyQuery = {
+            where: function() { return this; },
+            limit: function() { return this; },
+            orderBy: function() { return this; },
+            startAfter: function() { return this; },
+            count: function() { return this; },
+            aggregate: function() { return this; },
+            get: async () => { throw new Error('Firebase not configured'); },
+            add: async () => { throw new Error('Firebase not configured'); },
+            doc: () => ({
                 get: async () => { throw new Error('Firebase not configured'); },
-                add: async () => { throw new Error('Firebase not configured'); }
+                set: async () => { throw new Error('Firebase not configured'); },
+                update: async () => { throw new Error('Firebase not configured'); },
+                delete: async () => { throw new Error('Firebase not configured'); }
             })
         };
+        db = {
+            collection: () => dummyQuery
+        };
+        // Also provide dummy admin.firestore.AggregateField to prevent crash during query construction
+        if (!admin.firestore) {
+            admin.firestore = {
+                AggregateField: {
+                    average: () => ({}),
+                    sum: () => ({}),
+                    count: () => ({})
+                },
+                FieldValue: {
+                    serverTimestamp: () => new Date(),
+                    increment: () => 1,
+                    arrayUnion: () => [],
+                    arrayRemove: () => []
+                }
+            };
+        } else if (!admin.firestore.AggregateField) {
+            admin.firestore.AggregateField = {
+                average: () => ({}),
+                sum: () => ({}),
+                count: () => ({})
+            };
+        }
     }
 } catch (error) {
     console.error('❌ Error initializing Firebase:', error.message);
     // Dummy DB for the same reason
-    db = {
-        collection: () => ({
-            get: async () => { throw new Error('Firebase not configured'); }
+    const dummyQuery = {
+        where: function() { return this; },
+        limit: function() { return this; },
+        orderBy: function() { return this; },
+        startAfter: function() { return this; },
+        count: function() { return this; },
+        aggregate: function() { return this; },
+        get: async () => { throw new Error('Firebase not configured'); },
+        add: async () => { throw new Error('Firebase not configured'); },
+        doc: () => ({
+            get: async () => { throw new Error('Firebase not configured'); },
+            set: async () => { throw new Error('Firebase not configured'); },
+            update: async () => { throw new Error('Firebase not configured'); },
+            delete: async () => { throw new Error('Firebase not configured'); }
         })
     };
+    db = {
+        collection: () => dummyQuery
+    };
+    if (!admin.firestore) {
+        admin.firestore = {
+            AggregateField: {
+                average: () => ({}),
+                sum: () => ({}),
+                count: () => ({})
+            },
+            FieldValue: {
+                serverTimestamp: () => new Date(),
+                increment: () => 1,
+                arrayUnion: () => [],
+                arrayRemove: () => []
+            }
+        };
+    } else if (!admin.firestore.AggregateField) {
+        admin.firestore.AggregateField = {
+            average: () => ({}),
+            sum: () => ({}),
+            count: () => ({})
+        };
+    }
 }
 
 module.exports = { admin, db };
