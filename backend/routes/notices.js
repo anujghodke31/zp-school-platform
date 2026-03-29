@@ -28,6 +28,7 @@ router.post('/', protect, roleProtect('Admin', 'SuperAdmin', 'Teacher'), async (
 
         res.status(201).json({ success: true, notice });
     } catch (err) {
+        console.error(err);
         console.error("Error creating notice:", err);
         res.status(500).json({ success: false, message: 'Server Error' });
     }
@@ -42,6 +43,7 @@ router.get('/public', async (req, res) => {
         const notices = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         res.json({ success: true, data: notices });
     } catch (err) {
+        console.error(err);
         console.error("Error fetching public notices:", err);
         res.status(500).json({ success: false, message: 'Server Error' });
     }
@@ -59,6 +61,7 @@ router.get('/', protect, async (req, res) => {
         }));
         res.json(notices);
     } catch (err) {
+        console.error(err);
         console.error("Error fetching notices:", err);
         res.status(500).json({ success: false, message: 'Server Error' });
     }
