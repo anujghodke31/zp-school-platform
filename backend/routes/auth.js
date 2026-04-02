@@ -18,6 +18,7 @@ router.get('/me', protect, async (req, res) => {
             contactNumber: req.user.contactNumber
         });
     } catch (error) {
+        console.error("Profile fetch error:", error);
         res.status(500).json({ success: false, message: 'Server Error' });
     }
 });
@@ -66,7 +67,7 @@ router.post('/register', async (req, res) => {
         });
     } catch (error) {
         console.error("Registration error STACK:", error.stack || error);
-        res.status(500).json({ success: false, message: 'Server Error during registration: ' + error.message });
+        res.status(500).json({ success: false, message: 'Server Error' });
     }
 });
 
