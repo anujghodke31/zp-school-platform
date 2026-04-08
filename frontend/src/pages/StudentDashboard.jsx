@@ -17,18 +17,30 @@ const StudentDashboard = () => {
     const [notices, setNotices] = useState([]);
     const [attendance, setAttendance] = useState([]);
     const [attendancePct, setAttendancePct] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [dataError, setDataError] = useState(null);
 
     useEffect(() => {
         const load = async () => {
             try {
+                setIsLoading(true);
+                setDataError(null);
                 const [assignRes, noticeRes] = await Promise.all([
-                    api.get('/data/assignments').catch(() => ({ data: { data: [] } })),
-                    api.get('/notices').catch(() => ({ data: [] })),
+                    api.get('/data/assignments').catch(err => ({ error: err, data: { data: [] } })),
+                    api.get('/notices').catch(err => ({ error: err, data: [] })),
                 ]);
+
+                if (assignRes.error || noticeRes.error) {
+                    setDataError('Failed to load some dashboard data. Please try again later.');
+                }
+
                 setAssignments(assignRes.data.data || []);
                 setNotices(Array.isArray(noticeRes.data) ? noticeRes.data : []);
             } catch (err) {
                 console.error('Student dashboard load error:', err);
+                setDataError('An unexpected error occurred while loading data.');
+            } finally {
+                setIsLoading(false);
             }
         };
         load();
@@ -79,6 +91,19 @@ const StudentDashboard = () => {
                 </div>
 
                 <div className="dash-content">
+                    {dataError && (
+                        <div style={{ backgroundColor: '#fee2e2', color: '#991b1b', padding: '1rem', borderRadius: '0.5rem', marginBottom: '1.5rem', border: '1px solid #f87171' }}>
+                            <i className="fa-solid fa-triangle-exclamation" style={{ marginRight: '0.5rem' }}></i>
+                            {dataError}
+                        </div>
+                    )}
+                    {isLoading ? (
+                        <div style={{ display: 'flex', justifyContent: 'center', padding: '3rem' }}>
+                            <div className="spinner" style={{ width: '40px', height: '40px', border: '4px solid rgba(0,0,0,0.1)', borderTopColor: 'var(--navy)', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+                            <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
+                        </div>
+                    ) : (
+                    <>
                     {activeTab === 'overview' && (
                         <div className="panel slide-in active">
                             <div className="stat-grid">
@@ -192,6 +217,8 @@ const StudentDashboard = () => {
                         {activeTab === 'library' && <LibraryPanel />}
                         {activeTab === 'report-card' && user && <ReportCardPanel students={[{ id: user._id, name: user.name, class: user.class }]} />}
                     </React.Suspense>
+                    </>
+                    )}
                 </div>
             </div>
         </div>
