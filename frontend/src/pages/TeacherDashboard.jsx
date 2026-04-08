@@ -17,13 +17,37 @@ const TeacherDashboard = () => {
     const [attendance, setAttendance] = useState({});
     const [syncing, setSyncing] = useState(false);
     const [noticeText, setNoticeText] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
+    const [dataError, setDataError] = useState(null);
 
     const today = new Date().toISOString().slice(0, 10);
 
     useEffect(() => {
-        api.get('/data/students?limit=50').then(res => setStudents(res.data.data || [])).catch(() => {});
-        api.get('/data/classes').then(r => setClasses(r.data.data || [])).catch(() => {});
-        api.get('/data/subjects').then(r => setSubjects(r.data.data || [])).catch(() => {});
+        const load = async () => {
+            try {
+                setIsLoading(true);
+                setDataError(null);
+                const [studentsRes, classesRes, subjectsRes] = await Promise.all([
+                    api.get('/data/students?limit=50').catch(err => ({ error: err, data: { data: [] } })),
+                    api.get('/data/classes').catch(err => ({ error: err, data: { data: [] } })),
+                    api.get('/data/subjects').catch(err => ({ error: err, data: { data: [] } })),
+                ]);
+
+                if (studentsRes.error || classesRes.error || subjectsRes.error) {
+                    setDataError('Failed to load some dashboard data. Please try again later.');
+                }
+
+                setStudents(studentsRes.data.data || []);
+                setClasses(classesRes.data.data || []);
+                setSubjects(subjectsRes.data.data || []);
+            } catch (err) {
+                console.error('Teacher dashboard load error:', err);
+                setDataError('An unexpected error occurred while loading data.');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        load();
     }, []);
 
     const markAttendance = (studentId, status) => setAttendance(prev => ({ ...prev, [studentId]: status }));
@@ -50,6 +74,12 @@ const TeacherDashboard = () => {
             <div className="dash-main">
                 <TopBar title="Teacher Dashboard" subtitle="Attendance, Leave & Communication" />
                 <div className="dash-content">
+                    {dataError && (
+                        <div style={{ backgroundColor: '#fee2e2', color: '#991b1b', padding: '1rem', borderRadius: '0.5rem', marginBottom: '1.5rem', border: '1px solid #f87171' }}>
+                            <i className="fa-solid fa-triangle-exclamation" style={{ marginRight: '0.5rem' }}></i>
+                            {dataError}
+                        </div>
+                    )}
                     {activeTab === 'attendance' && (
                         <div className="panel slide-in active">
                             <div className="panel-card">
@@ -63,7 +93,9 @@ const TeacherDashboard = () => {
                                     <table className="data-table">
                                         <thead><tr><th className="th-navy">Roll</th><th className="th-navy">Student Info</th><th className="th-navy">Mark Status</th><th className="th-navy">Saved</th></tr></thead>
                                         <tbody>
-                                            {students.length > 0 ? students.map(st => (
+                                            {isLoading ? (
+                                                <tr><td colSpan="4" className="empty-state"><i className="fa-solid fa-spinner fa-spin" /> Loading students...</td></tr>
+                                            ) : students.length > 0 ? students.map(st => (
                                                 <tr key={st.id} className="table-row">
                                                     <td className="td"><div style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'var(--navy-light)', color: 'var(--navy)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>{st.roll_no}</div></td>
                                                     <td className="td"><div style={{ fontWeight: 600 }}>{st.name}</div><div className="text-muted text-xs">{st.parent_phone}</div></td>
@@ -75,7 +107,7 @@ const TeacherDashboard = () => {
                                                     </td>
                                                     <td className="td"><span className={`badge-${(st.attendance_pct ?? 100) >= 75 ? 'success' : 'danger'}`}>{st.attendance_pct ?? 100}%</span></td>
                                                 </tr>
-                                            )) : (<tr><td colSpan="4" className="empty-state"><i className="fa-solid fa-spinner fa-spin" /> Loading students...</td></tr>)}
+                                            )) : (<tr><td colSpan="4" className="empty-state">No students found.</td></tr>)}
                                         </tbody>
                                     </table>
                                 </div>
