@@ -17,7 +17,7 @@ router.get('/me', protect, async (req, res) => {
             role: req.user.role,
             contactNumber: req.user.contactNumber
         });
-    } catch (error) {
+    } catch (error) { console.error(error);
         res.status(500).json({ success: false, message: 'Server Error' });
     }
 });
@@ -64,9 +64,9 @@ router.post('/register', async (req, res) => {
                 ...userData
             }
         });
-    } catch (error) {
+    } catch (error) { console.error(error);
         console.error("Registration error STACK:", error.stack || error);
-        res.status(500).json({ success: false, message: 'Server Error during registration: ' + error.message });
+        res.status(500).json({ success: false, message: 'Server Error' });
     }
 });
 

@@ -87,7 +87,7 @@ app.use('/api/data', require('./routes/data'));
 // ─── Global error handler ────────────────────────────────────────────────────
 app.use((err, req, res, _next) => {
     console.error('Unhandled error:', err.message);
-    res.status(500).json({ success: false, message: err.message || 'Internal Server Error' });
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
 });
 
 const PORT = process.env.PORT || 8000;
