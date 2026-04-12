@@ -49,6 +49,31 @@ try {
                 ...dummyQuery
             })
         };
+        db = {
+            collection: () => dummyQuery
+        };
+        // Also provide dummy admin.firestore.AggregateField to prevent crash during query construction
+        if (!admin.firestore) {
+            admin.firestore = {
+                AggregateField: {
+                    average: () => ({}),
+                    sum: () => ({}),
+                    count: () => ({})
+                },
+                FieldValue: {
+                    serverTimestamp: () => new Date(),
+                    increment: () => 1,
+                    arrayUnion: () => [],
+                    arrayRemove: () => []
+                }
+            };
+        } else if (!admin.firestore.AggregateField) {
+            admin.firestore.AggregateField = {
+                average: () => ({}),
+                sum: () => ({}),
+                count: () => ({})
+            };
+        }
     }
 } catch (error) {
     console.error('❌ Error initializing Firebase:', error.message);
@@ -67,6 +92,30 @@ try {
             ...dummyQuery
         })
     };
+    db = {
+        collection: () => dummyQuery
+    };
+    if (!admin.firestore) {
+        admin.firestore = {
+            AggregateField: {
+                average: () => ({}),
+                sum: () => ({}),
+                count: () => ({})
+            },
+            FieldValue: {
+                serverTimestamp: () => new Date(),
+                increment: () => 1,
+                arrayUnion: () => [],
+                arrayRemove: () => []
+            }
+        };
+    } else if (!admin.firestore.AggregateField) {
+        admin.firestore.AggregateField = {
+            average: () => ({}),
+            sum: () => ({}),
+            count: () => ({})
+        };
+    }
 }
 
 module.exports = { admin, db };
