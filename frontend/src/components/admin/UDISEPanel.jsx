@@ -35,12 +35,8 @@ const UDISEPanel = () => {
         setExporting(true); setMsg('');
         try {
             // Direct download via anchor — backend returns CSV file
-            const token = JSON.parse(localStorage.getItem('userInfo') || '{}').token;
-            const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000/api'}/data/udise-export`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            if (!res.ok) throw new Error('Export failed');
-            const blob = await res.blob();
+            const res = await api.get('/data/udise-export', { responseType: 'blob' });
+            const blob = res.data;
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url; a.download = 'UDISE_Students_Export.csv';
