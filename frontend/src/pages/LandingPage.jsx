@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import api from '../utils/api';
 
 const LandingPage = () => {
 
@@ -73,11 +74,11 @@ const LandingPage = () => {
                 // Oh wait, I need to import api or use fetch. Let's use fetch.
                 const baseUrl = import.meta.env.VITE_API_URL || (window.location.hostname === 'localhost' ? 'http://localhost:8000/api' : '/api');
                 const [eventsRes, noticesRes] = await Promise.all([
-                    fetch(`${baseUrl}/data/events/public`).then(r => r.json()),
-                    fetch(`${baseUrl}/notices/public`).then(r => r.json())
+                    api.get(`/data/events/public`),
+                    api.get(`/notices/public`)
                 ]);
-                if (eventsRes.success) setEvents(eventsRes.data);
-                if (noticesRes.success) setNotices(noticesRes.data);
+                if (eventsRes.data.success) setEvents(eventsRes.data.data);
+                if (noticesRes.data.success) setNotices(noticesRes.data.data);
             } catch (err) {
                 console.error("Error fetching public data:", err);
             }
