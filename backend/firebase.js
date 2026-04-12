@@ -28,6 +28,15 @@ try {
         console.log('✅ Firebase initialized successfully.');
     } else {
         // Create dummy db object that warns when used to prevent immediate crash but document failure
+        const dummyQuery = {
+            get: async () => { throw new Error('Firebase not configured'); },
+            where: () => dummyQuery,
+            orderBy: () => dummyQuery,
+            limit: () => dummyQuery,
+            startAfter: () => dummyQuery,
+            count: () => dummyQuery,
+            aggregate: () => dummyQuery
+        };
         db = {
             collection: () => ({
                 doc: () => ({
@@ -36,19 +45,77 @@ try {
                     update: async () => { throw new Error('Firebase not configured'); },
                     delete: async () => { throw new Error('Firebase not configured'); }
                 }),
-                get: async () => { throw new Error('Firebase not configured'); },
-                add: async () => { throw new Error('Firebase not configured'); }
+                add: async () => { throw new Error('Firebase not configured'); },
+                ...dummyQuery
             })
         };
+        db = {
+            collection: () => dummyQuery
+        };
+        // Also provide dummy admin.firestore.AggregateField to prevent crash during query construction
+        if (!admin.firestore) {
+            admin.firestore = {
+                AggregateField: {
+                    average: () => ({}),
+                    sum: () => ({}),
+                    count: () => ({})
+                },
+                FieldValue: {
+                    serverTimestamp: () => new Date(),
+                    increment: () => 1,
+                    arrayUnion: () => [],
+                    arrayRemove: () => []
+                }
+            };
+        } else if (!admin.firestore.AggregateField) {
+            admin.firestore.AggregateField = {
+                average: () => ({}),
+                sum: () => ({}),
+                count: () => ({})
+            };
+        }
     }
 } catch (error) {
     console.error('❌ Error initializing Firebase:', error.message);
     // Dummy DB for the same reason
+    const dummyQuery = {
+        get: async () => { throw new Error('Firebase not configured'); },
+        where: () => dummyQuery,
+        orderBy: () => dummyQuery,
+        limit: () => dummyQuery,
+        startAfter: () => dummyQuery,
+        count: () => dummyQuery,
+        aggregate: () => dummyQuery
+    };
     db = {
         collection: () => ({
-            get: async () => { throw new Error('Firebase not configured'); }
+            ...dummyQuery
         })
     };
+    db = {
+        collection: () => dummyQuery
+    };
+    if (!admin.firestore) {
+        admin.firestore = {
+            AggregateField: {
+                average: () => ({}),
+                sum: () => ({}),
+                count: () => ({})
+            },
+            FieldValue: {
+                serverTimestamp: () => new Date(),
+                increment: () => 1,
+                arrayUnion: () => [],
+                arrayRemove: () => []
+            }
+        };
+    } else if (!admin.firestore.AggregateField) {
+        admin.firestore.AggregateField = {
+            average: () => ({}),
+            sum: () => ({}),
+            count: () => ({})
+        };
+    }
 }
 
 module.exports = { admin, db };
