@@ -147,9 +147,14 @@ const AdminDashboard = () => {
 
                 <div className="dash-content">
                     {dataError && (
-                        <div style={{ backgroundColor: '#fee2e2', color: '#991b1b', padding: '1rem', borderRadius: '0.5rem', marginBottom: '1.5rem', border: '1px solid #f87171' }}>
-                            <i className="fa-solid fa-triangle-exclamation" style={{ marginRight: '0.5rem' }}></i>
-                            {dataError}
+                        <div style={{ backgroundColor: '#fee2e2', color: '#991b1b', padding: '1rem', borderRadius: '0.5rem', marginBottom: '1.5rem', border: '1px solid #f87171', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div>
+                                <i className="fa-solid fa-triangle-exclamation" style={{ marginRight: '0.5rem' }}></i>
+                                {dataError}
+                            </div>
+                            <button className="btn btn-secondary btn-sm" onClick={fetchAll} style={{ backgroundColor: '#fff', color: '#991b1b', borderColor: '#f87171' }}>
+                                <i className="fa-solid fa-rotate-right" style={{ marginRight: '0.3rem' }}></i> Retry
+                            </button>
                         </div>
                     )}
                     {isLoading ? (

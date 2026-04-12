@@ -18,6 +18,7 @@ router.get('/me', protect, async (req, res) => {
             contactNumber: req.user.contactNumber
         });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ success: false, message: 'Server Error' });
     }
 });

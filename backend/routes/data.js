@@ -48,7 +48,7 @@ router.get('/admin/stats', protect, roleProtect('Admin', 'SuperAdmin'), async (r
         });
     } catch (err) {
         console.error('Stats error:', err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -61,8 +61,7 @@ router.get('/at-risk', protect, roleProtect('Admin', 'SuperAdmin'), async (req, 
         const students = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         res.json({ success: true, students });
     } catch (err) {
-        console.error('At-risk students error:', err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -88,8 +87,7 @@ router.get('/students', protect, roleProtect('Admin', 'SuperAdmin', 'Teacher'), 
 
         res.json({ success: true, data: students, nextCursor });
     } catch (err) {
-        console.error('Students error:', err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -155,7 +153,7 @@ router.post('/students', protect, roleProtect('Admin', 'SuperAdmin', 'Teacher'),
         res.status(201).json(responsePayload);
     } catch (err) {
         console.error('Add Student Error:', err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -183,8 +181,7 @@ router.get('/staff', protect, roleProtect('Admin', 'SuperAdmin'), async (req, re
 
         res.json({ success: true, data: staff, nextCursor });
     } catch (err) {
-        console.error('Staff error:', err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -214,7 +211,7 @@ router.post('/staff', protect, roleProtect('Admin', 'SuperAdmin'), async (req, r
         }
     } catch (err) {
         console.error('Add Staff Error:', err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -230,8 +227,7 @@ router.get('/assignments', protect, async (req, res) => {
         const snap = await query.get();
         res.json({ success: true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
     } catch (err) {
-        console.error('Assignments error:', err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -241,8 +237,7 @@ router.get('/classes', protect, async (req, res) => {
         const snap = await db.collection('classes').orderBy('grade', 'asc').get();
         res.json({ success: true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
     } catch (err) {
-        console.error('Classes error:', err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -253,8 +248,7 @@ router.post('/classes', protect, roleProtect('Admin', 'SuperAdmin'), async (req,
         const ref = await db.collection('classes').add({ grade, section, room: room || null, createdAt: admin.firestore.FieldValue.serverTimestamp() });
         res.status(201).json({ success: true, id: ref.id, grade, section, room });
     } catch (err) {
-        console.error('Classes error:', err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -263,8 +257,7 @@ router.delete('/classes/:id', protect, roleProtect('Admin', 'SuperAdmin'), async
         await db.collection('classes').doc(req.params.id).delete();
         res.json({ success: true });
     } catch (err) {
-        console.error('Classes error:', err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -274,8 +267,7 @@ router.get('/subjects', protect, async (req, res) => {
         const snap = await db.collection('subjects').orderBy('name', 'asc').get();
         res.json({ success: true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
     } catch (err) {
-        console.error('Subjects error:', err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -286,8 +278,7 @@ router.post('/subjects', protect, roleProtect('Admin', 'SuperAdmin'), async (req
         const ref = await db.collection('subjects').add({ name, code, type: type || 'Theory', createdAt: admin.firestore.FieldValue.serverTimestamp() });
         res.status(201).json({ success: true, id: ref.id, name, code, type });
     } catch (err) {
-        console.error('Subjects error:', err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -296,8 +287,7 @@ router.delete('/subjects/:id', protect, roleProtect('Admin', 'SuperAdmin'), asyn
         await db.collection('subjects').doc(req.params.id).delete();
         res.json({ success: true });
     } catch (err) {
-        console.error('Subjects error:', err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -307,8 +297,7 @@ router.get('/events/public', async (req, res) => {
         const snap = await db.collection('events').orderBy('date', 'asc').limit(5).get();
         res.json({ success: true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
     } catch (err) {
-        console.error('Events error:', err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -317,8 +306,7 @@ router.get('/events', protect, async (req, res) => {
         const snap = await db.collection('events').orderBy('date', 'asc').get();
         res.json({ success: true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
     } catch (err) {
-        console.error('Events error:', err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -329,8 +317,7 @@ router.post('/events', protect, roleProtect('Admin', 'SuperAdmin'), async (req, 
         const ref = await db.collection('events').add({ title, description: description || '', date, createdBy: req.user.id, createdAt: admin.firestore.FieldValue.serverTimestamp() });
         res.status(201).json({ success: true, id: ref.id, title, date });
     } catch (err) {
-        console.error('Events error:', err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -345,8 +332,7 @@ router.get('/timetable', protect, async (req, res) => {
         const snap = await query.get();
         res.json({ success: true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
     } catch (err) {
-        console.error('Timetable error:', err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -377,7 +363,7 @@ router.post('/timetable', protect, roleProtect('Admin', 'SuperAdmin'), async (re
         }
     } catch (err) {
         console.error('Timetable error:', err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -386,8 +372,7 @@ router.delete('/timetable/:id', protect, roleProtect('Admin', 'SuperAdmin'), asy
         await db.collection('timetable').doc(req.params.id).delete();
         res.json({ success: true });
     } catch (err) {
-        console.error('Timetable error:', err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -403,8 +388,7 @@ router.get('/results', protect, roleProtect('Admin', 'SuperAdmin', 'Teacher'), a
         const snap = await query.orderBy('createdAt', 'desc').get();
         res.json({ success: true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
     } catch (err) {
-        console.error('Results error:', err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -429,7 +413,7 @@ router.post('/results', protect, roleProtect('Admin', 'SuperAdmin', 'Teacher'), 
         res.status(201).json({ success: true, id: ref.id });
     } catch (err) {
         console.error('Results error:', err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -461,7 +445,7 @@ router.post('/attendance', protect, roleProtect('Admin', 'SuperAdmin', 'Teacher'
         res.json({ success: true, attendance_pct: pct });
     } catch (err) {
         console.error('Attendance error:', err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -480,8 +464,7 @@ router.get('/attendance', protect, async (req, res) => {
         const snap = await query.orderBy('date', 'desc').get();
         res.json({ success: true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
     } catch (err) {
-        console.error('Attendance error:', err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -496,7 +479,10 @@ router.get('/mdm', protect, async (req, res) => {
         let data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         if (month) data = data.filter(r => r.date && r.date.startsWith(month));
         res.json({ success: true, data });
-    } catch (err) { console.error(err); res.status(500).json({ success: false, message: 'Server Error' }); }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
 });
 
 // POST /api/data/mdm — add/upsert daily MDM log
@@ -507,7 +493,10 @@ router.post('/mdm', protect, roleProtect('Admin', 'Teacher'), async (req, res) =
         const docId = `mdm_${date}`;
         await db.collection('mdm').doc(docId).set({ date, menuId, menu, studentsFed: Number(studentsFed) || 0, cookName, remarks, updatedAt: new Date() }, { merge: true });
         res.json({ success: true, id: docId });
-    } catch (err) { console.error(err); res.status(500).json({ success: false, message: 'Server Error' }); }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
 });
 
 // GET /api/data/mdm/stock — MDM stock inventory
@@ -515,7 +504,10 @@ router.get('/mdm/stock', protect, async (req, res) => {
     try {
         const snap = await db.collection('mdm_stock').orderBy('updatedAt', 'desc').get();
         res.json({ success: true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
-    } catch (err) { console.error(err); res.status(500).json({ success: false, message: 'Server Error' }); }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
 });
 
 // POST /api/data/mdm/stock — add/update a stock item
@@ -524,7 +516,10 @@ router.post('/mdm/stock', protect, roleProtect('Admin', 'Teacher'), async (req, 
         const { item, quantity, unit, updatedBy } = req.body;
         const ref = await db.collection('mdm_stock').add({ item, quantity: Number(quantity) || 0, unit, updatedBy, updatedAt: new Date() });
         res.json({ success: true, id: ref.id });
-    } catch (err) { console.error(err); res.status(500).json({ success: false, message: 'Server Error' }); }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
 });
 
 // GET /api/data/mdm/report — monthly aggregate
@@ -538,7 +533,10 @@ router.get('/mdm/report', protect, async (req, res) => {
         const totalStudents = logs.reduce((s, l) => s + (l.studentsFed || 0), 0);
         const avgPerDay = totalDays ? Math.round(totalStudents / totalDays) : 0;
         res.json({ success: true, totalDays, totalStudentsMealDays: totalStudents, avgPerDay, logs });
-    } catch (err) { console.error(err); res.status(500).json({ success: false, message: 'Server Error' }); }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
 });
 
 // ─── FEE MANAGEMENT ────────────────────────────────────────────────────────────
@@ -550,7 +548,10 @@ router.get('/fees', protect, async (req, res) => {
         if (classId) q = q.where('classId', '==', classId);
         const snap = await q.get();
         res.json({ success: true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
-    } catch (err) { console.error(err); res.status(500).json({ success: false, message: 'Server Error' }); }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
 });
 
 // POST /api/data/fees — record a fee payment
@@ -560,7 +561,10 @@ router.post('/fees', protect, roleProtect('Admin'), async (req, res) => {
         if (!studentId) return res.status(400).json({ success: false, message: 'studentId required' });
         const ref = await db.collection('fees').add({ studentId, studentName, classId, amount: Number(amount) || 0, category: category || 'General', status: status || 'Unpaid', paymentMode, receiptNo, paidOn, createdAt: new Date() });
         res.json({ success: true, id: ref.id });
-    } catch (err) { console.error(err); res.status(500).json({ success: false, message: 'Server Error' }); }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
 });
 
 // PATCH /api/data/fees/:id — update payment status
@@ -568,7 +572,10 @@ router.patch('/fees/:id', protect, roleProtect('Admin'), async (req, res) => {
     try {
         await db.collection('fees').doc(req.params.id).update({ ...req.body, updatedAt: new Date() });
         res.json({ success: true });
-    } catch (err) { console.error(err); res.status(500).json({ success: false, message: 'Server Error' }); }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
 });
 
 // ─── SCHOLARSHIP / SCHEME TRACKING ────────────────────────────────────────────
@@ -581,7 +588,10 @@ router.get('/scholarships', protect, async (req, res) => {
         if (classId) q = q.where('classId', '==', classId);
         const snap = await q.get();
         res.json({ success: true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
-    } catch (err) { console.error(err); res.status(500).json({ success: false, message: 'Server Error' }); }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
 });
 
 // POST /api/data/scholarships — add scheme for a student
@@ -590,7 +600,10 @@ router.post('/scholarships', protect, roleProtect('Admin'), async (req, res) => 
         const { studentId, studentName, classId, schemeName, benefit, status, disbursementDate } = req.body;
         const ref = await db.collection('scholarships').add({ studentId, studentName, classId, schemeName, benefit, status: status || 'Approved', disbursementDate, createdAt: new Date() });
         res.json({ success: true, id: ref.id });
-    } catch (err) { console.error(err); res.status(500).json({ success: false, message: 'Server Error' }); }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
 });
 
 // PATCH /api/data/scholarships/:id
@@ -598,7 +611,10 @@ router.patch('/scholarships/:id', protect, roleProtect('Admin'), async (req, res
     try {
         await db.collection('scholarships').doc(req.params.id).update({ ...req.body, updatedAt: new Date() });
         res.json({ success: true });
-    } catch (err) { console.error(err); res.status(500).json({ success: false, message: 'Server Error' }); }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
 });
 
 // ─── TEACHER LEAVE MANAGEMENT ─────────────────────────────────────────────────
@@ -609,7 +625,10 @@ router.get('/leave', protect, async (req, res) => {
         if (req.user.role === 'Teacher') q = q.where('teacherId', '==', req.user.id);
         const snap = await q.get();
         res.json({ success: true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
-    } catch (err) { console.error(err); res.status(500).json({ success: false, message: 'Server Error' }); }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
 });
 
 // POST /api/data/leave — submit a leave request
@@ -624,7 +643,10 @@ router.post('/leave', protect, roleProtect('Teacher', 'Admin'), async (req, res)
             status: 'Pending', createdAt: new Date(),
         });
         res.status(201).json({ success: true, id: ref.id });
-    } catch (err) { console.error(err); res.status(500).json({ success: false, message: 'Server Error' }); }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
 });
 
 // PATCH /api/data/leave/:id — approve/reject leave (Admin only)
@@ -634,7 +656,10 @@ router.patch('/leave/:id', protect, roleProtect('Admin', 'SuperAdmin'), async (r
         if (!['Approved', 'Rejected'].includes(status)) return res.status(400).json({ success: false, message: 'status must be Approved or Rejected' });
         await db.collection('leave_requests').doc(req.params.id).update({ status, remarks, decidedBy: req.user.name, decidedAt: new Date() });
         res.json({ success: true });
-    } catch (err) { console.error(err); res.status(500).json({ success: false, message: 'Server Error' }); }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
 });
 
 // ─── EXAM SCHEDULE ─────────────────────────────────────────────────────────────
@@ -645,7 +670,10 @@ router.get('/exam-schedule', protect, async (req, res) => {
         if (classId) q = q.where('classId', '==', classId);
         const snap = await q.get();
         res.json({ success: true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
-    } catch (err) { console.error(err); res.status(500).json({ success: false, message: 'Server Error' }); }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
 });
 
 router.post('/exam-schedule', protect, roleProtect('Admin', 'Teacher'), async (req, res) => {
@@ -654,14 +682,20 @@ router.post('/exam-schedule', protect, roleProtect('Admin', 'Teacher'), async (r
         if (!classId || !examDate) return res.status(400).json({ success: false, message: 'classId and examDate required' });
         const ref = await db.collection('exam_schedule').add({ classId, subjectId, subjectName, examName, examType: examType || 'Unit Test', examDate, startTime, endTime, totalMarks: Number(totalMarks) || 100, venue, createdAt: new Date() });
         res.status(201).json({ success: true, id: ref.id });
-    } catch (err) { console.error(err); res.status(500).json({ success: false, message: 'Server Error' }); }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
 });
 
 router.delete('/exam-schedule/:id', protect, roleProtect('Admin'), async (req, res) => {
     try {
         await db.collection('exam_schedule').doc(req.params.id).delete();
         res.json({ success: true });
-    } catch (err) { console.error(err); res.status(500).json({ success: false, message: 'Server Error' }); }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
 });
 
 // ─── DIGITAL LIBRARY ──────────────────────────────────────────────────────────
@@ -669,7 +703,10 @@ router.get('/library', protect, async (req, res) => {
     try {
         const snap = await db.collection('library').orderBy('title').get();
         res.json({ success: true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
-    } catch (err) { console.error(err); res.status(500).json({ success: false, message: 'Server Error' }); }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
 });
 
 router.post('/library', protect, roleProtect('Admin', 'Teacher'), async (req, res) => {
@@ -678,7 +715,10 @@ router.post('/library', protect, roleProtect('Admin', 'Teacher'), async (req, re
         if (!title) return res.status(400).json({ success: false, message: 'title required' });
         const ref = await db.collection('library').add({ title, author, subject, totalCopies: Number(totalCopies) || 1, availableCopies: Number(availableCopies ?? totalCopies) || 1, isbn, category: category || 'General', issuedTo: [], createdAt: new Date() });
         res.status(201).json({ success: true, id: ref.id });
-    } catch (err) { console.error(err); res.status(500).json({ success: false, message: 'Server Error' }); }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
 });
 
 // POST /api/data/library/:id/issue — issue book to a student
@@ -693,7 +733,10 @@ router.post('/library/:id/issue', protect, roleProtect('Admin', 'Teacher'), asyn
         const issuedTo = [...(book.issuedTo || []), { studentId, studentName, issuedOn: new Date().toISOString().slice(0, 10), dueDate, status: 'Issued' }];
         await ref.update({ availableCopies: book.availableCopies - 1, issuedTo });
         res.json({ success: true });
-    } catch (err) { console.error(err); res.status(500).json({ success: false, message: 'Server Error' }); }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
 });
 
 // POST /api/data/library/:id/return — return a book
@@ -707,7 +750,10 @@ router.post('/library/:id/return', protect, roleProtect('Admin', 'Teacher'), asy
         const issuedTo = (book.issuedTo || []).map(r => r.studentId === studentId && r.status === 'Issued' ? { ...r, status: 'Returned', returnedOn: new Date().toISOString().slice(0, 10) } : r);
         await ref.update({ availableCopies: book.availableCopies + 1, issuedTo });
         res.json({ success: true });
-    } catch (err) { console.error(err); res.status(500).json({ success: false, message: 'Server Error' }); }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
 });
 
 // ─── UDISE CSV EXPORT ─────────────────────────────────────────────────────────
@@ -747,7 +793,10 @@ router.get('/udise-export', protect, roleProtect('Admin', 'SuperAdmin'), async (
         res.setHeader('Content-Type', 'text/csv');
         res.setHeader('Content-Disposition', 'attachment; filename="UDISE_Students_Export.csv"');
         res.send(csv);
-    } catch (err) { console.error(err); res.status(500).json({ success: false, message: 'Server Error' }); }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
 });
 
 // ─── REPORT CARD ──────────────────────────────────────────────────────────────
@@ -777,7 +826,10 @@ router.get('/report-card/:studentId', protect, async (req, res) => {
         }, {});
 
         res.json({ success: true, student, byExam, attendancePct, totalPresent: present, totalDays: attendance.length });
-    } catch (err) { console.error(err); res.status(500).json({ success: false, message: 'Server Error' }); }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
 });
 
 module.exports = router;
