@@ -29,19 +29,24 @@ try {
     } else {
         // Create dummy db object that warns when used to prevent immediate crash but document failure
         const dummyQuery = {
-            where: function() { return this; },
-            limit: function() { return this; },
-            orderBy: function() { return this; },
-            startAfter: function() { return this; },
-            count: function() { return this; },
-            aggregate: function() { return this; },
             get: async () => { throw new Error('Firebase not configured'); },
-            add: async () => { throw new Error('Firebase not configured'); },
-            doc: () => ({
-                get: async () => { throw new Error('Firebase not configured'); },
-                set: async () => { throw new Error('Firebase not configured'); },
-                update: async () => { throw new Error('Firebase not configured'); },
-                delete: async () => { throw new Error('Firebase not configured'); }
+            where: () => dummyQuery,
+            orderBy: () => dummyQuery,
+            limit: () => dummyQuery,
+            startAfter: () => dummyQuery,
+            count: () => dummyQuery,
+            aggregate: () => dummyQuery
+        };
+        db = {
+            collection: () => ({
+                doc: () => ({
+                    get: async () => { throw new Error('Firebase not configured'); },
+                    set: async () => { throw new Error('Firebase not configured'); },
+                    update: async () => { throw new Error('Firebase not configured'); },
+                    delete: async () => { throw new Error('Firebase not configured'); }
+                }),
+                add: async () => { throw new Error('Firebase not configured'); },
+                ...dummyQuery
             })
         };
         db = {
@@ -74,19 +79,17 @@ try {
     console.error('❌ Error initializing Firebase:', error.message);
     // Dummy DB for the same reason
     const dummyQuery = {
-        where: function() { return this; },
-        limit: function() { return this; },
-        orderBy: function() { return this; },
-        startAfter: function() { return this; },
-        count: function() { return this; },
-        aggregate: function() { return this; },
         get: async () => { throw new Error('Firebase not configured'); },
-        add: async () => { throw new Error('Firebase not configured'); },
-        doc: () => ({
-            get: async () => { throw new Error('Firebase not configured'); },
-            set: async () => { throw new Error('Firebase not configured'); },
-            update: async () => { throw new Error('Firebase not configured'); },
-            delete: async () => { throw new Error('Firebase not configured'); }
+        where: () => dummyQuery,
+        orderBy: () => dummyQuery,
+        limit: () => dummyQuery,
+        startAfter: () => dummyQuery,
+        count: () => dummyQuery,
+        aggregate: () => dummyQuery
+    };
+    db = {
+        collection: () => ({
+            ...dummyQuery
         })
     };
     db = {
