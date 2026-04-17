@@ -495,7 +495,7 @@ router.post('/mdm', protect, roleProtect('Admin', 'Teacher'), async (req, res) =
         res.json({ success: true, id: docId });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -506,7 +506,7 @@ router.get('/mdm/stock', protect, async (req, res) => {
         res.json({ success: true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -518,7 +518,7 @@ router.post('/mdm/stock', protect, roleProtect('Admin', 'Teacher'), async (req, 
         res.json({ success: true, id: ref.id });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -535,7 +535,7 @@ router.get('/mdm/report', protect, async (req, res) => {
         res.json({ success: true, totalDays, totalStudentsMealDays: totalStudents, avgPerDay, logs });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -550,7 +550,7 @@ router.get('/fees', protect, async (req, res) => {
         res.json({ success: true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -563,7 +563,7 @@ router.post('/fees', protect, roleProtect('Admin'), async (req, res) => {
         res.json({ success: true, id: ref.id });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -574,7 +574,7 @@ router.patch('/fees/:id', protect, roleProtect('Admin'), async (req, res) => {
         res.json({ success: true });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -590,7 +590,7 @@ router.get('/scholarships', protect, async (req, res) => {
         res.json({ success: true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -602,7 +602,7 @@ router.post('/scholarships', protect, roleProtect('Admin'), async (req, res) => 
         res.json({ success: true, id: ref.id });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -613,7 +613,7 @@ router.patch('/scholarships/:id', protect, roleProtect('Admin'), async (req, res
         res.json({ success: true });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -627,7 +627,7 @@ router.get('/leave', protect, async (req, res) => {
         res.json({ success: true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -645,7 +645,7 @@ router.post('/leave', protect, roleProtect('Teacher', 'Admin'), async (req, res)
         res.status(201).json({ success: true, id: ref.id });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -658,7 +658,7 @@ router.patch('/leave/:id', protect, roleProtect('Admin', 'SuperAdmin'), async (r
         res.json({ success: true });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -672,7 +672,7 @@ router.get('/exam-schedule', protect, async (req, res) => {
         res.json({ success: true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -684,7 +684,7 @@ router.post('/exam-schedule', protect, roleProtect('Admin', 'Teacher'), async (r
         res.status(201).json({ success: true, id: ref.id });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -694,7 +694,7 @@ router.delete('/exam-schedule/:id', protect, roleProtect('Admin'), async (req, r
         res.json({ success: true });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -705,7 +705,7 @@ router.get('/library', protect, async (req, res) => {
         res.json({ success: true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -717,7 +717,7 @@ router.post('/library', protect, roleProtect('Admin', 'Teacher'), async (req, re
         res.status(201).json({ success: true, id: ref.id });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -735,7 +735,7 @@ router.post('/library/:id/issue', protect, roleProtect('Admin', 'Teacher'), asyn
         res.json({ success: true });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -752,7 +752,7 @@ router.post('/library/:id/return', protect, roleProtect('Admin', 'Teacher'), asy
         res.json({ success: true });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -795,7 +795,7 @@ router.get('/udise-export', protect, roleProtect('Admin', 'SuperAdmin'), async (
         res.send(csv);
     } catch (err) {
         console.error(err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -828,7 +828,7 @@ router.get('/report-card/:studentId', protect, async (req, res) => {
         res.json({ success: true, student, byExam, attendancePct, totalPresent: present, totalDays: attendance.length });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
