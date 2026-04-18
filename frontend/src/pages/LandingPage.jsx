@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../utils/api';
+import api from '../utils/api.js';
 
 const LandingPage = () => {
 
@@ -70,9 +70,7 @@ const LandingPage = () => {
         // Fetch public data for the landing page
         const fetchPublicData = async () => {
             try {
-                // Use absolute URL or relative depending on setup, but typically api utility handles it. We don't have api util imported here.
-                // Oh wait, I need to import api or use fetch. Let's use fetch.
-                const baseUrl = import.meta.env.VITE_API_URL || (window.location.hostname === 'localhost' ? 'http://localhost:8000/api' : '/api');
+
                 const [eventsRes, noticesRes] = await Promise.all([
                     api.get(`/data/events/public`),
                     api.get(`/notices/public`)
