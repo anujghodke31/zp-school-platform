@@ -23,10 +23,10 @@ const StudentDashboard = () => {
             try {
                 const [assignRes, noticeRes] = await Promise.all([
                     api.get('/data/assignments').catch(() => ({ data: { data: [] } })),
-                    api.get('/notices').catch(() => ({ data: [] })),
+                    api.get('/notices').catch(() => ({ data: { data: [] } })),
                 ]);
                 setAssignments(assignRes.data.data || []);
-                setNotices(Array.isArray(noticeRes.data) ? noticeRes.data : []);
+                setNotices(noticeRes.data?.data || []);
             } catch (err) {
                 console.error('Student dashboard load error:', err);
             }

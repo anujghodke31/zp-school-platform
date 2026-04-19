@@ -57,7 +57,7 @@ router.get('/', protect, async (req, res) => {
             id: doc.id,
             ...doc.data()
         }));
-        res.json(notices);
+        res.json({ success: true, data: notices });
     } catch (err) {
         console.error("Error fetching notices:", err);
         console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
