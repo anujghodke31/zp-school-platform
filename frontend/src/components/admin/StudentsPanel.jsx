@@ -32,7 +32,7 @@ const StudentsPanel = ({ students, onAddStudent, nextCursor, onLoadMore }) => (
                                 </td>
                             </tr>
                         )) : (
-                            <tr><td colSpan="5" className="empty-state"><i className="fa-solid fa-spinner fa-spin" /> Loading...</td></tr>
+                            <tr><td colSpan="5" className="empty-state">No students found.</td></tr>
                         )}
                     </tbody>
                 </table>
