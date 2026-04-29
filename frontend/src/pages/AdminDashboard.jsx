@@ -52,6 +52,8 @@ const AdminDashboard = () => {
     const [selectedTeacher, setSelectedTeacher] = useState(null);
     const [dataError, setDataError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [isFetchingMoreStudents, setIsFetchingMoreStudents] = useState(false);
+    const [isFetchingMoreTeachers, setIsFetchingMoreTeachers] = useState(false);
 
     const fetchAll = useCallback(async () => {
         try {
@@ -112,16 +114,26 @@ const AdminDashboard = () => {
 
     const loadMoreStudents = async () => {
         if (!studentCursor) return;
-        const res = await api.get(`/data/students?limit=20&cursor=${studentCursor}`).catch(() => ({ data: { data: [], nextCursor: null } }));
-        setStudents(prev => [...prev, ...(res.data.data || [])]);
-        setStudentCursor(res.data.nextCursor || null);
+        setIsFetchingMoreStudents(true);
+        try {
+            const res = await api.get(`/data/students?limit=20&cursor=${studentCursor}`).catch(() => ({ data: { data: [], nextCursor: null } }));
+            setStudents(prev => [...prev, ...(res.data.data || [])]);
+            setStudentCursor(res.data.nextCursor || null);
+        } finally {
+            setIsFetchingMoreStudents(false);
+        }
     };
 
     const loadMoreTeachers = async () => {
         if (!teacherCursor) return;
-        const res = await api.get(`/data/staff?limit=20&cursor=${teacherCursor}`).catch(() => ({ data: { data: [], nextCursor: null } }));
-        setTeachers(prev => [...prev, ...(res.data.data || [])]);
-        setTeacherCursor(res.data.nextCursor || null);
+        setIsFetchingMoreTeachers(true);
+        try {
+            const res = await api.get(`/data/staff?limit=20&cursor=${teacherCursor}`).catch(() => ({ data: { data: [], nextCursor: null } }));
+            setTeachers(prev => [...prev, ...(res.data.data || [])]);
+            setTeacherCursor(res.data.nextCursor || null);
+        } finally {
+            setIsFetchingMoreTeachers(false);
+        }
     };
 
     const handleDeleteClass = async (id) => {
@@ -169,6 +181,7 @@ const AdminDashboard = () => {
                         {activeTab === 'students' && (
                             <StudentsPanel
                                 students={students}
+                                isLoading={isFetchingMoreStudents}
                                 nextCursor={studentCursor}
                                 onAddStudent={type => { setUserModalType(type); setIsUserModalOpen(true); }}
                                 onLoadMore={loadMoreStudents}
@@ -178,6 +191,7 @@ const AdminDashboard = () => {
                         {activeTab === 'teachers' && (
                             <TeachersPanel
                                 teachers={teachers}
+                                isLoading={isFetchingMoreTeachers}
                                 nextCursor={teacherCursor}
                                 onAddStaff={() => { setUserModalType('staff'); setIsUserModalOpen(true); }}
                                 onAssign={t => { setSelectedTeacher(t); setIsAssignModalOpen(true); }}
