@@ -38,7 +38,7 @@ const TeachersPanel = ({ teachers, onAddStaff, onAssign, nextCursor, onLoadMore 
                                 </td>
                             </tr>
                         )) : (
-                            <tr><td colSpan="6" className="empty-state"><i className="fa-solid fa-spinner fa-spin" /> Loading...</td></tr>
+                            <tr><td colSpan="6" className="empty-state">No teachers found. Add a teacher to get started.</td></tr>
                         )}
                     </tbody>
                 </table>
