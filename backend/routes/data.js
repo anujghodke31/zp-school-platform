@@ -48,7 +48,7 @@ router.get('/admin/stats', protect, roleProtect('Admin', 'SuperAdmin'), async (r
         });
     } catch (err) {
         console.error('Stats error:', err);
-        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -61,7 +61,8 @@ router.get('/at-risk', protect, roleProtect('Admin', 'SuperAdmin'), async (req, 
         const students = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         res.json({ success: true, students });
     } catch (err) {
-        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
+        console.error('At-risk students error:', err);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -87,7 +88,8 @@ router.get('/students', protect, roleProtect('Admin', 'SuperAdmin', 'Teacher'), 
 
         res.json({ success: true, data: students, nextCursor });
     } catch (err) {
-        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
+        console.error('Get students error:', err);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -153,7 +155,7 @@ router.post('/students', protect, roleProtect('Admin', 'SuperAdmin', 'Teacher'),
         res.status(201).json(responsePayload);
     } catch (err) {
         console.error('Add Student Error:', err);
-        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -181,7 +183,8 @@ router.get('/staff', protect, roleProtect('Admin', 'SuperAdmin'), async (req, re
 
         res.json({ success: true, data: staff, nextCursor });
     } catch (err) {
-        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
+        console.error('Get staff error:', err);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -211,7 +214,7 @@ router.post('/staff', protect, roleProtect('Admin', 'SuperAdmin'), async (req, r
         }
     } catch (err) {
         console.error('Add Staff Error:', err);
-        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -227,7 +230,8 @@ router.get('/assignments', protect, async (req, res) => {
         const snap = await query.get();
         res.json({ success: true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
     } catch (err) {
-        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
+        console.error('Get assignments error:', err);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -237,7 +241,8 @@ router.get('/classes', protect, async (req, res) => {
         const snap = await db.collection('classes').orderBy('grade', 'asc').get();
         res.json({ success: true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
     } catch (err) {
-        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
+        console.error('Get classes error:', err);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -248,7 +253,8 @@ router.post('/classes', protect, roleProtect('Admin', 'SuperAdmin'), async (req,
         const ref = await db.collection('classes').add({ grade, section, room: room || null, createdAt: admin.firestore.FieldValue.serverTimestamp() });
         res.status(201).json({ success: true, id: ref.id, grade, section, room });
     } catch (err) {
-        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
+        console.error('Post classes error:', err);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -257,7 +263,8 @@ router.delete('/classes/:id', protect, roleProtect('Admin', 'SuperAdmin'), async
         await db.collection('classes').doc(req.params.id).delete();
         res.json({ success: true });
     } catch (err) {
-        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
+        console.error('Delete classes error:', err);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -267,7 +274,8 @@ router.get('/subjects', protect, async (req, res) => {
         const snap = await db.collection('subjects').orderBy('name', 'asc').get();
         res.json({ success: true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
     } catch (err) {
-        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
+        console.error('Get subjects error:', err);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -278,7 +286,8 @@ router.post('/subjects', protect, roleProtect('Admin', 'SuperAdmin'), async (req
         const ref = await db.collection('subjects').add({ name, code, type: type || 'Theory', createdAt: admin.firestore.FieldValue.serverTimestamp() });
         res.status(201).json({ success: true, id: ref.id, name, code, type });
     } catch (err) {
-        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
+        console.error('Post subjects error:', err);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -287,7 +296,8 @@ router.delete('/subjects/:id', protect, roleProtect('Admin', 'SuperAdmin'), asyn
         await db.collection('subjects').doc(req.params.id).delete();
         res.json({ success: true });
     } catch (err) {
-        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
+        console.error('Delete subjects error:', err);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -297,7 +307,8 @@ router.get('/events/public', async (req, res) => {
         const snap = await db.collection('events').orderBy('date', 'asc').limit(5).get();
         res.json({ success: true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
     } catch (err) {
-        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
+        console.error('Get public events error:', err);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -306,7 +317,8 @@ router.get('/events', protect, async (req, res) => {
         const snap = await db.collection('events').orderBy('date', 'asc').get();
         res.json({ success: true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
     } catch (err) {
-        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
+        console.error('Get events error:', err);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -317,7 +329,8 @@ router.post('/events', protect, roleProtect('Admin', 'SuperAdmin'), async (req, 
         const ref = await db.collection('events').add({ title, description: description || '', date, createdBy: req.user.id, createdAt: admin.firestore.FieldValue.serverTimestamp() });
         res.status(201).json({ success: true, id: ref.id, title, date });
     } catch (err) {
-        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
+        console.error('Post events error:', err);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -332,7 +345,8 @@ router.get('/timetable', protect, async (req, res) => {
         const snap = await query.get();
         res.json({ success: true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
     } catch (err) {
-        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
+        console.error('Get timetable error:', err);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -363,7 +377,7 @@ router.post('/timetable', protect, roleProtect('Admin', 'SuperAdmin'), async (re
         }
     } catch (err) {
         console.error('Timetable error:', err);
-        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -372,7 +386,8 @@ router.delete('/timetable/:id', protect, roleProtect('Admin', 'SuperAdmin'), asy
         await db.collection('timetable').doc(req.params.id).delete();
         res.json({ success: true });
     } catch (err) {
-        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
+        console.error('Delete timetable error:', err);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -388,7 +403,8 @@ router.get('/results', protect, roleProtect('Admin', 'SuperAdmin', 'Teacher'), a
         const snap = await query.orderBy('createdAt', 'desc').get();
         res.json({ success: true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
     } catch (err) {
-        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
+        console.error('Get results error:', err);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -413,7 +429,7 @@ router.post('/results', protect, roleProtect('Admin', 'SuperAdmin', 'Teacher'), 
         res.status(201).json({ success: true, id: ref.id });
     } catch (err) {
         console.error('Results error:', err);
-        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -445,7 +461,7 @@ router.post('/attendance', protect, roleProtect('Admin', 'SuperAdmin', 'Teacher'
         res.json({ success: true, attendance_pct: pct });
     } catch (err) {
         console.error('Attendance error:', err);
-        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -464,7 +480,8 @@ router.get('/attendance', protect, async (req, res) => {
         const snap = await query.orderBy('date', 'desc').get();
         res.json({ success: true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
     } catch (err) {
-        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
+        console.error('Get attendance error:', err);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 

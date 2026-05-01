@@ -75,7 +75,7 @@ const TeacherDashboard = () => {
                                                     </td>
                                                     <td className="td"><span className={`badge-${(st.attendance_pct ?? 100) >= 75 ? 'success' : 'danger'}`}>{st.attendance_pct ?? 100}%</span></td>
                                                 </tr>
-                                            )) : (<tr><td colSpan="4" className="empty-state"><i className="fa-solid fa-spinner fa-spin" /> Loading students...</td></tr>)}
+                                            )) : (<tr><td colSpan="4" className="empty-state">No records found.</td></tr>)}
                                         </tbody>
                                     </table>
                                 </div>

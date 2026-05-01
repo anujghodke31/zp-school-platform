@@ -32,14 +32,16 @@ const StudentsPanel = ({ students, onAddStudent, nextCursor, onLoadMore }) => (
                                 </td>
                             </tr>
                         )) : (
-                            <tr><td colSpan="5" className="empty-state"><i className="fa-solid fa-spinner fa-spin" /> Loading...</td></tr>
+                            <tr><td colSpan="5" className="empty-state">No records found.</td></tr>
                         )}
                     </tbody>
                 </table>
             </div>
             {nextCursor && (
                 <div className="load-more-row">
-                    <button className="btn btn-secondary" onClick={onLoadMore}>Load More</button>
+                    <button className="btn btn-secondary" onClick={onLoadMore} disabled={!onLoadMore}>
+                        {onLoadMore ? "Load More" : <><i className="fa-solid fa-spinner fa-spin" /> Loading...</>}
+                    </button>
                 </div>
             )}
         </div>
