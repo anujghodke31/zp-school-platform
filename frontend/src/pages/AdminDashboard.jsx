@@ -52,6 +52,8 @@ const AdminDashboard = () => {
     const [selectedTeacher, setSelectedTeacher] = useState(null);
     const [dataError, setDataError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [isMoreStudentsLoading, setIsMoreStudentsLoading] = useState(false);
+    const [isMoreTeachersLoading, setIsMoreTeachersLoading] = useState(false);
 
     const fetchAll = useCallback(async () => {
         try {
@@ -112,16 +114,20 @@ const AdminDashboard = () => {
 
     const loadMoreStudents = async () => {
         if (!studentCursor) return;
+        setIsMoreStudentsLoading(true);
         const res = await api.get(`/data/students?limit=20&cursor=${studentCursor}`).catch(() => ({ data: { data: [], nextCursor: null } }));
         setStudents(prev => [...prev, ...(res.data.data || [])]);
         setStudentCursor(res.data.nextCursor || null);
+        setIsMoreStudentsLoading(false);
     };
 
     const loadMoreTeachers = async () => {
         if (!teacherCursor) return;
+        setIsMoreTeachersLoading(true);
         const res = await api.get(`/data/staff?limit=20&cursor=${teacherCursor}`).catch(() => ({ data: { data: [], nextCursor: null } }));
         setTeachers(prev => [...prev, ...(res.data.data || [])]);
         setTeacherCursor(res.data.nextCursor || null);
+        setIsMoreTeachersLoading(false);
     };
 
     const handleDeleteClass = async (id) => {
@@ -172,6 +178,7 @@ const AdminDashboard = () => {
                                 nextCursor={studentCursor}
                                 onAddStudent={type => { setUserModalType(type); setIsUserModalOpen(true); }}
                                 onLoadMore={loadMoreStudents}
+                                isMoreLoading={isMoreStudentsLoading}
                             />
                         )}
 
@@ -182,6 +189,7 @@ const AdminDashboard = () => {
                                 onAddStaff={() => { setUserModalType('staff'); setIsUserModalOpen(true); }}
                                 onAssign={t => { setSelectedTeacher(t); setIsAssignModalOpen(true); }}
                                 onLoadMore={loadMoreTeachers}
+                                isMoreLoading={isMoreTeachersLoading}
                             />
                         )}
 
