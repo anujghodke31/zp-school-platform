@@ -1,6 +1,6 @@
 import React from 'react';
 
-const TeachersPanel = ({ teachers, onAddStaff, onAssign, nextCursor, onLoadMore }) => (
+const TeachersPanel = ({ teachers, onAddStaff, onAssign, nextCursor, onLoadMore, isMoreLoading }) => (
     <div className="panel slide-in active">
         <div className="panel-card">
             <div className="panel-title-row">
@@ -38,14 +38,16 @@ const TeachersPanel = ({ teachers, onAddStaff, onAssign, nextCursor, onLoadMore 
                                 </td>
                             </tr>
                         )) : (
-                            <tr><td colSpan="6" className="empty-state"><i className="fa-solid fa-spinner fa-spin" /> Loading...</td></tr>
+                            <tr><td colSpan="6" className="empty-state">No records found.</td></tr>
                         )}
                     </tbody>
                 </table>
             </div>
             {nextCursor && (
                 <div className="load-more-row">
-                    <button className="btn btn-secondary" onClick={onLoadMore}>Load More</button>
+                    <button className="btn btn-secondary" onClick={onLoadMore} disabled={isMoreLoading}>
+                        {isMoreLoading ? 'Loading...' : 'Load More'}
+                    </button>
                 </div>
             )}
         </div>
