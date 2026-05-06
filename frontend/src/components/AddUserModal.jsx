@@ -28,6 +28,11 @@ const AddUserModal = ({ isOpen, onClose, type, onUserAdded }) => {
 
         try {
             if (type === 'student') {
+                if (parentPhone.length !== 10 || !/^\d{10}$/.test(parentPhone)) {
+                    setError('Parent mobile number must be exactly 10 digits.');
+                    setLoading(false);
+                    return;
+                }
                 const payload = { roll_no: rollNo, name, className, parent_phone: parentPhone };
                 await api.post('/data/students', payload);
             } else {
