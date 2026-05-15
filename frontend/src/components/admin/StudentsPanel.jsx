@@ -1,6 +1,6 @@
 import React from 'react';
 
-const StudentsPanel = ({ students, onAddStudent, nextCursor, onLoadMore }) => (
+const StudentsPanel = ({ isLoading, students, onAddStudent, nextCursor, onLoadMore }) => (
     <div className="panel slide-in active">
         <div className="panel-card">
             <div className="panel-title-row">
@@ -19,7 +19,9 @@ const StudentsPanel = ({ students, onAddStudent, nextCursor, onLoadMore }) => (
                         </tr>
                     </thead>
                     <tbody>
-                        {students.length > 0 ? students.map(st => (
+                        {isLoading ? (
+                            <tr><td colSpan="5" className="empty-state"><i className="fa-solid fa-spinner fa-spin" /> Loading...</td></tr>
+                        ) : students.length > 0 ? students.map(st => (
                             <tr key={st.id} className="table-row">
                                 <td className="td">{st.roll_no}</td>
                                 <td className="td"><strong>{st.name}</strong></td>
@@ -32,7 +34,7 @@ const StudentsPanel = ({ students, onAddStudent, nextCursor, onLoadMore }) => (
                                 </td>
                             </tr>
                         )) : (
-                            <tr><td colSpan="5" className="empty-state"><i className="fa-solid fa-spinner fa-spin" /> Loading...</td></tr>
+                            <tr><td colSpan="5" className="empty-state">No students found.</td></tr>
                         )}
                     </tbody>
                 </table>

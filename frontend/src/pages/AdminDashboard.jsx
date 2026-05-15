@@ -168,6 +168,7 @@ const AdminDashboard = () => {
 
                         {activeTab === 'students' && (
                             <StudentsPanel
+                                isLoading={isLoading}
                                 students={students}
                                 nextCursor={studentCursor}
                                 onAddStudent={type => { setUserModalType(type); setIsUserModalOpen(true); }}
