@@ -188,8 +188,8 @@ const Login = () => {
                                         <label style={styles.label}>Parent's Mobile Number</label>
                                         <div style={styles.inputWrap}>
                                             <span style={styles.inputIcon}>📞</span>
-                                            <input style={styles.input} type="tel" placeholder="+91 98765 43210"
-                                                value={phone} onChange={e => setPhone(e.target.value)} required />
+                                            <input style={styles.input} type="tel" placeholder="9876543210"
+                                                value={phone} onChange={e => setPhone(e.target.value)} pattern="[0-9]{10}" required />
                                         </div>
                                     </div>
                                     <p style={{ fontSize: '0.78rem', color: '#8BA8C7', marginBottom: 16, textAlign: 'center' }}>
