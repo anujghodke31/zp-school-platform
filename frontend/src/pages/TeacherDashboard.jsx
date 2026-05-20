@@ -17,11 +17,18 @@ const TeacherDashboard = () => {
     const [attendance, setAttendance] = useState({});
     const [syncing, setSyncing] = useState(false);
     const [noticeText, setNoticeText] = useState('');
+    const [loadingStudents, setLoadingStudents] = useState(true);
 
     const today = new Date().toISOString().slice(0, 10);
 
     useEffect(() => {
-        api.get('/data/students?limit=50').then(res => setStudents(res.data.data || [])).catch(() => {});
+        setLoadingStudents(true);
+        api.get('/data/students?limit=50')
+            .then(res => {
+                setStudents(res.data.data || []);
+                setLoadingStudents(false);
+            })
+            .catch(() => setLoadingStudents(false));
         api.get('/data/classes').then(r => setClasses(r.data.data || [])).catch(() => {});
         api.get('/data/subjects').then(r => setSubjects(r.data.data || [])).catch(() => {});
     }, []);
@@ -63,7 +70,9 @@ const TeacherDashboard = () => {
                                     <table className="data-table">
                                         <thead><tr><th className="th-navy">Roll</th><th className="th-navy">Student Info</th><th className="th-navy">Mark Status</th><th className="th-navy">Saved</th></tr></thead>
                                         <tbody>
-                                            {students.length > 0 ? students.map(st => (
+                                            {loadingStudents ? (
+                                                <tr><td colSpan="4" className="empty-state"><i className="fa-solid fa-spinner fa-spin" /> Loading students...</td></tr>
+                                            ) : students.length > 0 ? students.map(st => (
                                                 <tr key={st.id} className="table-row">
                                                     <td className="td"><div style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'var(--navy-light)', color: 'var(--navy)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>{st.roll_no}</div></td>
                                                     <td className="td"><div style={{ fontWeight: 600 }}>{st.name}</div><div className="text-muted text-xs">{st.parent_phone}</div></td>
@@ -75,7 +84,7 @@ const TeacherDashboard = () => {
                                                     </td>
                                                     <td className="td"><span className={`badge-${(st.attendance_pct ?? 100) >= 75 ? 'success' : 'danger'}`}>{st.attendance_pct ?? 100}%</span></td>
                                                 </tr>
-                                            )) : (<tr><td colSpan="4" className="empty-state"><i className="fa-solid fa-spinner fa-spin" /> Loading students...</td></tr>)}
+                                            )) : (<tr><td colSpan="4" className="empty-state">No students found.</td></tr>)}
                                         </tbody>
                                     </table>
                                 </div>
