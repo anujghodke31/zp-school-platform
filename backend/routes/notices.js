@@ -29,7 +29,8 @@ router.post('/', protect, roleProtect('Admin', 'SuperAdmin', 'Teacher'), async (
         res.status(201).json({ success: true, notice });
     } catch (err) {
         console.error("Error creating notice:", err);
-        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -43,7 +44,8 @@ router.get('/public', async (req, res) => {
         res.json({ success: true, data: notices });
     } catch (err) {
         console.error("Error fetching public notices:", err);
-        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -60,7 +62,8 @@ router.get('/', protect, async (req, res) => {
         res.json(notices);
     } catch (err) {
         console.error("Error fetching notices:", err);
-        console.error(err); res.status(500).json({ success: false, message: 'Internal Server Error' });
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
