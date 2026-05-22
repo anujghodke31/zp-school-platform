@@ -1,6 +1,6 @@
 import React from 'react';
 
-const TeachersPanel = ({ teachers, onAddStaff, onAssign, nextCursor, onLoadMore }) => (
+const TeachersPanel = ({ teachers, onAddStaff, onAssign, nextCursor, onLoadMore, isLoading, isLoadingMore }) => (
     <div className="panel slide-in active">
         <div className="panel-card">
             <div className="panel-title-row">
@@ -19,33 +19,39 @@ const TeachersPanel = ({ teachers, onAddStaff, onAssign, nextCursor, onLoadMore 
                         </tr>
                     </thead>
                     <tbody>
-                        {teachers.length > 0 ? teachers.map((t, i) => (
-                            <tr key={t.id} className="table-row">
-                                <td className="td">{i + 1}</td>
-                                <td className="td">
-                                    <strong>{t.name}</strong>
-                                    <span className="text-muted" style={{ display: 'block', fontSize: '.75rem' }}>ID: {t.username}</span>
-                                </td>
-                                <td className="td">{t.role}</td>
-                                <td className="td">{t.contactNumber || 'N/A'}</td>
-                                <td className="td"><span className="badge-success">● Active</span></td>
-                                <td className="td">
-                                    {t.role === 'Teacher' && (
-                                        <button className="btn btn-secondary" style={{ fontSize: '.8rem', padding: '.3rem .7rem' }} onClick={() => onAssign(t)}>
-                                            Assign Subject
-                                        </button>
-                                    )}
-                                </td>
-                            </tr>
-                        )) : (
+                        {isLoading ? (
                             <tr><td colSpan="6" className="empty-state"><i className="fa-solid fa-spinner fa-spin" /> Loading...</td></tr>
+                        ) : teachers.length === 0 ? (
+                            <tr><td colSpan="6" className="empty-state">No records found.</td></tr>
+                        ) : (
+                            teachers.map((t, i) => (
+                                <tr key={t.id} className="table-row">
+                                    <td className="td">{i + 1}</td>
+                                    <td className="td">
+                                        <strong>{t.name}</strong>
+                                        <span className="text-muted" style={{ display: 'block', fontSize: '.75rem' }}>ID: {t.username}</span>
+                                    </td>
+                                    <td className="td">{t.role}</td>
+                                    <td className="td">{t.contactNumber || 'N/A'}</td>
+                                    <td className="td"><span className="badge-success">● Active</span></td>
+                                    <td className="td">
+                                        {t.role === 'Teacher' && (
+                                            <button className="btn btn-secondary" style={{ fontSize: '.8rem', padding: '.3rem .7rem' }} onClick={() => onAssign(t)}>
+                                                Assign Subject
+                                            </button>
+                                        )}
+                                    </td>
+                                </tr>
+                            ))
                         )}
                     </tbody>
                 </table>
             </div>
             {nextCursor && (
                 <div className="load-more-row">
-                    <button className="btn btn-secondary" onClick={onLoadMore}>Load More</button>
+                    <button className="btn btn-secondary" onClick={onLoadMore} disabled={isLoadingMore}>
+                        {isLoadingMore ? <><i className="fa-solid fa-spinner fa-spin" /> Loading...</> : 'Load More'}
+                    </button>
                 </div>
             )}
         </div>
