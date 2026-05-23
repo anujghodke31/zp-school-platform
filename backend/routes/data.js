@@ -435,10 +435,13 @@ router.post('/attendance', protect, roleProtect('Admin', 'SuperAdmin', 'Teacher'
         }, { merge: true });
 
         // Recalculate attendance_pct from all records for this student
-        const allSnap = await db.collection('attendance').where('studentId', '==', studentId).get();
-        const all = allSnap.docs.map(d => d.data());
-        const presentCount = all.filter(r => r.status === 'P').length;
-        const pct = all.length ? Math.round((presentCount / all.length) * 100) : 100;
+        const [totalSnap, presentSnap] = await Promise.all([
+            db.collection('attendance').where('studentId', '==', studentId).count().get(),
+            db.collection('attendance').where('studentId', '==', studentId).where('status', '==', 'P').count().get()
+        ]);
+        const totalRecords = totalSnap.data().count;
+        const presentCount = presentSnap.data().count;
+        const pct = totalRecords ? Math.round((presentCount / totalRecords) * 100) : 100;
 
         await db.collection('students').doc(studentId).update({ attendance_pct: pct });
 
@@ -804,18 +807,20 @@ router.get('/udise-export', protect, roleProtect('Admin', 'SuperAdmin'), async (
 router.get('/report-card/:studentId', protect, async (req, res) => {
     try {
         const { studentId } = req.params;
-        const [studentDoc, marksSnap, attendanceSnap] = await Promise.all([
+        const [studentDoc, marksSnap, totalAttendanceSnap, presentAttendanceSnap] = await Promise.all([
             db.collection('students').doc(studentId).get(),
             db.collection('results').where('studentId', '==', studentId).get(),
-            db.collection('attendance').where('studentId', '==', studentId).get(),
+            db.collection('attendance').where('studentId', '==', studentId).count().get(),
+            db.collection('attendance').where('studentId', '==', studentId).where('status', '==', 'P').count().get()
         ]);
 
         if (!studentDoc.exists) return res.status(404).json({ success: false, message: 'Student not found' });
         const student = { id: studentDoc.id, ...studentDoc.data() };
         const marks = marksSnap.docs.map(d => d.data());
-        const attendance = attendanceSnap.docs.map(d => d.data());
-        const present = attendance.filter(a => a.status === 'P').length;
-        const attendancePct = attendance.length ? Math.round((present / attendance.length) * 100) : (student.attendance_pct ?? 100);
+
+        const totalAttendance = totalAttendanceSnap.data().count;
+        const present = presentAttendanceSnap.data().count;
+        const attendancePct = totalAttendance ? Math.round((present / totalAttendance) * 100) : (student.attendance_pct ?? 100);
 
         // Group marks by exam type
         const byExam = marks.reduce((acc, m) => {
@@ -825,7 +830,7 @@ router.get('/report-card/:studentId', protect, async (req, res) => {
             return acc;
         }, {});
 
-        res.json({ success: true, student, byExam, attendancePct, totalPresent: present, totalDays: attendance.length });
+        res.json({ success: true, student, byExam, attendancePct, totalPresent: present, totalDays: totalAttendance });
     } catch (err) {
         console.error(err);
         res.status(500).json({ success: false, message: 'Server Error' });
