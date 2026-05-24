@@ -65,14 +65,13 @@ const LandingPage = () => {
 
     const [events, setEvents] = React.useState([]);
     const [notices, setNotices] = React.useState([]);
+    const [loading, setLoading] = React.useState(true);
+    const [error, setError] = React.useState(null);
 
     useEffect(() => {
         // Fetch public data for the landing page
         const fetchPublicData = async () => {
             try {
-                // Use absolute URL or relative depending on setup, but typically api utility handles it. We don't have api util imported here.
-                // Oh wait, I need to import api or use fetch. Let's use fetch.
-                const baseUrl = import.meta.env.VITE_API_URL || (window.location.hostname === 'localhost' ? 'http://localhost:8000/api' : '/api');
                 const [eventsRes, noticesRes] = await Promise.all([
                     api.get(`/data/events/public`),
                     api.get(`/notices/public`)
@@ -81,6 +80,9 @@ const LandingPage = () => {
                 if (noticesRes.data.success) setNotices(noticesRes.data.data);
             } catch (err) {
                 console.error("Error fetching public data:", err);
+                setError("Failed to load announcements and events.");
+            } finally {
+                setLoading(false);
             }
         };
         fetchPublicData();
@@ -209,7 +211,11 @@ const LandingPage = () => {
                                     <Link to="/login" style={{ fontSize: '0.9rem', color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>View All <i className="fa-solid fa-arrow-right"></i></Link>
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                                    {notices.length > 0 ? notices.map(notice => (
+                                    {loading ? (
+                                        <div style={{ padding: '30px', textAlign: 'center', color: 'var(--text-muted)', background: 'var(--bg-main)', borderRadius: '12px', border: '1px dashed var(--border)' }}>Loading announcements...</div>
+                                    ) : error ? (
+                                        <div style={{ padding: '30px', textAlign: 'center', color: 'var(--danger)', background: 'var(--bg-main)', borderRadius: '12px', border: '1px dashed var(--danger)' }}>{error}</div>
+                                    ) : notices.length > 0 ? notices.map(notice => (
                                         <div key={notice.id} style={{ padding: '20px', background: 'var(--bg-main)', borderRadius: '12px', borderLeft: '4px solid var(--primary)', transition: 'transform 0.2s, box-shadow 0.2s' }}
                                              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = 'var(--shadow-sm)'; }}
                                              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}>
@@ -236,7 +242,11 @@ const LandingPage = () => {
                                     </h2>
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                                    {events.length > 0 ? events.map((ev, i) => {
+                                    {loading ? (
+                                        <div style={{ padding: '30px', textAlign: 'center', color: 'var(--text-muted)', background: 'var(--bg-main)', borderRadius: '12px', border: '1px dashed var(--border)' }}>Loading events...</div>
+                                    ) : error ? (
+                                        <div style={{ padding: '30px', textAlign: 'center', color: 'var(--danger)', background: 'var(--bg-main)', borderRadius: '12px', border: '1px dashed var(--danger)' }}>{error}</div>
+                                    ) : events.length > 0 ? events.map((ev, i) => {
                                         const dateObj = new Date(ev.date);
                                         return (
                                             <div key={ev.id || i} style={{ display: 'flex', gap: '20px', alignItems: 'center', padding: '15px', background: 'var(--bg-main)', borderRadius: '12px', border: '1px solid var(--border)' }}>
