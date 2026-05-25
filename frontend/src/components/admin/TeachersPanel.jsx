@@ -1,6 +1,6 @@
 import React from 'react';
 
-const TeachersPanel = ({ teachers, onAddStaff, onAssign, nextCursor, onLoadMore }) => (
+const TeachersPanel = ({ teachers, onAddStaff, onAssign, nextCursor, onLoadMore, isLoading }) => (
     <div className="panel slide-in active">
         <div className="panel-card">
             <div className="panel-title-row">
@@ -38,7 +38,13 @@ const TeachersPanel = ({ teachers, onAddStaff, onAssign, nextCursor, onLoadMore 
                                 </td>
                             </tr>
                         )) : (
-                            <tr><td colSpan="6" className="empty-state"><i className="fa-solid fa-spinner fa-spin" /> Loading...</td></tr>
+                            <tr>
+                                <td colSpan="6" className="empty-state">
+                                    {isLoading
+                                        ? <><i className="fa-solid fa-spinner fa-spin" /> Loading...</>
+                                        : 'No records found'}
+                                </td>
+                            </tr>
                         )}
                     </tbody>
                 </table>
