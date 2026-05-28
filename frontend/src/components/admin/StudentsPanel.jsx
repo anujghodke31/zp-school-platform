@@ -45,7 +45,11 @@ const StudentsPanel = ({ students, onAddStudent, nextCursor, onLoadMore, isLoadi
             </div>
             {nextCursor && (
                 <div className="load-more-row">
-                    <button className="btn btn-secondary" onClick={onLoadMore}>Load More</button>
+                    <button className="btn btn-secondary" onClick={onLoadMore} disabled={isLoading}>
+                        {isLoading ? (
+                            <><i className="fa-solid fa-spinner fa-spin" style={{ marginRight: '0.5rem' }} /> Loading...</>
+                        ) : 'Load More'}
+                    </button>
                 </div>
             )}
         </div>
