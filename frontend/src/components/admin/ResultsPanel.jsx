@@ -86,7 +86,7 @@ const ResultsPanel = ({ classes }) => {
                     </div>
                 )}
 
-                {loading && <div className="empty-state"><i className="fa-solid fa-spinner fa-spin" /> Loading results...</div>}
+                {loading && <div className="empty-state">Loading results...</div>}
 
                 {!loading && results.length > 0 && (
                     <div className="data-table-wrap">

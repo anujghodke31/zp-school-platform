@@ -57,7 +57,7 @@ const TimetablePanel = ({ classes, subjects, teachers }) => {
                     </div>
                 </div>
 
-                {loading && <div className="empty-state"><i className="fa-solid fa-spinner fa-spin" /> Loading...</div>}
+                {loading && <div className="empty-state">Loading...</div>}
 
                 {!loading && selectedClass && (
                     <div style={{ overflowX: 'auto' }}>
