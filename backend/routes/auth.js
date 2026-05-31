@@ -19,7 +19,7 @@ router.get('/me', protect, async (req, res) => {
         });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -67,7 +67,7 @@ router.post('/register', async (req, res) => {
         });
     } catch (error) {
         console.error("Registration error STACK:", error.stack || error);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
