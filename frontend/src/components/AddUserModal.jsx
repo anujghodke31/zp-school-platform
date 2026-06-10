@@ -86,7 +86,7 @@ const AddUserModal = ({ isOpen, onClose, type, onUserAdded }) => {
                                 </div>
                                 <div className="form-group mb-lg">
                                     <label className="form-label">Parent Mobile Number (10 Digits)</label>
-                                    <input type="text" className="form-input" placeholder="9876543210" value={parentPhone} onChange={e => setParentPhone(e.target.value)} required />
+                                    <input type="tel" pattern="[0-9]{10}" className="form-input" placeholder="9876543210" value={parentPhone} onChange={e => setParentPhone(e.target.value)} required />
                                     <small className="text-muted" style={{ fontSize: '0.75rem', marginTop: '4px', display: 'block' }}>This number acts as the Parent login credential.</small>
                                 </div>
                             </>
@@ -113,8 +113,8 @@ const AddUserModal = ({ isOpen, onClose, type, onUserAdded }) => {
                                         <input type="password" className="form-input" value={password} onChange={e => setPassword(e.target.value)} required />
                                     </div>
                                     <div className="form-group mb-sm">
-                                        <label className="form-label">Contact Number</label>
-                                        <input type="text" className="form-input" value={contactNumber} onChange={e => setContactNumber(e.target.value)} />
+                                        <label className="form-label">Contact Number (10 Digits)</label>
+                                        <input type="tel" pattern="[0-9]{10}" placeholder="9876543210" className="form-input" value={contactNumber} onChange={e => setContactNumber(e.target.value)} />
                                     </div>
                                 </div>
                             </>
