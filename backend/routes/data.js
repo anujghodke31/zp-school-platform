@@ -102,6 +102,9 @@ router.post('/students', protect, roleProtect('Admin', 'SuperAdmin', 'Teacher'),
         if (!roll_no || !name || !className || !parent_phone) {
             return res.status(400).json({ success: false, message: 'All fields are required.' });
         }
+        if (!/^\d{10}$/.test(parent_phone)) {
+            return res.status(400).json({ success: false, message: 'Parent phone number must be exactly 10 digits.' });
+        }
 
         const existingSnap = await db.collection('students')
             .where('roll_no', '==', roll_no)
@@ -197,6 +200,9 @@ router.post('/staff', protect, roleProtect('Admin', 'SuperAdmin'), async (req, r
         const { username, password, name, role, contactNumber } = req.body;
         if (!username || !password || !name || !role) {
             return res.status(400).json({ success: false, message: 'Missing required staff fields.' });
+        }
+        if (contactNumber && !/^\d{10}$/.test(contactNumber)) {
+            return res.status(400).json({ success: false, message: 'Contact number must be exactly 10 digits.' });
         }
 
         const email = `${username}@zp.local`;
