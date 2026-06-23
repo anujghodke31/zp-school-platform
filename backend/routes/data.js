@@ -48,7 +48,6 @@ router.get('/admin/stats', protect, roleProtect('Admin', 'SuperAdmin'), async (r
         });
     } catch (err) {
         console.error('Stats error:', err);
-        console.error(err);
         res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
@@ -156,7 +155,6 @@ router.post('/students', protect, roleProtect('Admin', 'SuperAdmin', 'Teacher'),
         res.status(201).json(responsePayload);
     } catch (err) {
         console.error('Add Student Error:', err);
-        console.error(err);
         res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
@@ -216,7 +214,6 @@ router.post('/staff', protect, roleProtect('Admin', 'SuperAdmin'), async (req, r
         }
     } catch (err) {
         console.error('Add Staff Error:', err);
-        console.error(err);
         res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
@@ -380,7 +377,6 @@ router.post('/timetable', protect, roleProtect('Admin', 'SuperAdmin'), async (re
         }
     } catch (err) {
         console.error('Timetable error:', err);
-        console.error(err);
         res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
@@ -433,7 +429,6 @@ router.post('/results', protect, roleProtect('Admin', 'SuperAdmin', 'Teacher'), 
         res.status(201).json({ success: true, id: ref.id });
     } catch (err) {
         console.error('Results error:', err);
-        console.error(err);
         res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
@@ -466,7 +461,6 @@ router.post('/attendance', protect, roleProtect('Admin', 'SuperAdmin', 'Teacher'
         res.json({ success: true, attendance_pct: pct });
     } catch (err) {
         console.error('Attendance error:', err);
-        console.error(err);
         res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
