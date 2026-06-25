@@ -188,7 +188,7 @@ const Login = () => {
                                         <label style={styles.label}>Parent's Mobile Number</label>
                                         <div style={styles.inputWrap}>
                                             <span style={styles.inputIcon}>📞</span>
-                                            <input style={styles.input} type="tel" pattern="[0-9]{10}" placeholder="9876543210"
+                                            <input style={styles.input} type="tel" placeholder="9876543210" pattern="[0-9]{10}"
                                                 value={phone} onChange={e => setPhone(e.target.value)} required />
                                         </div>
                                     </div>
