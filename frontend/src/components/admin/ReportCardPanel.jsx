@@ -128,7 +128,7 @@ const ReportCardPanel = ({ students = [] }) => {
                     })}
 
                     {Object.keys(reportData.byExam).length === 0 && (
-                        <p style={{ textAlign: 'center', color: 'var(--muted)' }}>No marks recorded yet for this student.</p>
+                        <div className="empty-state">No marks recorded yet for this student.</div>
                     )}
 
                     {/* Overall summary */}

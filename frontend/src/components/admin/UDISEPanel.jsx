@@ -93,7 +93,7 @@ const UDISEPanel = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {loading && <tr><td colSpan={7} style={{ textAlign: 'center' }}>Loading…</td></tr>}
+                        {loading && <tr><td colSpan={7} className="empty-state"><i className="fa-solid fa-spinner fa-spin" /> Loading...</td></tr>}
                         {students.map(s => {
                             const pct = completeness(s);
                             const color = pct === 100 ? '#27ae60' : pct >= 60 ? '#e67e22' : '#e74c3c';

@@ -100,8 +100,8 @@ const ScholarshipPanel = ({ classes = [] }) => {
                 <table className="data-table">
                     <thead><tr><th>Student</th><th>Class</th><th>Scheme</th><th>Benefit</th><th>Status</th><th>Disbursed On</th><th>Actions</th></tr></thead>
                     <tbody>
-                        {loading && <tr><td colSpan={7} style={{ textAlign: 'center' }}>Loading…</td></tr>}
-                        {!loading && data.length === 0 && <tr><td colSpan={7} style={{ textAlign: 'center' }}>No records found</td></tr>}
+                        {loading && <tr><td colSpan={7} className="empty-state"><i className="fa-solid fa-spinner fa-spin" /> Loading...</td></tr>}
+                        {!loading && data.length === 0 && <tr><td colSpan={7} className="empty-state">No records found</td></tr>}
                         {data.map(d => (
                             <tr key={d.id}>
                                 <td>{d.studentName || d.studentId}</td>

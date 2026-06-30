@@ -89,9 +89,9 @@ const ExamPanel = ({ classes = [] }) => {
                 </form>
             )}
 
-            {loading && <p style={{ textAlign: 'center' }}>Loading…</p>}
+            {loading && <div className="empty-state"><i className="fa-solid fa-spinner fa-spin" /> Loading...</div>}
 
-            {!loading && Object.keys(grouped).length === 0 && <p style={{ textAlign: 'center', color: 'var(--muted)' }}>No exams scheduled</p>}
+            {!loading && Object.keys(grouped).length === 0 && <div className="empty-state">No exams scheduled</div>}
 
             {Object.entries(grouped).map(([type, items]) => (
                 <div key={type} style={{ marginBottom: 20 }}>

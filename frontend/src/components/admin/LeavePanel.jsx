@@ -87,8 +87,8 @@ const LeavePanel = ({ isAdmin = true }) => {
                 <table className="data-table">
                     <thead><tr><th>Teacher</th><th>Type</th><th>From</th><th>To</th><th>Days</th><th>Reason</th><th>Status</th>{isAdmin && <th>Action</th>}</tr></thead>
                     <tbody>
-                        {loading && <tr><td colSpan={8} style={{ textAlign: 'center' }}>Loading…</td></tr>}
-                        {!loading && requests.length === 0 && <tr><td colSpan={8} style={{ textAlign: 'center' }}>No leave requests</td></tr>}
+                        {loading && <tr><td colSpan={8} className="empty-state"><i className="fa-solid fa-spinner fa-spin" /> Loading...</td></tr>}
+                        {!loading && requests.length === 0 && <tr><td colSpan={8} className="empty-state">No leave requests</td></tr>}
                         {requests.map(r => (
                             <tr key={r.id}>
                                 <td>{r.teacherName || r.teacherId}</td>
