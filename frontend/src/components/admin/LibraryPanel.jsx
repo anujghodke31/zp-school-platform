@@ -113,8 +113,8 @@ const LibraryPanel = () => {
                 <table className="data-table">
                     <thead><tr><th>Title</th><th>Author</th><th>Category</th><th>Available</th><th>Total</th><th>Actions</th></tr></thead>
                     <tbody>
-                        {loading && <tr><td colSpan={6} style={{ textAlign: 'center' }}>Loading…</td></tr>}
-                        {!loading && filtered.length === 0 && <tr><td colSpan={6} style={{ textAlign: 'center' }}>No books found</td></tr>}
+                        {loading && <tr><td colSpan={6} className="empty-state"><i className="fa-solid fa-spinner fa-spin" /> Loading...</td></tr>}
+                        {!loading && filtered.length === 0 && <tr><td colSpan={6} className="empty-state">No books found</td></tr>}
                         {filtered.map(b => (
                             <React.Fragment key={b.id}>
                                 <tr>

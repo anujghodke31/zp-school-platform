@@ -91,7 +91,7 @@ const MdmPanel = () => {
                         <table className="data-table">
                             <thead><tr><th>Date</th><th>Menu</th><th>Students Fed</th><th>Cook</th><th>Remarks</th></tr></thead>
                             <tbody>
-                                {logs.length === 0 && <tr><td colSpan={5} style={{ textAlign: 'center' }}>No logs this month</td></tr>}
+                                {logs.length === 0 && <tr><td colSpan={5} className="empty-state">No logs this month</td></tr>}
                                 {logs.map(l => <tr key={l.id}><td>{l.date}</td><td>{l.menu}</td><td>{l.studentsFed}</td><td>{l.cookName}</td><td>{l.remarks}</td></tr>)}
                             </tbody>
                         </table>

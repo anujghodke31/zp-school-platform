@@ -105,8 +105,8 @@ const FeePanel = ({ classes = [] }) => {
                 <table className="data-table">
                     <thead><tr><th>Student</th><th>Class</th><th>Amount</th><th>Category</th><th>Status</th><th>Mode</th><th>Paid On</th><th>Action</th></tr></thead>
                     <tbody>
-                        {loading && <tr><td colSpan={8} style={{ textAlign: 'center' }}>Loading…</td></tr>}
-                        {!loading && fees.length === 0 && <tr><td colSpan={8} style={{ textAlign: 'center' }}>No fee records</td></tr>}
+                        {loading && <tr><td colSpan={8} className="empty-state"><i className="fa-solid fa-spinner fa-spin" /> Loading...</td></tr>}
+                        {!loading && fees.length === 0 && <tr><td colSpan={8} className="empty-state">No fee records</td></tr>}
                         {fees.map(f => (
                             <tr key={f.id}>
                                 <td>{f.studentName || f.studentId}</td>
