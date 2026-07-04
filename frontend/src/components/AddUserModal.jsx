@@ -114,7 +114,7 @@ const AddUserModal = ({ isOpen, onClose, type, onUserAdded }) => {
                                     </div>
                                     <div className="form-group mb-sm">
                                         <label className="form-label">Contact Number</label>
-                                        <input type="tel" pattern="[0-9]{10}" className="form-input" value={contactNumber} onChange={e => setContactNumber(e.target.value)} />
+                                        <input type="tel" pattern="[0-9]{10}" placeholder="9876543210" className="form-input" value={contactNumber} onChange={e => setContactNumber(e.target.value)} />
                                     </div>
                                 </div>
                             </>
