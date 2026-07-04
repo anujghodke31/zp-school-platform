@@ -12,14 +12,18 @@ const ParentPortal = () => {
     const activeTab = searchParams.get('tab') || 'dashboard';
 
     const [assignments, setAssignments] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const fetchAssignments = async () => {
+            setIsLoading(true);
             try {
                 const res = await api.get('/data/assignments').catch(() => ({ data: { data: [] } }));
                 setAssignments(res.data.data || []);
             } catch (error) {
                 console.error("Failed to fetch assignments", error);
+            } finally {
+                setIsLoading(false);
             }
         };
         fetchAssignments();
@@ -135,7 +139,7 @@ const ParentPortal = () => {
                                         </div>
                                     )) : (
                                         <div className="empty-state">
-                                            <i className="fa-solid fa-spinner fa-spin"></i> Loading Assignments...
+                                            {isLoading ? <><i className="fa-solid fa-spinner fa-spin" /> Loading Assignments...</> : 'No active assignments found'}
                                         </div>
                                     )}
                                 </div>

@@ -17,9 +17,12 @@ const StudentDashboard = () => {
     const [notices, setNotices] = useState([]);
     const [attendance, setAttendance] = useState([]);
     const [attendancePct, setAttendancePct] = useState(null);
+    const [isLoadingInitial, setIsLoadingInitial] = useState(true);
+    const [isLoadingAttendance, setIsLoadingAttendance] = useState(true);
 
     useEffect(() => {
         const load = async () => {
+            setIsLoadingInitial(true);
             try {
                 const [assignRes, noticeRes] = await Promise.all([
                     api.get('/data/assignments').catch(() => ({ data: { data: [] } })),
@@ -29,6 +32,8 @@ const StudentDashboard = () => {
                 setNotices(Array.isArray(noticeRes.data) ? noticeRes.data : []);
             } catch (err) {
                 console.error('Student dashboard load error:', err);
+            } finally {
+                setIsLoadingInitial(false);
             }
         };
         load();
@@ -36,6 +41,7 @@ const StudentDashboard = () => {
 
     useEffect(() => {
         if (!user?._id) return;
+        setIsLoadingAttendance(true);
         const month = new Date().toISOString().slice(0, 7); // "2026-03"
         api.get(`/data/attendance?studentId=${user._id}&month=${month}`)
             .then(res => {
@@ -46,7 +52,8 @@ const StudentDashboard = () => {
                     setAttendancePct(Math.round((present / records.length) * 100));
                 }
             })
-            .catch(console.error);
+            .catch(console.error)
+            .finally(() => setIsLoadingAttendance(false));
     }, [user]);
 
     const dueAssignments = assignments.filter(a => a.dueDate && new Date(a.dueDate) > new Date());
@@ -148,7 +155,9 @@ const StudentDashboard = () => {
                                         <p className="text-muted text-sm">{a.description || ''}</p>
                                     </div>
                                 )) : (
-                                    <div className="empty-state">No assignments found.</div>
+                                    <div className="empty-state">
+                                        {isLoadingInitial ? <><i className="fa-solid fa-spinner fa-spin" /> Loading...</> : 'No assignments found.'}
+                                    </div>
                                 )}
                             </div>
                         </div>
@@ -182,7 +191,9 @@ const StudentDashboard = () => {
                                         </table>
                                     </div>
                                 ) : (
-                                    <div className="empty-state">No attendance records for this month.</div>
+                                    <div className="empty-state">
+                                        {isLoadingAttendance ? <><i className="fa-solid fa-spinner fa-spin" /> Loading...</> : 'No attendance records for this month.'}
+                                    </div>
                                 )}
                             </div>
                         </div>
