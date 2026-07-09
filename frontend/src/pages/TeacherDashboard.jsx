@@ -17,11 +17,17 @@ const TeacherDashboard = () => {
     const [attendance, setAttendance] = useState({});
     const [syncing, setSyncing] = useState(false);
     const [noticeText, setNoticeText] = useState('');
+    const [isLoadingStudents, setIsLoadingStudents] = useState(true);
 
     const today = new Date().toISOString().slice(0, 10);
 
     useEffect(() => {
-        api.get('/data/students?limit=50').then(res => setStudents(res.data.data || [])).catch(() => {});
+        setIsLoadingStudents(true);
+        api.get('/data/students?limit=50')
+            .then(res => setStudents(res.data.data || []))
+            .catch(() => {})
+            .finally(() => setIsLoadingStudents(false));
+
         api.get('/data/classes').then(r => setClasses(r.data.data || [])).catch(() => {});
         api.get('/data/subjects').then(r => setSubjects(r.data.data || [])).catch(() => {});
     }, []);
@@ -75,7 +81,15 @@ const TeacherDashboard = () => {
                                                     </td>
                                                     <td className="td"><span className={`badge-${(st.attendance_pct ?? 100) >= 75 ? 'success' : 'danger'}`}>{st.attendance_pct ?? 100}%</span></td>
                                                 </tr>
-                                            )) : (<tr><td colSpan="4" className="empty-state"><i className="fa-solid fa-spinner fa-spin" /> Loading students...</td></tr>)}
+                                            )) : (
+                                                <tr>
+                                                    <td colSpan="4" className="empty-state">
+                                                        {isLoadingStudents
+                                                            ? <><i className="fa-solid fa-spinner fa-spin" /> Loading students...</>
+                                                            : 'No students found.'}
+                                                    </td>
+                                                </tr>
+                                            )}
                                         </tbody>
                                     </table>
                                 </div>
